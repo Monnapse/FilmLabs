@@ -1,0 +1,9 @@
+/*
+    _______
+
+    Globals
+    _______
+*/
+body {
+    background: radial-gradient(circle, var(--primary-color), var(--secondary-color));
+}
