@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FilmLabs | Login</title>
+        <title>FilmLabs | Register</title>
         <link rel="icon" href="media/filmlabslogo.svg" type="image/svg+xml">
         <link rel="stylesheet" href="styles/style.css">
         <script src="js/helpers.js"></script>
@@ -21,8 +21,8 @@
         <main class="login-main center">
             <div class="account-login-modal">
                 <div class="account-modal-top-text">
-                    <h5>WELCOME BACK</h5>
-                    <h2>Log Into your account</h2>
+                    <h5>WELCOME</h5>
+                    <h2>Create an account</h2>
                 </div>
 
                 <form class="account-login-form">
@@ -35,19 +35,16 @@
                             Password
                             <input type="password" id="password" name="password" placeholder="Enter your password" required>
                         </label>
-                        
+                        <label for="reenter_password">
+                            Re-enter Password
+                            <input type="password" id="reenter_password" name="reenter_password" placeholder="Re-enter your password" required>
+                        </label>
                     </fieldset>
-
-                    <label for="remember" class="checkbox-container">
-                        <input type="checkbox" id="remember" name="remember" value="remember" class="checkbox">
-                        <div class="checkbox-box"></div>
-                        <span>Remember me</span>
-                    </label>
                     
-                    <button class="submit-btn">Login</button>
+                    <button class="submit-btn">Register</button>
                 </form>
 
-                <p class="account-login-form-bottom">Don't have an account? <a class="gold" href="register.html">Register here.</a><p>
+                <p class="account-login-form-bottom">Already have an account? <a class="gold" href="login.html">Login here.</a><p>
             </div>
         </main>
     </body>

@@ -1,20 +1,22 @@
 window.onload = function() {
     console.log("index.js loaded");
 
+    let loggedIn = true;
+
+    // Account/Login
+    manageLoggedIn(loggedIn);
+
     // Scrolling
     const mediaList = document.getElementsByClassName("media-list");
     let isDown = false;
     let startX;
     let scrollLeft;
 
-    for (let i=0; i<mediaList.length; i++)
-    {
-        const listContainer = mediaList.item(i);
+    iterate(mediaList, (listContainer)=>{
         listContainer.addEventListener("mousedown", (e)=>{
             isDown = true;
-            startX = e.pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-            console.log("mouse down");
+            startX = e.pageX - listContainer.offsetLeft;
+            scrollLeft = listContainer.scrollLeft;
         })
         listContainer.addEventListener('mouseleave', () => {
             isDown = false;
@@ -33,5 +35,5 @@ window.onload = function() {
             e.preventDefault();
             listContainer.scrollLeft += e.deltaY;
         });
-    }
+    })
 };
