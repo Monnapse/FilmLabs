@@ -6,7 +6,7 @@ window.onload = function() {
     
     const options = {
         root: null,
-        threshold: 0.3
+        threshold: 0.6
     };
     
     const callback = (entries) => {
@@ -16,7 +16,6 @@ window.onload = function() {
                     btn.classList.remove("side-button");
                 })
                 document.getElementById(entry.target.id+"-btn").classList.add("side-button");
-
             }
         });
     };

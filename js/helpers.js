@@ -17,16 +17,12 @@ function isBlacklisted(element)
 {
     let isBlacklistedBool = false;
     blacklist.forEach((b)=>{
-        console.log(element);
-        console.log(b);
         //const queryElement = document.querySelector(e.target);
         if (b == element)
         {
-            console.log("is blacklisted");
             isBlacklistedBool = true;
         }
     })
-    console.log("is blacklisted:" + isBlacklistedBool);
     return isBlacklistedBool;
 }
 

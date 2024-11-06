@@ -481,11 +481,17 @@ side fog
     Selected films
     ______________
 */
+/* film grid*/
 .films-grid {
-    display: grid;
     
-
 }
+/* media grid */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
 
 /*
     ____________
