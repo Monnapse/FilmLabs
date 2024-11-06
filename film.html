@@ -3,11 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FilmLabs</title>
+        <title>FilmLabs | Dune: Part Two</title>
         <link rel="icon" href="media/filmlabslogo.svg" type="image/svg+xml">
         <link rel="stylesheet" href="styles/style.css">
-        <script src="js/helpers.js"></script>
-        <script src="js/index.js"></script>
+        <script src="js/global.js"></script>
     </head>
     <body>
         <header>
@@ -28,7 +27,7 @@
                             Login
                         </span>
                     </a>
-                    <div class="account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
+                    <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
                     <div class="account-popout-box hide" id="account-popout-box">
                         <a href="account.html">Settings</a>
                         <a href="selected.html">My Favorites</a>
@@ -40,166 +39,172 @@
             </div>
         </header>
         <main>
-            <div class="film-viewer">
-                <img src="media/dune_viewer.png">
-            </div>
-            <div>
-                <h1>Dune: Part Two</h1>
-                <div class="rating">
-                    <img src="media/imdb.svg" alt="IMDB">
-                    <span>8.5/10</span>
+            <div class="film-main">
+                <div class="film-viewer">
+                    <img src="media/dune_viewer.png">
                 </div>
-                <button class="button">
-                    Trailer
-                </button>
-                <button class="button">
-                    <img src="media/heart.svg">
-                    Favorites
-                </button>
-            </div>
-            <div class="film-info-tags">
-                <span>2024</span>
-                <span>2h 46m</span>
-                <span>PG-13</span>
-                <span>TV</span>
-            </div>
-            <div class="genre-chips">
-                <a href="" class="clear-chip">
-                    <span>Action Epic</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Desert Adventure</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Epic</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Sci-Fi Epic</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Space Sci-Fi</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Action</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Adventure</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Drama</span>
-                </a>
-                <a href="" class="clear-chip">
-                    <span>Sci-Fi</span>
-                </a>
-            </div>
-            <div>
-                <p>
-                    Paul Atreides unites with the Fremen while on a warpath of revenge against the conspirators who destroyed his family. 
-                    Facing a choice between the love of his life and the fate of the universe, 
-                    he endeavors to prevent a terrible future.
-                </p>
-                <p>
-                    See more at
-                    <a href="">
-                        <img src="media/imdb.svg" alt="IMDB">
+                <div class="film-top">
+                    <h1 style="flex: 1;">Dune: Part Two</h1>
+                    <div class="film-end">
+                        <div class="rating">
+                            <img class="imdb-img" src="media/imdb.svg" alt="IMDB">
+                            <span>8.5/10</span>
+                        </div>
+                        <button class="button">
+                            Trailer
+                        </button>
+                        <button class="button">
+                            <img src="media/heart.svg">
+                            Favorites
+                        </button>
+                    </div>
+                </div>
+                <div class="film-info-tags">
+                    <span>2024</span>
+                    <span>2h 46m</span>
+                    <span>PG-13</span>
+                    <span>TV</span>
+                </div>
+                <div class="genre-chips scroll-list">
+                    <a href="" class="clear-chip">
+                        <span>Action Epic</span>
                     </a>
-                </p>
-            </div>
-            <div class="dropdown">
-                <button class="dropdown-button">
-                    <span>Season 4</span>
-                    <img src="media/down_arrow.svg">
-                </button>
-                <div class="dropdown-list">
-                    <button>Season 1</button>
-                    <button>Season 2</button>
-                    <button>Season 3</button>
-                    <button>Season 4</button>
-                    <button>Season 5</button>
-                    <button>Season 6</button>
+                    <a href="" class="clear-chip">
+                        <span>Desert Adventure</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Epic</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Sci-Fi Epic</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Space Sci-Fi</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Action</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Adventure</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Drama</span>
+                    </a>
+                    <a href="" class="clear-chip">
+                        <span>Sci-Fi</span>
+                    </a>
                 </div>
-            </div>
-            <div class="chips-grid">
-                <button class="button-chip">
-                    <span>Episode 1 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 2 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 3 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 4 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 5 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 6 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 7 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 8 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 9 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 10 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 11 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 12 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 13 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 14 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 15 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 16 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 17 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 18 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 19 ∙</span>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 20 ∙</span>
-                    <p>Episode Title</p>
-                </button>
+                <div class="film-description">
+                    <p>
+                        Paul Atreides unites with the Fremen while on a warpath of revenge against the conspirators who destroyed his family. 
+                        Facing a choice between the love of his life and the fate of the universe, 
+                        he endeavors to prevent a terrible future.
+                    </p>
+                    <p class="see-more">
+                        <span>See more at</span>
+                        <a href="https://www.imdb.com" target=”_blank”>
+                            <img class="imdb-img" src="media/imdb.svg" alt="IMDB">
+                        </a>
+                    </p>
+                </div>
+                <div class="film-episodes">
+                    <div class="dropdown">
+                        <button class="dropdown-button">
+                            <span>Season 4</span>
+                            <img src="media/down_arrow.svg">
+                        </button>
+                        <div class="dropdown-list">
+                            <button>Season 1</button>
+                            <button>Season 2</button>
+                            <button>Season 3</button>
+                            <button>Season 4</button>
+                            <button>Season 5</button>
+                            <button>Season 6</button>
+                        </div>
+                    </div>
+                    <div class="chips-grid">
+                        <button class="button-chip">
+                            <span>Episode 1 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 2 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 3 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 4 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 5 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 6 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 7 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 8 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 9 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 10 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 11 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 12 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 13 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 14 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 15 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 16 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 17 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 18 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 19 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                        <button class="button-chip">
+                            <span>Episode 20 ∙</span>
+                            <p>Episode Title</p>
+                        </button>
+                    </div>
+                </div>                
             </div>
 
             <section class="category">

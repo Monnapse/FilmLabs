@@ -6,7 +6,7 @@ window.onload = function() {
     
     const options = {
         root: null,
-        threshold: 0.6
+        threshold: 0.3
     };
     
     const callback = (entries) => {
