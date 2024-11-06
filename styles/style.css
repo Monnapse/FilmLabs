@@ -90,6 +90,9 @@ footer {
     -ms-user-select: none;     /* For Internet Explorer and Edge */
     user-select: none;         /* Standard */
 }
+.unclickable {
+    pointer-events: none;
+}
 .center-vertically {
     position: absolute;
     top: 50%;
@@ -212,24 +215,33 @@ footer {
     width: 100%;
     height: 100%;
 }
+/* account */
+.account {
+    position: relative;
+    display: inline-block;
+}
 /* account popout box */
 .account-popout-box {
     position: absolute;
     background-color: var(--secondary-color);
 
-    margin-top: 1.3%;
-    width: 13%;
-
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
+    margin-top: 15px;
+    width: 100%;
     border-radius: 15px;
     z-index: 2;
 }
 .account-popout-box a,hr {
     width: 100%;
     text-align: left;
-    margin-block-end: 10px;
+}
+/* account popout box list */
+.account-popout-box-list {
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
 }
 
 /*
@@ -417,6 +429,11 @@ side fog
     border-radius: 100px;
     cursor: pointer;
     margin-top: 30px;
+
+    transition: background-color .15s ease;
+}
+.submit-btn:hover {
+    background-color: #ff6f6f;
 }
 /* bottom text */
 .account-login-form-bottom {
@@ -509,6 +526,8 @@ side fog
 .film-main {
     position: relative;
     width: 90vw;
+
+    margin-bottom: 100px;
 }
 /* film viewer */
 .film-viewer {
@@ -634,7 +653,112 @@ side fog
 .film-episodes {
     margin-top: 20px;
 }
+/* dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 250px;
 
+    z-index: 9;
+}
+/* dropdown button */
+.dropdown-button {
+    position: relative;
+
+    background-color: var(--secondary-color);
+
+    border-radius: 13px;
+    padding: 10px 15px 10px 15px;
+    width: 100%;
+    text-align: start;
+
+    cursor: pointer;
+    z-index: 3;
+
+    text-indent: 6px;
+
+    font-size: 1.3em;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dropdown-button span {
+    margin-right: auto;
+    text-align: start;
+    width: 100%;
+}
+.dropdown-button img {
+    width: 20px;
+    height: 20px;
+}
+/* dropdown list */
+.dropdown-list-container {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-top: -20px;
+    width: 100%;
+
+    border-radius: 13px;
+
+    background-color: var(--secondary-color);
+}
+.dropdown-button-list button {
+    width: 100%;
+    cursor: pointer;
+
+    background-color: transparent;
+
+    text-align: left;
+
+    transition: background-color 0.15s ease;
+
+    height: 30px;
+    border-radius: 7px;
+}
+.dropdown-button-list button:hover {
+    background-color: var(--hover-color);
+}
+.dropdown-button-active {
+    background-color: var(--primary-color) !important;
+}
+.dropdown-button-list {
+    padding: 15px;
+    margin-top: 10px;
+}
+/* chips grid */
+.chips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+/* chip buttons */
+.button-chip {
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    cursor: pointer;
+
+    width: 100%;
+
+    border-radius: 13px;
+
+    padding: 15px 50px;
+}
+.button-chip span {
+    font-size: 1.35em;
+}
+.button-chip p {
+    color: var(--smoke-color);
+    font-weight: 100;
+}
 /*
     ____________
 

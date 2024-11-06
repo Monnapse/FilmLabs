@@ -1,6 +1,8 @@
 let hideOnClickList = [];
 let blacklist = [];
 
+let autoLoadGlobal = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", (e) => {
         hideOnClickList.forEach((element)=>{
@@ -14,7 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.onload = function() {
-    console.log("index.js loaded");
+    if (autoLoadGlobal)
+    {
+        loadGlobal();
+    }
+};
+
+function loadGlobal()
+{
+    console.log("global.js loaded");
 
     let loggedIn = true;
 
@@ -51,13 +61,12 @@ window.onload = function() {
             listContainer.scrollLeft += e.deltaY;
         });
     })
-};
+}
 
 function isBlacklisted(element)
 {
     let isBlacklistedBool = false;
     blacklist.forEach((b)=>{
-        //const queryElement = document.querySelector(e.target);
         if (b == element)
         {
             isBlacklistedBool = true;
@@ -82,6 +91,15 @@ function addBlacklist(element)
 {
     blacklist.push(element);
 }
+function addDropdown(button, list)
+{
+    addHideOnClick(list);
+    addBlacklist(button);
+    button.addEventListener("click", (e)=>{
+        console.log("toggle");
+        list.classList.toggle("hide");
+    })
+}
 function manageLoggedIn(isLoggedIn)
 {
     if (isLoggedIn)
@@ -101,12 +119,13 @@ function manageLoggedIn(isLoggedIn)
 
             // Show account box when user toggles account button
             const popoutBox = document.getElementById("account-popout-box");
-            addHideOnClick(popoutBox);
-            addBlacklist(loggedInContainer);
-            console.log("popoutBox");
-            loggedInContainer.addEventListener("click", (e)=>{
-                popoutBox.classList.toggle("hide");
-            })
+            addDropdown(loggedInContainer, popoutBox);
+            //addHideOnClick(popoutBox);
+            //addBlacklist(loggedInContainer);
+            //console.log("popoutBox");
+            //loggedInContainer.addEventListener("click", (e)=>{
+            //    popoutBox.classList.toggle("hide");
+            //})
         }
     } 
     else

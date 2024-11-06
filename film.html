@@ -7,6 +7,7 @@
         <link rel="icon" href="media/filmlabslogo.svg" type="image/svg+xml">
         <link rel="stylesheet" href="styles/style.css">
         <script src="js/global.js"></script>
+        <script src="js/film.js"></script>
     </head>
     <body>
         <header>
@@ -29,11 +30,13 @@
                     </a>
                     <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
                     <div class="account-popout-box hide" id="account-popout-box">
-                        <a href="account.html">Settings</a>
-                        <a href="selected.html">My Favorites</a>
-                        <a href="selected.html">Watch History</a>
-                        <hr>
-                        <a href="">Logout</a>
+                        <div class="account-popout-box-list">
+                            <a href="account.html">Settings</a>
+                            <a href="selected.html">My Favorites</a>
+                            <a href="selected.html">Watch History</a>
+                            <hr>
+                            <a href="">Logout</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,7 +68,7 @@
                     <span>PG-13</span>
                     <span>TV</span>
                 </div>
-                <div class="genre-chips scroll-list">
+                <div class="genre-chips scroll-list unselectable">
                     <a href="" class="clear-chip">
                         <span>Action Epic</span>
                     </a>
@@ -110,97 +113,119 @@
                 <div class="film-episodes">
                     <div class="dropdown">
                         <button class="dropdown-button">
-                            <span>Season 4</span>
-                            <img src="media/down_arrow.svg">
+                            <span class="unclickable">Season 4</span>
+                            <img src="media/down_arrow.svg" class="unclickable">
                         </button>
-                        <div class="dropdown-list">
-                            <button>Season 1</button>
-                            <button>Season 2</button>
-                            <button>Season 3</button>
-                            <button>Season 4</button>
-                            <button>Season 5</button>
-                            <button>Season 6</button>
+                        <div class="dropdown-list-container hide">
+                            <div class="dropdown-button-list">
+                                <button>Season 1</button>
+                                <button>Season 2</button>
+                                <button>Season 3</button>
+                                <button class="dropdown-button-active">Season 4</button>
+                                <button>Season 5</button>
+                                <button>Season 6</button>
+                            </div>
                         </div>
                     </div>
                     <div class="chips-grid">
                         <button class="button-chip">
-                            <span>Episode 1 ∙</span>
+                            <span>Episode 1</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 2 ∙</span>
+                            <span>Episode 2</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 3 ∙</span>
+                            <span>Episode 3</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 4 ∙</span>
+                            <span>Episode 4</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 5 ∙</span>
+                            <span>Episode 5</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 6 ∙</span>
+                            <span>Episode 6</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 7 ∙</span>
+                            <span>Episode 7</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 8 ∙</span>
+                            <span>Episode 8</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 9 ∙</span>
+                            <span>Episode 9</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 10 ∙</span>
+                            <span>Episode 10</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 11 ∙</span>
+                            <span>Episode 11</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 12 ∙</span>
+                            <span>Episode 12</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 13 ∙</span>
+                            <span>Episode 13</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 14 ∙</span>
+                            <span>Episode 14</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 15 ∙</span>
+                            <span>Episode 15</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 16 ∙</span>
+                            <span>Episode 16</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 17 ∙</span>
+                            <span>Episode 17</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 18 ∙</span>
+                            <span>Episode 18</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 19 ∙</span>
+                            <span>Episode 19</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                         <button class="button-chip">
-                            <span>Episode 20 ∙</span>
+                            <span>Episode 20</span>
+                            <spam>∙</spam>
                             <p>Episode Title</p>
                         </button>
                     </div>
