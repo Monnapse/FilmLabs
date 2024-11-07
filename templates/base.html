@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {% if title %}
+            <title>FilmLabs | {{ title }}</title>
+        {% else %}
+            <title>FilmLabs</title>
+        {% endif %}
+        
+        <link rel="icon" href="static/media/filmlabslogo.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="static/styles/style.css">
+        <script src="static/js/global.js"></script>
+
+        {% if javascript %}
+            <script src="static/js/{{ javascript }}.js"></script>
+        {% endif %}
+    </head>
+    <body>
+        {% if not no_header %}
+            <header>
+                <div class="header-container">
+                    <a href="/" class="logo unselectable" draggable="false">
+                        <img src="static/media/filmlabslogo.svg">
+                        <h1>FilmLabs</h1>
+                    </a>
+                    {% if not no_header_additional %}
+                        <div class="searchbar">
+                            <button class="center-vertically">
+                                <img src="static/media/magnifying.svg" class="center">
+                            </button>
+                            <input type="text" placeholder="Search for a movie or a tv show">
+                        </div>
+                        <div class="account">
+                            {% if logged_in %}
+                                <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
+                                <div class="account-popout-box hide" id="account-popout-box">
+                                    <div class="account-popout-box-list">
+                                        <a href="account">Settings</a>
+                                        <a href="favorites">My Favorites</a>
+                                        <a href="history">Watch History</a>
+                                        <hr>
+                                        <a href="">Logout</a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="login" id="logged-out" class="login-btn">
+                                    <span>
+                                        Login
+                                    </span>
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </header>
+        {% endif %}
+        
+        {% if template %}
+            {% include template %}
+        {% endif %}
+
+        {% if not no_footer %}
+            <footer>
+                <p>
+                    FilmLabs is your ultimate destination for a vast world of movies and TV shows, 
+                    all completely ad-free. Dive into a premium streaming experience that offers high-quality entertainment across genres, 
+                    thoughtfully curated and available anytime, anywhere—all in one convenient platform.
+                </p>
+                <p>
+                    FilmLabs does not host or store any content on our servers. Instead, 
+                    we provide access to an extensive collection of movies and shows through trusted third-party streaming services, 
+                    ensuring a seamless and responsible viewing experience.
+                </p>
+            </footer>
+        {% endif %}
+    </body>
+</html>

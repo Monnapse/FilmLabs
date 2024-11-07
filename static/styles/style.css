@@ -192,6 +192,7 @@ footer {
 }
 /* account login button */
 .login-btn {
+    display: block;
     background-color: var(--red-color);
     width: 150px;
     height: 30px;
@@ -766,6 +767,9 @@ side fog
     ____________
 */
 @media (max-width: 768px), (max-height: 550px) {
+    .header {
+        height: 100px;
+    }
     .header-container {
         flex-direction: column;
         padding: 5px;

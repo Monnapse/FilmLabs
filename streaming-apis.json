@@ -1,10 +1,10 @@
 {
     "autoembed": {
         "movie": [
-            "https://player.autoembed.cc/embed/movie/{imbdid}"
+            "https://player.autoembed.cc/embed/movie/{imdb_id}"
         ],
         "tv": [
-            "https://player.autoembed.cc/embed/tv/{imbdid}/{season}/{episode}"
+            "https://player.autoembed.cc/embed/tv/{imdb_id}/{season}/{episode}"
         ]
     }
 }

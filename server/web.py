@@ -5,13 +5,14 @@
     11/6/2024
 """
 
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 import os, glob
 import imp
 import json
 
 class web_class:
     # This defines the main attributes of the class
+    base = "base.html"
     flask: Flask = None
 
     # The initializer of the class
@@ -29,3 +30,6 @@ class web_class:
            module = imp.load_source(filename, filename)
            module.run(app)
            print(filename)
+
+    def is_logged_in(app) -> bool:
+        return bool(session.get("user_id"))

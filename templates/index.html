@@ -1,369 +1,312 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FilmLabs</title>
-        <link rel="icon" href="static/media/filmlabslogo.svg" type="image/svg+xml">
-        <link rel="stylesheet" href="static/styles/style.css">
-        <script src="static/js/global.js"></script>
-        <script src="static/js/index.js"></script>
-    </head>
-    <body>
-        <header>
-            <div class="header-container">
-                <a href="/" class="logo unselectable" draggable="false">
-                    <img src="static/media/filmlabslogo.svg">
-                    <h1>FilmLabs</h1>
-                </a>
-                <div class="searchbar">
-                    <button class="center-vertically">
-                        <img src="static/media/magnifying.svg" class="center">
-                    </button>
-                    <input type="text" placeholder="Search for a movie or a tv show">
-                </div>
-                <div class="account">
-                    <a href="login.html" id="logged-out" class="login-btn hide">
-                        <span>
-                            Login
-                        </span>
-                    </a>
-                    <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
-                    <div class="account-popout-box hide" id="account-popout-box">
-                        <div class="account-popout-box-list">
-                            <a href="account.html">Settings</a>
-                            <a href="selected.html">My Favorites</a>
-                            <a href="selected.html">Watch History</a>
-                            <hr>
-                            <a href="">Logout</a>
+<main>
+    <section class="category">
+        <h2>Featured today</h2>
+        <div class="media-list scroll-list">
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
                         </div>
                     </div>
                 </div>
+                <img src="static/media/dune.jpg">
             </div>
-        </header>
-        <main>
-            <section class="category">
-                <h2>Featured today</h2>
-                <div class="media-list scroll-list">
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
                         </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
                     </div>
                 </div>
-            </section>
-            <section class="category">
-                <h2>Featured today</h2>
-                <div class="media-list scroll-list">
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
                         </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="static/media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
                     </div>
                 </div>
-            </section>
-        </main>
-        <footer>
-            <p>
-                FilmLabs is your ultimate destination for a vast world of movies and TV shows, 
-                all completely ad-free. Dive into a premium streaming experience that offers high-quality entertainment across genres, 
-                thoughtfully curated and available anytime, anywhere—all in one convenient platform.
-            </p>
-            <p>
-                FilmLabs does not host or store any content on our servers. Instead, 
-                we provide access to an extensive collection of movies and shows through trusted third-party streaming services, 
-                ensuring a seamless and responsible viewing experience.
-            </p>
-        </footer>
-    </body>
-</html>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+        </div>
+    </section>
+    <section class="category">
+        <h2>Featured today</h2>
+        <div class="media-list scroll-list">
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="static/media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+            <div class="media-modal unselectable">
+                <div class="media-info">
+                    <div>
+                        <h3>Dune: Part Two</h3>
+                        <div>
+                            <p>2024</p>
+                            <p>8.5/10</p>
+                            <p>2h 46m</p>
+                            <p>PG-13</p>
+                            <p>Movie</p>
+                        </div>
+                    </div>
+                </div>
+                <img src="media/dune.jpg">
+            </div>
+        </div>
+    </section>
+</main>
