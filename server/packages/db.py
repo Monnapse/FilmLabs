@@ -34,11 +34,11 @@ class film_labs_db:
 
     def create_account(self, username: str, password: str) -> account:
         # Create queire
-        querie = f"insert into account (username, password) values (%s, %s)"
+        query = "insert into account (username, password) values (%s, %s)"
         values = (username, password)
 
         # Execute querie
-        self.db_cursor.execute(querie, values)
+        self.db_cursor.execute(query, values)
         self.db_connection.commit()
 
         user_id = self.db_cursor.lastrowid
@@ -47,7 +47,17 @@ class film_labs_db:
             user_id,
             username
         )
+    
+    def does_username_exist(self, username: str) -> bool:
+        query = "select user_id from account where username = %s"
+        username = (username, )
 
+        self.db_cursor.execute(query, username)
+        results = self.db_cursor.fetchall()
+
+        if (len(results) > 0):
+            return True
+        return False
 
 # Testing
 """
@@ -58,7 +68,8 @@ db.connect(
     environ.get("MYSQL_PASSWORD"),
     environ.get("FILMLABS_DB")
 )
-admin_account = db.create_account("sugriva", "fortnite")
+#admin_account = db.create_account("sugriva", "fortnite")
+account_exists = db.does_username_exist("Monnapse")
 
-print(admin_account.user_id)
+print(account_exists)
 """

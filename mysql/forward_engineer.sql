@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `filmlabs`.`account` ;
 CREATE TABLE IF NOT EXISTS `filmlabs`.`account` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(80) NOT NULL,
   PRIMARY KEY (`user_id`))
 ENGINE = InnoDB;
 

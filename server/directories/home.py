@@ -5,11 +5,13 @@
     11/6/2024
 """
 
+from server.web import web_class
+
 from flask import Flask, render_template, session
 
 # SETTINGS
 
-def run(app: Flask):
+def run(app: web_class):
     print("Home >>> Home directories loaded")
 
     @app.flask.route("/")

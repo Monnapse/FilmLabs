@@ -9,19 +9,19 @@
             <fieldset class="account-input-container">
                 <label for="username">
                     Username
-                    <input type="text" id="username" name="username" placeholder="Enter your username" required> 
+                    <input type="text" id="username" name="username" placeholder="Enter your username" minlength="{{ username_min }}" maxlength="{{ username_max }}" required> 
                 </label>
                 <label for="password">
                     Password
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="{{ password_min }}" maxlength="{{ password_max }}" required>
                 </label>
                 <label for="reenter_password">
                     Re-enter Password
-                    <input type="password" id="reenter_password" name="reenter_password" placeholder="Re-enter your password" required>
+                    <input type="password" id="reenter_password" name="reenter_password" placeholder="Re-enter your password" minlength="{{ password_min }}" maxlength="{{ password_max }}" required>
                 </label>
             </fieldset>
             
-            <button class="submit-btn">Register</button>
+            <button class="submit-btn" onclick="register()">Register</button>
         </form>
 
         <p class="account-login-form-bottom">Already have an account? <a class="gold" href="login">Login here.</a><p>

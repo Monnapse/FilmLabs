@@ -767,7 +767,7 @@ side fog
     ____________
 */
 @media (max-width: 768px), (max-height: 550px) {
-    .header {
+    header {
         height: 100px;
     }
     .header-container {
@@ -796,5 +796,8 @@ side fog
     }
     .submit-btn {
         height: 30px;
+    }
+    .login-main {
+        top: 90%;
     }
 }

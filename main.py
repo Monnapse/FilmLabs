@@ -10,25 +10,44 @@
 
 """
 
-from flask import Flask
+from flask import Flask, request
 from flask_session import Session
 from datetime import timedelta
 from os import environ
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 import server.web as web
 import server.packages.db as db
 
+# Settings
 session_hours = 168 # Amount of time to remember
+
+password_min_length = 8
+password_max_length = 20
+
+username_min_length = 3
+username_max_length = 20
 
 # Define the flask app
 app = Flask(__name__)
+limiter = Limiter(app, key_func=get_remote_address)
+
 #app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=session_hours)
 Session(app)
 
 db_controller = db.film_labs_db()
-web_controller = web.web_class(app)
+web_controller = web.web_class(
+    app, 
+    limiter,
+    db_controller,
+    password_max_length, 
+    password_min_length,
+    username_min_length,
+    username_max_length
+)
 
 if __name__ == '__main__':
     # Connect to database

@@ -1,0 +1,7 @@
+flask
+mysql-connector-python
+requests
+datetime
+os
+importlib
+bcrypt
