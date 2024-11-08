@@ -5,13 +5,14 @@ window.onload = function() {
 
     let page = 1;
     let isLoading = false;
+    let reachedPageLimit = false;
 
     const categoryContainer = document.getElementById("categories")
 
     console.log(categoryContainer)
 
     async function loadMoreData() {
-        if (isLoading) return;
+        if (isLoading || reachedPageLimit) { return; };
         isLoading = true;
 
         //document.getElementById('loading').style.display = 'block';
@@ -21,7 +22,13 @@ window.onload = function() {
 
             //if (!response.ok) throw new Error('Network response was not ok');
 
+            reachedPageLimit = hasReachedPageLimit(response);
+
+            if (reachedPageLimit) { return; }
+
             const data = await response.json();
+
+            //console.log(response.status)
 
             //const contentDiv = document.getElementById('content');
 
@@ -30,7 +37,15 @@ window.onload = function() {
                 // Category
                 cardsList = "";
                 item.film_list.results.forEach((item)=>{
-                    cardsList += createFilmCard();
+                    cardsList += createFilmCard(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        item.poster_path
+                    );
                 })
 
                 category = createCategory(item.title, cardsList);
@@ -42,12 +57,12 @@ window.onload = function() {
 
                 container.innerHTML = category;
 
-                console.log(container.firstChild)
                 categoryContainer.appendChild(container.firstChild);
+
+                addScrollList(document.getElementById(`scroll-${item.title}`));
             });
 
             page++;
-
         } catch (error) {
             console.error('Failed to load data:', error);
         } finally {
@@ -63,6 +78,19 @@ window.onload = function() {
 
     loadMoreData();
 };
+
+function hasReachedPageLimit(data)
+{
+    if (data && data.status == 200)
+    {
+        return false;
+    }
+    else if (data && data.status == 404)
+    {
+        // Reached page limit
+        return true;
+    }
+}
 
 function createFilmCard(title, year, rating, time, ageRating, mediaType, img)
 {
@@ -97,7 +125,7 @@ function createCategory(title, filmCards)
         </section>
     */
 
-    const html = `<section class="category"><h2>${title}</h2>${filmCards}</section>`
+    const html = `<section class="category"><h2>${title}</h2><div id="scroll-${title}" class="media-list scroll-list">${filmCards}</div></section>`
 
     return html
 }

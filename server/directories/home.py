@@ -17,20 +17,11 @@ def run(app: web_class):
 
     @app.flask.route("/")
     def home():
-        authenticated_account = app.check_authentication()
+        authorization = app.get_authorization_data()
 
-        if (authenticated_account.account_exists):
-            return render_template(
-                app.base,
-                template = "index.html",
-                javascript = "index",
-                logged_in = True,
-                username = authenticated_account.username
-            )
-        else:
-            return render_template(
-                app.base,
-                template = "index.html",
-                javascript = "index",
-                logged_in = False
-            )
+        return render_template(
+            app.base,
+            template = "index.html",
+            javascript = "index",
+            authorization=authorization
+        )

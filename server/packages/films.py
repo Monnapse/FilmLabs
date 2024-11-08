@@ -48,7 +48,7 @@ class FilmsController:
             return None
 
     def get_next_categories(self, current_page: int) -> list[Category]:
-        if self.default_page_layout != None and self.default_page_layout[current_page]:
+        if self.default_page_layout != None and self.get_raw_category_by_page(current_page):
             page = self.get_raw_category_by_page(current_page)
 
             if page == None: return

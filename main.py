@@ -51,6 +51,8 @@ film_controller = films.FilmsController(
     json_controller.load_json("home_page.json")
 )
 
+#print(film_controller.get_next_categories(2))
+
 db_controller = db.film_labs_db(
     password_max_length, 
     password_min_length,

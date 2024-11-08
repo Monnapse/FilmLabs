@@ -17,9 +17,9 @@ def run(app: web_class):
 
     @app.flask.route("/account")
     def account():
-        authenticated_account = app.check_authentication()
+        authorization = app.get_authorization_data()
 
-        if (authenticated_account.account_exists):
+        if (authorization["logged_in"]):
             # If logged in then continue to account page
             return render_template(
                 app.base,
@@ -27,8 +27,7 @@ def run(app: web_class):
                 title = "Account",
                 javascript = "account",
                 no_footer = True,
-                logged_in = True,
-                username = authenticated_account.username
+                authorization=authorization
             )
         else:
             # If not logged in then redirect to login page

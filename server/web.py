@@ -64,7 +64,7 @@ class web_class:
            spec.loader.exec_module(module)
            module.run(app)
 
-    def check_authentication(app) -> account:
+    def get_authorized_account(app) -> account:
         #current_user = get_jwt_identity()
         token = request.cookies.get("access_token")
         if (token):
@@ -96,3 +96,11 @@ class web_class:
             account_exists=False,
             account_message="Token is invalid"
         )
+    def is_logged_in(app) -> bool:
+        return app.check_authentication() != None
+    def get_authorization_data(app) -> dict[bool, str]:
+        authorized_account = app.get_authorized_account()
+        return {
+            "logged_in": authorized_account.account_exists,
+            "username": authorized_account.username
+        }

@@ -34,8 +34,8 @@
                             <input type="text" placeholder="Search for a movie or a tv show">
                         </div>
                         <div class="account">
-                            {% if logged_in %}
-                                <div class="button account-btn unselectable" id="logged-in">{{ username }}</div>
+                            {% if authorization and authorization.logged_in %}
+                                <div class="button account-btn unselectable" id="logged-in">{{ authorization.username }}</div>
                                 <div class="account-popout-box hide" id="account-popout-box">
                                     <div class="account-popout-box-list">
                                         <a href="account">Settings</a>

@@ -18,7 +18,9 @@
         <div class="account-property-container">
             <div class="account-property">
                 <h3>Username</h3>
-                <span>{{ username }}</span>
+                {% if authorization and authorization.logged_in %}
+                    <span>{{ authorization.username }}</span>
+                {% endif %}
             </div>
         </div>
     </div>
