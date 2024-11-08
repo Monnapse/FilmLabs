@@ -35,16 +35,22 @@
                         </div>
                         <div class="account">
                             {% if logged_in %}
-                                <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
+                                <div class="button account-btn unselectable" id="logged-in">{{ username }}</div>
                                 <div class="account-popout-box hide" id="account-popout-box">
                                     <div class="account-popout-box-list">
                                         <a href="account">Settings</a>
                                         <a href="favorites">My Favorites</a>
                                         <a href="history">Watch History</a>
                                         <hr>
-                                        <a href="">Logout</a>
+                                        <a href="logout">Logout</a>
                                     </div>
                                 </div>
+
+                                <script>
+                                    const loggedInContainer = document.getElementById("logged-in");
+                                    const popoutBox = document.getElementById("account-popout-box");
+                                    addDropdown(loggedInContainer, popoutBox);
+                                </script>
                             {% else %}
                                 <a href="login" id="logged-out" class="login-btn">
                                     <span>

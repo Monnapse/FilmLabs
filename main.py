@@ -16,12 +16,13 @@ from datetime import timedelta
 from os import environ
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_jwt_extended import JWTManager
 
 import server.web as web
 import server.packages.db as db
 
 # Settings
-session_hours = 168 # Amount of time to remember
+token_max_days = 7
 
 password_min_length = 8
 password_max_length = 20
@@ -34,15 +35,26 @@ app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
 
 #app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=session_hours)
-Session(app)
+#app.config["SESSION_TYPE"] = "filesystem"
+#app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=session_days)
+app.config['JWT_SECRET_KEY'] = environ.get("FILMLABS_JWT_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=token_max_days)
 
-db_controller = db.film_labs_db()
+Session(app)
+jwt = JWTManager(app)
+
+db_controller = db.film_labs_db(
+    password_max_length, 
+    password_min_length,
+    username_min_length,
+    username_max_length
+)
 web_controller = web.web_class(
     app, 
     limiter,
     db_controller,
+    jwt,
+    token_max_days,
     password_max_length, 
     password_min_length,
     username_min_length,

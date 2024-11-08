@@ -22,6 +22,8 @@ function iterate(list, callback)
 
 function login()
 {
+    const redirect = "/";
+
     const formData = {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
@@ -35,12 +37,24 @@ function login()
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status == 429)
+        {
+            alert("To many request's, please try again later.");
+        }
+        else if (!response.ok) {
+            return response.json().then(errorData => {
+                doOutcome(errorData, redirect);
+            });
+        }
+        
+        return response.json();
+    })
     .then(data => {
-
+        doOutcome(data, redirect);
     })
     .catch((error) => {
-
+        doOutcome(error, redirect);
     });
 }
 
@@ -49,6 +63,8 @@ function register()
     const username = document.getElementById("username").value;
     const passwordValue = document.getElementById("password").value;
     const reenterPasswordValue = document.getElementById("reenter_password").value;
+
+    const redirect = "/login";
 
     if (passwordValue != reenterPasswordValue)
     {
@@ -61,24 +77,6 @@ function register()
         password: passwordValue,
         reenter_password: reenterPasswordValue
     };
-
-    //try {
-    //    const response = await fetch('register_submit', {
-    //      method: 'POST',
-    //      headers: { 'Content-Type': 'application/json' },
-    //      body: JSON.stringify(formData)
-    //    });
-//
-    //    if (!response.ok) {
-    //        alert(error.message);
-    //    }
-//
-    //    //const data = await response.json();
-    //    //result.textContent = "Submission successful!";
-//
-    //} catch (error) {
-    //    alert(error.message);
-    //}
 
     fetch("register_submit", {
         method: "POST",
@@ -94,26 +92,26 @@ function register()
         }
         else if (!response.ok) {
             return response.json().then(errorData => {
-                doOutcome(errorData);
+                doOutcome(errorData, redirect);
             });
         }
         
         return response.json();
     })
     .then(data => {
-        doOutcome(data);
+        doOutcome(data, redirect);
     })
     .catch((error) => {
-        doOutcome(error);
+        doOutcome(error, redirect);
     });
 }
 
-function doOutcome(data)
+function doOutcome(data, redirect)
 {
     if (data == null)  {return; }
-    if (data.success)
+    if (data.success && redirect != null)
     {
-        window.location.href = "/";
+        window.location.href = redirect;
     }
     else
     {

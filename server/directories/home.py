@@ -8,6 +8,7 @@
 from server.web import web_class
 
 from flask import Flask, render_template, session
+from flask_jwt_extended import jwt_required
 
 # SETTINGS
 
@@ -16,9 +17,20 @@ def run(app: web_class):
 
     @app.flask.route("/")
     def home():
-        return render_template(
-            app.base,
-            template = "index.html",
-            javascript = "index",
-            logged_in = app.is_logged_in()
-        )
+        authenticated_account = app.check_authentication()
+
+        if (authenticated_account.account_exists):
+            return render_template(
+                app.base,
+                template = "index.html",
+                javascript = "index",
+                logged_in = True,
+                username = authenticated_account.username
+            )
+        else:
+            return render_template(
+                app.base,
+                template = "index.html",
+                javascript = "index",
+                logged_in = False
+            )

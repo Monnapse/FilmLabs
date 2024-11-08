@@ -1,5 +1,6 @@
 import bcrypt
 import json
+from flask import Flask, render_template, session, request, jsonify
 
 def hash_password(plain_password):
     salt = bcrypt.gensalt()

@@ -26,10 +26,10 @@ function loadGlobal()
 {
     console.log("global.js loaded");
 
-    let loggedIn = true;
+    //let loggedIn = true;
 
     // Account/Login
-    manageLoggedIn(loggedIn);
+    //manageLoggedIn(loggedIn);
 
     // Scrolling
     const mediaList = document.getElementsByClassName("scroll-list");
@@ -100,6 +100,7 @@ function addDropdown(button, list)
         list.classList.toggle("hide");
     })
 }
+/*
 function manageLoggedIn(isLoggedIn)
 {
     if (isLoggedIn)
@@ -145,3 +146,4 @@ function manageLoggedIn(isLoggedIn)
         }
     }
 }
+*/
