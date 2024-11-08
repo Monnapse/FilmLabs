@@ -12,7 +12,6 @@ from typing import Optional, Union
 
 # Enums
 class FilmType(Enum):
-
     Movie = "movie"
     TV = "tv"
 
@@ -184,7 +183,7 @@ class TMDB:
             poster_path = self.to_img_url(data.get("poster_path")),
             first_air_date = data.get("first_air_date"),
             name = data.get("name"),
-            vote_average = data.get("vote_average:"),
+            vote_average = data.get("vote_average"),
             vote_count = data.get("vote_count")
         )
         return tv_class
@@ -197,11 +196,15 @@ class TMDB:
                 time_window (TimeWindow): you only need to specify this if the list requires it (known required lists that require this are 'trending')
         """
 
-        api = f"{film_type.value}/{list_type.value}?language=en-US&page={str(page)}"
+        time = enum_to_string(time_window)
+        media_type = enum_to_string(film_type)
+        media_list_type = enum_to_string(list_type)
 
-        if list_type.value == "trending":
+        api = f"{media_type}/{media_list_type}?language=en-US&page={str(page)}"
+
+        if media_list_type == "trending":
             # If list is trending then add the time_window as required
-            api = f"{list_type.value}/{film_type.value}/{time_window.value}?language=en-US&page={str(page)}"
+            api = f"{media_list_type}/{media_type}/{time}?language=en-US&page={str(page)}"
 
         response = self.send_api(api)
 
@@ -218,9 +221,9 @@ class TMDB:
 
             for film in films_results:
                 film_class = None
-                if (film_type == FilmType.Movie):
+                if (media_type == FilmType.Movie.value):
                     film_class = self.to_movie(film)
-                elif (film_type == FilmType.TV):
+                elif (media_type == FilmType.TV.value):
                     film_class = self.to_tv(film)
 
                 list_result.results.append(film_class)
@@ -229,40 +232,59 @@ class TMDB:
         return None
 
     def get_trending_films_list(self, page: int = 1, time_window: TimeWindow = TimeWindow.Day) -> ListResult:
-        movie_list = api.get_film_list(FilmType.Movie, MovieListType.Trending, page, time_window) or []
-        tv_list = api.get_film_list(FilmType.TV, TVListType.Trending, page, time_window) or []
-
+        tv_list = self.get_film_list(FilmType.TV, TVListType.Trending, page, time_window) or []
+        movie_list = self.get_film_list(FilmType.Movie, MovieListType.Trending, page, time_window) or []
+        
         total_pages = 0
         if movie_list.total_pages > tv_list.total_pages:
             total_pages = movie_list.total_pages
         elif tv_list.total_pages > movie_list.total_pages:
             total_pages = tv_list.total_pages
 
-        results = movie_list.results + tv_list.results
-        
-        print(results)
+        results = tv_list.results + movie_list.results
 
-        sorted_results = results.sort(key=sort_by_rating)
+        results.sort(reverse=True, key=sort_by_rating)
+
+        #for i in results:
+        #    print(f"media type: {i.media_type}, rating: {i.vote_average}%")
 
         list_result = ListResult(
             page = movie_list.page,
-            results = sorted_results,
+            results = results,
             total_pages = total_pages,
             total_results = movie_list.total_results + tv_list.total_results
         )
         return list_result
 
+    def list_result_to_json(self, list: ListResult):
+        result = list.__dict__
+
+        films_list = []
+
+        for i in list.results:
+            films_list.append(i.__dict__)
+
+        result["results"] = films_list
+
+        return result
+
+
 # Functions
 def sort_by_rating(film: Optional[Union[Movie, TV]]):
-    print(film.vote_average)
-    print(film.media_type)
+    #print(f"media type: {film.media_type}, rating: {film.vote_average * 10}%")
     return film.vote_average
 
+def enum_to_string(enum):
+    if (type(enum) is not str and enum != None):
+        enum = enum.value
+    return enum
+
 # TESTING
+"""
 from os import environ
 api = TMDB(environ.get("TMDB_API_KEY"))
 #movies_list = api.get_movie_list(MovieListType.UpComing, 5)
 #tv_list = api.get_film_list(FilmType.TV, TVListType.AiringToday, 5)
 trending_film_list = api.get_trending_films_list(1, TimeWindow.Week)
-
-print(trending_film_list.results[0].poster_path)
+print(api.list_result_to_json(trending_film_list))
+"""

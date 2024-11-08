@@ -17,9 +17,11 @@ from os import environ
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_jwt_extended import JWTManager
+import json
 
 import server.web as web
-import server.packages.db as db
+from server.packages import db, films, tmdb, json_controller
+from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult
 
 # Settings
 token_max_days = 7
@@ -43,6 +45,12 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=token_max_days)
 Session(app)
 jwt = JWTManager(app)
 
+api = tmdb.TMDB(environ.get("TMDB_API_KEY"))
+film_controller = films.FilmsController(
+    api,
+    json_controller.load_json("home_page.json")
+)
+
 db_controller = db.film_labs_db(
     password_max_length, 
     password_min_length,
@@ -54,6 +62,7 @@ web_controller = web.web_class(
     limiter,
     db_controller,
     jwt,
+    film_controller,
     token_max_days,
     password_max_length, 
     password_min_length,

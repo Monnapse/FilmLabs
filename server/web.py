@@ -9,6 +9,7 @@ from flask import Flask, render_template, session, request
 from flask_limiter import Limiter
 from server.packages.db import film_labs_db, account
 from server.packages import db
+from server.packages.films import FilmsController
 import os, glob
 import importlib.util
 import json
@@ -23,12 +24,25 @@ class web_class:
 
     # The initializer of the class
     # Defines the class attributes
-    def __init__(app, flask_app: Flask, limiter: Limiter, db_controller: film_labs_db, jwt:JWTManager, token_max_days: int, password_max_length: int, password_min_length: int, username_min_length: int, username_max_length: int) -> None:
+    def __init__(
+            app, 
+            flask_app: Flask, 
+            limiter: Limiter, 
+            db_controller: film_labs_db, 
+            jwt: JWTManager, 
+            film_controller: FilmsController,
+            token_max_days: int, 
+            password_max_length: int, 
+            password_min_length: int, 
+            username_min_length: int, 
+            username_max_length: int
+        ) -> None:
         # Defaults
         app.flask = flask_app
         app.limiter = limiter
         app.db_controller = db_controller
         app.jwt = jwt
+        app.film_controller = film_controller
 
         # Settings
         app.token_max_days = token_max_days

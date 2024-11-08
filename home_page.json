@@ -1,0 +1,52 @@
+{
+    "pages": [
+        {
+            "current_page": 1,
+            
+            "categories": [
+                {
+                    "name": "Trending today",
+                    "media_type": null,
+                    "list_type": "trending",
+                    "time_window": "day"
+                },
+                {
+                    "name": "Trending this week",
+                    "media_type": null,
+                    "list_type": "trending",
+                    "time_window": "week"
+                },
+                {
+                    "name": "Popular movies",
+                    "media_type": "movie",
+                    "list_type": "popular",
+                    "time_window": null
+                }
+            ]
+        },
+        {
+            "current_page": 2,
+
+            "categories": [
+                {
+                    "name": "Popular tv series",
+                    "media_type": "tv",
+                    "list_type": "popular",
+                    "time_window": null
+                },
+                {
+                    "name": "Now playing movies",
+                    "media_type": "movie",
+                    "list_type": "now_playing",
+                    "time_window": null
+                },
+                {
+                    "name": "Top rated tv series",
+                    "media_type": "tv",
+                    "list_type": "top_rated",
+                    "time_window": null
+                }
+            ]
+        }
+    ]
+}
