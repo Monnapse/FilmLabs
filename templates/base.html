@@ -10,12 +10,12 @@
             <title>FilmLabs</title>
         {% endif %}
         
-        <link rel="icon" href="static/media/filmlabslogo.svg" type="image/svg+xml">
-        <link rel="stylesheet" href="static/styles/style.css">
-        <script src="static/js/global.js"></script>
+        <link rel="icon" href="/static/media/filmlabslogo.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="/static/styles/style.css">
+        <script src="/static/js/global.js"></script>
 
         {% if javascript %}
-            <script src="static/js/{{ javascript }}.js"></script>
+            <script src="/static/js/{{ javascript }}.js"></script>
         {% endif %}
     </head>
     <body>
@@ -23,13 +23,13 @@
             <header>
                 <div class="header-container">
                     <a href="/" class="logo unselectable" draggable="false">
-                        <img src="static/media/filmlabslogo.svg">
+                        <img src="/static/media/filmlabslogo.svg">
                         <h1>FilmLabs</h1>
                     </a>
                     {% if not no_header_additional %}
                         <div class="searchbar">
                             <button class="center-vertically">
-                                <img src="static/media/magnifying.svg" class="center">
+                                <img src="/static/media/magnifying.svg" class="center">
                             </button>
                             <input type="text" placeholder="Search for a movie or a tv show">
                         </div>

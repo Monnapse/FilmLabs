@@ -17,9 +17,8 @@ from datetime import timedelta
 def run(app: web_class):
     print("Films >>> Films directories loaded")
 
-    # Routes
-    @app.flask.route("/category/<media_type>/<list_type>")
-    def category(media_type, list_type):
+    # Function Routes
+    def category_base(media_type = None, list_type = None, time_window = None):
         authorization = app.get_authorization_data()
 
         return render_template(
@@ -28,6 +27,14 @@ def run(app: web_class):
             javascript = "selectedFilms",
             authorization = authorization
         )
+
+    # Routes
+    @app.flask.route("/category/<media_type>/<list_type>")
+    def category(media_type, list_type):
+        return category_base(media_type, list_type)
+    @app.flask.route("/category/<media_type>/<list_type>/<time_window>")
+    def category_time(media_type, list_type, time_window):
+        return category_base(media_type, list_type, time_window)
     
     # API
     @app.flask.route("/get_home_page_categories", methods=['GET'])
@@ -65,6 +72,7 @@ def run(app: web_class):
                 if media_type == FilmType.Movie.value:
                     # Is movie list type
                     category_results = app.film_controller.tmdb.get_film_list(FilmType.Movie, list_type, int(page), time_window)
+
                 elif media_type == FilmType.TV.value:
                     # Is tv list type
                     category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, list_type, int(page), time_window)

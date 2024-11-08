@@ -47,6 +47,10 @@ h5 {
     font-weight: 1000;
     color: var(--smoke-color);
 }
+.h3 {
+    font-weight: 1000;
+    font-size: 1.5em;
+}
 
 hr {
     border-color: var(--smoke-color);
