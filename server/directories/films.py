@@ -56,7 +56,18 @@ def run(app: web_class):
         )
     
     @app.flask.route("/film/tv/<id>/<season>/<episode>")
-    def film(id, season, episode):
+    def tv(id, season, episode):
+        authorization = app.get_authorization_data()
+
+        return render_template(
+            app.base,
+            template = "film.html",
+            javascript = "film",
+            authorization = authorization
+        )
+    
+    @app.flask.route("/film/movie/<id>")
+    def movie(id):
         authorization = app.get_authorization_data()
 
         return render_template(

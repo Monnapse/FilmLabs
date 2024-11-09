@@ -538,12 +538,22 @@ side fog
 }
 /* film viewer */
 .film-viewer {
+    position: relative;
     width: 100%;
-    height: auto;
+    padding-top: 56.25%; /* This is 16:9 aspect ratio */
+    overflow: hidden;
 }
 .film-viewer img {
     width: 100%;
     height: auto;
+}
+.film-viewer iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 /* film top */
 .film-top {
@@ -766,6 +776,19 @@ side fog
     color: var(--smoke-color);
     font-weight: 100;
 }
+/* chip button selected */
+.selected-button-chip {
+    background-color: var(--gold-color);
+}
+.selected-button-chip p {
+    color: var(--white-color);
+    font-weight: 800;
+}
+/* service provider container */
+.service-provider-container {
+    margin-top: 40px;
+}
+
 /*
     ____________
 
