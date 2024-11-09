@@ -29,6 +29,12 @@
 
             "categories": [
                 {
+                    "name": "Now playing movies",
+                    "media_type": "movie",
+                    "list_type": "now_playing",
+                    "time_window": null
+                },
+                {
                     "name": "Popular tv series",
                     "media_type": "tv",
                     "list_type": "popular",
@@ -39,11 +45,47 @@
                     "media_type": "movie",
                     "list_type": "now_playing",
                     "time_window": null
-                },
+                }
+            ]
+        },
+        {
+            "current_page": 3,
+
+            "categories": [
                 {
                     "name": "Top rated tv series",
                     "media_type": "tv",
                     "list_type": "top_rated",
+                    "time_window": null
+                },
+                {
+                    "name": "Top rated movies",
+                    "media_type": "movie",
+                    "list_type": "popular",
+                    "time_window": null
+                },
+                {
+                    "name": "On the air tv series",
+                    "media_type": "tv",
+                    "list_type": "on_the_air",
+                    "time_window": null
+                }
+            ]
+        },
+        {
+            "current_page": 4,
+
+            "categories": [
+                {
+                    "name": "Upcoming movies",
+                    "media_type": "movie",
+                    "list_type": "upcoming",
+                    "time_window": null
+                },
+                {
+                    "name": "Airing today tv series",
+                    "media_type": "tv",
+                    "list_type": "airing_today",
                     "time_window": null
                 }
             ]

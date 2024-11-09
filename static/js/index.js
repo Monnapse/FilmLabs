@@ -29,24 +29,10 @@ window.onload = function() {
                 // Category
                 cardsList = "";
                 item.film_list.results.forEach((item)=>{
-                    cardsList += createFilmCard(
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        item.poster_path
-                    );
+                    cardsList += createFilmCard(item);
                 })
 
-                media = item.media_type
-                if (media == null) 
-                {
-                    media = item.time_window
-                }
-
-                category = createCategory(item.title, cardsList, media, item.list_type);
+                category = createCategory(item.title, cardsList, item.media_type, item.list_type, item.time_window);
 
                 //console.log(category);
                 //categoryContainer.insertAdjacentElement("beforeend", category)
@@ -63,8 +49,10 @@ window.onload = function() {
             page++;
         } catch (error) {
             console.error('Failed to load data:', error);
+            return false;
         } finally {
             isLoading = false;
+            return true;
         }
     });
 };

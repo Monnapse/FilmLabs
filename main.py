@@ -32,6 +32,9 @@ password_max_length = 20
 username_min_length = 3
 username_max_length = 20
 
+# w9, w154, w185, w342, w500, w780, original
+poster_sizing = "w185" # Smaller = more optimized = faster loading
+
 # Define the flask app
 app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
@@ -45,7 +48,10 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=token_max_days)
 Session(app)
 jwt = JWTManager(app)
 
-api = tmdb.TMDB(environ.get("TMDB_API_KEY"))
+api = tmdb.TMDB(
+    environ.get("TMDB_API_KEY"), 
+    poster_sizing
+)
 film_controller = films.FilmsController(
     api,
     json_controller.load_json("home_page.json")

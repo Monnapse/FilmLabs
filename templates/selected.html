@@ -1,6 +1,12 @@
 <main>
     <section class="films-grid">
-        <h2 id="category-title">{{ title }}</h2>
+
+        {% if title %}
+            <h2 id="category-title">{{ title }}</h2>
+        {% else %}
+            <h2 id="category-title">Category could not be found</h2>
+        {% endif %}
+
         <div id="media-grid" class="media-grid">
             
         </div>

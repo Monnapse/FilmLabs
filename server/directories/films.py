@@ -25,16 +25,33 @@ def run(app: web_class):
             app.base,
             template = "selected.html",
             javascript = "selectedFilms",
-            authorization = authorization
+            authorization = authorization,
+            title = app.film_controller.get_category_name(media_type, list_type, time_window)
         )
 
     # Routes
-    @app.flask.route("/category/<media_type>/<list_type>")
-    def category(media_type, list_type):
-        return category_base(media_type, list_type)
-    @app.flask.route("/category/<media_type>/<list_type>/<time_window>")
-    def category_time(media_type, list_type, time_window):
+    @app.flask.route("/category")
+    def category():
+        # /<media_type>/<list_type>/<time_window>
+        media_type = request.args.get("media_type")
+        list_type = request.args.get("list_type")
+        time_window = request.args.get("time_window")
         return category_base(media_type, list_type, time_window)
+    
+    @app.flask.route("/search")
+    def category_time():
+        #media_type = request.args.get("media_type")
+        #list_type = request.args.get("list_type")
+        #time_window = request.args.get("time_window")
+
+        authorization = app.get_authorization_data()
+
+        return render_template(
+            app.base,
+            template = "search.html",
+            javascript = "search",
+            authorization = authorization,
+        )
     
     # API
     @app.flask.route("/get_home_page_categories", methods=['GET'])
@@ -58,30 +75,62 @@ def run(app: web_class):
             return jsonify(success=False, message="Something went wrong"), 403
 
     # /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null
-    @app.flask.route("/get_category")
+    @app.flask.route("/get_category", methods=['GET'])
     @app.limiter.limit("30 per minute")
     def category_api():
         page = request.args.get("page")
-        media_type = request.args.get("media_type")
-        list_type = request.args.get("list_type")
-        time_window = request.args.get("time_window")
+        mediaType = request.args.get("media_type")
+        listType = request.args.get("list_type")
+        timeWindow = request.args.get("time_window")
 #
         try:
-            if page != None and media_type != None and list_type != None:
+            if page != None and mediaType != None and listType != None:
                 category_results = []
-                if media_type == FilmType.Movie.value:
+                if mediaType == FilmType.Movie.value:
                     # Is movie list type
-                    category_results = app.film_controller.tmdb.get_film_list(FilmType.Movie, list_type, int(page), time_window)
+                    category_results = app.film_controller.tmdb.get_film_list(FilmType.Movie, listType, int(page), timeWindow)
 
-                elif media_type == FilmType.TV.value:
+                elif mediaType == FilmType.TV.value:
                     # Is tv list type
-                    category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, list_type, int(page), time_window)
+                    category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, listType, int(page), timeWindow)
+
+                else:
+                    category_results = app.film_controller.tmdb.get_trending_films_list(int(page), timeWindow)
 
                 if category_results != None:
                     categories_json = app.film_controller.tmdb.list_result_to_json(category_results)
                     return jsonify(success=True, data=categories_json), 200
                 else:
                     return jsonify(success=False, message="Page, media type, list type or time window is invalid."), 404
+            else:
+                return jsonify(success=False, message="Please specify a page number"), 403
+        except: 
+            return jsonify(success=False, message="Something went wrong"), 403
+        
+    #
+    @app.flask.route("/search_media", methods=['GET'])
+    @app.limiter.limit("30 per minute")
+    def search_media():
+        page = request.args.get("page") or 1
+        mediaType = request.args.get("media_type") or "all"
+        query = request.args.get("query")
+        includeAdult = request.args.get("include_adult") or "false"
+#
+        try:
+            if query != None:
+                search_results = app.film_controller.tmdb.search_films(
+                    query,
+                    mediaType,
+                    page,
+                    includeAdult
+                )
+                #print(f"{query}, {mediaType}, {page}, {includeAdult}")
+                if search_results != None:
+                    search_json = app.film_controller.tmdb.list_result_to_json(search_results)
+
+                    return jsonify(success=True, data=search_json), 200
+                else:
+                    return jsonify(success=False, message="Query did not work"), 404
             else:
                 return jsonify(success=False, message="Please specify a page number"), 403
         except: 

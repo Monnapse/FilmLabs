@@ -25,7 +25,6 @@ window.onload = function() {
 function dynamicScrollBarLoading(loadEvent)
 {
     window.addEventListener('scroll', () => {
-        console.log(isScrollingPossible())
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !isLoading) {
             loadEvent();
         }
@@ -35,16 +34,22 @@ function dynamicScrollBarLoading(loadEvent)
 
     // Keep loading more until scrolling is possible
     // because if client cant scroll then they cant load anything more.
-    function call_until(stop)
+    async function call_until(stop, passes)
     {
-        if (stop) { return; }
+        if (stop || passes > 5) { return; }
 
         setTimeout(()=>{
-            loadEvent();
-            return call_until(isScrollingPossible());
+            loadEvent().then((result) => {
+                console.log(result)
+                if (result) 
+                {
+                    return call_until(isScrollingPossible(), passes+1);
+                }
+            })
+            .catch(console.error)
         }, 1000)
     }
-    call_until(isScrollingPossible());
+    call_until(isScrollingPossible(), 0);
 }
 
 function isScrollingPossible() {
@@ -55,12 +60,33 @@ function loadGlobal()
 {
     console.log("global.js loaded");
 
+    // Search bar
+    const searchbar = document.getElementById("searchbar");
+    const searchbarBtn = document.getElementById("searchbar-btn");
+
+    searchbar.addEventListener('keydown', (e)=>{
+        if (e.code == "Enter")
+        {
+            search(searchbar.value);
+        }
+    });
+    searchbarBtn.addEventListener('click', ()=>{
+        search(searchbar.value);
+    });
+
     // Scrolling
     const mediaList = document.getElementsByClassName("scroll-list");
-
     iterate(mediaList, (listContainer)=>{
         addScrollList(listContainer);
     })
+}
+
+function search(query) {
+    // search_media?media_type=multi&page=1&query=the%20100&include_adult=true
+    if (query)
+    {
+        window.location.href = `search?media_type=all&page=1&query=${encodeURIComponent(query)}&include_adult=false`;
+    }
 }
 
 function addScrollList(listContainer)
@@ -144,7 +170,7 @@ function hasReachedPageLimit(data)
     }
 }
 
-function createFilmCard(title, year, rating, time, ageRating, mediaType, img)
+function createFilmCard(film)
 {
     /*
         <div class="media-modal unselectable">
@@ -164,12 +190,25 @@ function createFilmCard(title, year, rating, time, ageRating, mediaType, img)
         </div>
     */
 
-    const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${time}</p><p>${ageRating}</p><p>${mediaType}</p></div></div></div><img src="${img}"></div>`
+    if (film == null) { return; }
+
+    //console.log(film);
+
+    const title = film.media_type === "movie" ? film.title : film.media_type === "tv" ? film.name : "Loading"
+    const year = film.media_type === "movie" ? film.release_date.split("-")[0] : film.media_type === "tv" ? film.first_air_date.split("-")[0] : "Loading";
+    const rating = parseFloat(film.vote_average.toFixed(1));;
+    const mediaType = film.media_type === "movie" ? "Movie" : film.media_type === "tv" ? "TV" : "Loading";
+    const img = film.poster_path;
+
+    console.log(img);
+
+    //const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${time}</p><p>${ageRating}</p><p>${mediaType}</p></div></div></div><img src="${film.poster_path}"></div>`
+    const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${mediaType}</p></div></div></div><img src="${img}"></div>`
 
     return html;
 }
 
-function createCategory(title, filmCards, mediaType, listType)
+function createCategory(title, filmCards, mediaType, listType, timeWindow)
 {
     /*
         <section class="category">
@@ -177,7 +216,74 @@ function createCategory(title, filmCards, mediaType, listType)
         </section>
     */
 
-    const html = `<section class="category"><a class="h3" href="/category/${mediaType}/${listType}">${title}</a><div id="scroll-${title}" class="media-list scroll-list">${filmCards}</div></section>`
+    /*
+        media_type
+        list_type
+        time_window
+    */
+
+    const timeHtml = timeWindow != null ? `&time_window=${timeWindow}` : ""
+
+    const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${title}" class="media-list scroll-list">${filmCards}</div></section>`
 
     return html
+}
+
+
+function addScrollWithRequest(apiString, mediaGrid)
+{
+    let page = 1;
+    let reachedPageLimit = false;
+
+    async function scroll()
+    {
+        if (isLoading || reachedPageLimit) { return; };
+        isLoading = true;
+        try {
+            /*
+                /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null
+                get_category
+
+                page
+                media_type
+                list_type
+                time_window
+            */
+            const response = await fetch(`${apiString}&page=${page}`); //`/get_category?page=${page}&media_type=${mediaType}&list_type=${listType}&time_window=${timeWindow}`);
+
+            if (reachedPageLimit) { return; }
+            reachedPageLimit = hasReachedPageLimit(response);
+            if (reachedPageLimit) { return; }
+
+            const data = await response.json();
+
+            if (data.data.results.length <= 0)
+            {
+                reachedPageLimit = true;
+                return false;
+            }
+
+            // Category
+            let cardsList = "";
+            data.data.results.forEach((item)=>{
+                cardsList += createFilmCard(item);
+            })
+
+            const container = document.createElement('div');
+            container.innerHTML = cardsList;
+
+            Array.from(container.children).forEach(child => {
+                mediaGrid.appendChild(child);
+            });
+
+            page++;
+        } catch (error) {
+            console.error('Failed to load data:', error);
+            return false;
+        } finally {
+            isLoading = false;
+            return true;
+        }
+    }
+    dynamicScrollBarLoading(scroll);
 }

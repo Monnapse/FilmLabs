@@ -28,21 +28,21 @@
                     </a>
                     {% if not no_header_additional %}
                         <div class="searchbar">
-                            <button class="center-vertically">
+                            <button id="searchbar-btn" class="center-vertically">
                                 <img src="/static/media/magnifying.svg" class="center">
                             </button>
-                            <input type="text" placeholder="Search for a movie or a tv show">
+                            <input id="searchbar" type="text" placeholder="Search for a movie or a tv show">
                         </div>
                         <div class="account">
                             {% if authorization and authorization.logged_in %}
                                 <div class="button account-btn unselectable" id="logged-in">{{ authorization.username }}</div>
                                 <div class="account-popout-box hide" id="account-popout-box">
                                     <div class="account-popout-box-list">
-                                        <a href="account">Settings</a>
-                                        <a href="favorites">My Favorites</a>
-                                        <a href="history">Watch History</a>
+                                        <a href="/account">Settings</a>
+                                        <a href="/favorites">My Favorites</a>
+                                        <a href="/history">Watch History</a>
                                         <hr>
-                                        <a href="logout">Logout</a>
+                                        <a href="/logout">Logout</a>
                                     </div>
                                 </div>
 
@@ -52,7 +52,7 @@
                                     addDropdown(loggedInContainer, popoutBox);
                                 </script>
                             {% else %}
-                                <a href="login" id="logged-out" class="login-btn">
+                                <a href="/login" id="logged-out" class="login-btn">
                                     <span>
                                         Login
                                     </span>

@@ -12,6 +12,7 @@ from typing import Optional, Union
 
 # Enums
 class FilmType(Enum):
+    All = "all"
     Movie = "movie"
     TV = "tv"
 
@@ -121,8 +122,10 @@ class ListResult:
         self.total_results = total_results
 
 class TMDB:
-    def __init__(self, key):
+    def __init__(self, key, poster_sizing:  str = "original"):
         self.key = key
+
+        self.poster_sizing = poster_sizing
 
         self.api_base_url = "https://api.themoviedb.org/3/"
         self.config = self.get_config()
@@ -144,9 +147,11 @@ class TMDB:
         return requests.get(f"{self.api_base_url}{url}{paramter_method}api_key={self.key}", headers=headers)
 
     def to_img_url(self, path: str):
+        if path == None:
+            return None
         try:
             base_url = self.config["base_url"]
-            return f"{base_url}original{path}"
+            return f"{base_url}{self.poster_sizing}{path}"
         except:
             return path
 
@@ -188,6 +193,34 @@ class TMDB:
         )
         return tv_class
 
+    def to_film_class(self, film: dict, film_type: FilmType):
+        if (enum_to_string(film_type) == FilmType.Movie.value):
+            return self.to_movie(film)
+        elif (enum_to_string(film_type) == FilmType.TV.value):
+            return self.to_tv(film)
+        elif (enum_to_string(film_type) == FilmType.All.value):
+            #print(self.to_film_class(film, film["media_type"]))
+            return self.to_film_class(film, film["media_type"])
+        else:
+            return None
+
+    def json_to_list_result(self, json_dict: dict, film_type: FilmType) -> ListResult:
+        list_result = ListResult(
+            page = json_dict["page"],
+            results = [],
+            total_pages = json_dict["total_pages"],
+            total_results = json_dict["total_results"]
+        )
+
+        films_results = json_dict["results"]
+
+        for film in films_results:
+            film_class = self.to_film_class(film, film_type)
+            list_result.results.append(film_class)
+
+        return list_result
+
+
     def get_film_list(self, film_type: FilmType, list_type: Optional[Union[TVListType, MovieListType]] = None, page: int = 1, time_window: TimeWindow = TimeWindow.Day) -> ListResult:
         """
             Gets a list of films either movie or tv
@@ -202,59 +235,46 @@ class TMDB:
 
         api = f"{media_type}/{media_list_type}?language=en-US&page={str(page)}"
 
-        if media_list_type == "trending":
-            # If list is trending then add the time_window as required
-            api = f"{media_list_type}/{media_type}/{time}?language=en-US&page={str(page)}"
+        if media_type == FilmType.All.value and media_list_type == "trending":
+            api = f"{media_list_type}/all/{time}?language=en-US&page={str(page)}"
+
+        #if media_list_type == "trending" and media_type != FilmType.All.value:
+        #    # If list is trending then add the time_window as required
+        #    api = f"{media_list_type}/{media_type}/{time}?language=en-US&page={str(page)}"
 
         response = self.send_api(api)
 
         if (response.status_code == 200):
             response_json = response.json()
-            list_result = ListResult(
-                page = response_json["page"],
-                results = [],
-                total_pages = response_json["total_pages"],
-                total_results = response_json["total_results"]
-            )
-
-            films_results = response_json["results"]
-
-            for film in films_results:
-                film_class = None
-                if (media_type == FilmType.Movie.value):
-                    film_class = self.to_movie(film)
-                elif (media_type == FilmType.TV.value):
-                    film_class = self.to_tv(film)
-
-                list_result.results.append(film_class)
-
-            return list_result
+            return self.json_to_list_result(response_json, film_type)
+            
         return None
 
     def get_trending_films_list(self, page: int = 1, time_window: TimeWindow = TimeWindow.Day) -> ListResult:
-        tv_list = self.get_film_list(FilmType.TV, TVListType.Trending, page, time_window) or []
-        movie_list = self.get_film_list(FilmType.Movie, MovieListType.Trending, page, time_window) or []
+        #tv_list = self.get_film_list(FilmType.TV, TVListType.Trending, page, time_window) or []
+        #movie_list = self.get_film_list(FilmType.Movie, MovieListType.Trending, page, time_window) or []
+        list = self.get_film_list(FilmType.All, MovieListType.Trending, page, time_window) or ListResult()
         
-        total_pages = 0
-        if movie_list.total_pages > tv_list.total_pages:
-            total_pages = movie_list.total_pages
-        elif tv_list.total_pages > movie_list.total_pages:
-            total_pages = tv_list.total_pages
+        #total_pages = 0
+        #if movie_list.total_pages > tv_list.total_pages:
+        #    total_pages = movie_list.total_pages
+        #elif tv_list.total_pages > movie_list.total_pages:
+        #    total_pages = tv_list.total_pages
 
-        results = tv_list.results + movie_list.results
+        #results = tv_list.results + movie_list.results
 
-        results.sort(reverse=True, key=sort_by_rating)
+        #results.sort(reverse=True, key=sort_by_rating)
 
         #for i in results:
         #    print(f"media type: {i.media_type}, rating: {i.vote_average}%")
 
-        list_result = ListResult(
-            page = movie_list.page,
-            results = results,
-            total_pages = total_pages,
-            total_results = movie_list.total_results + tv_list.total_results
-        )
-        return list_result
+        #list_result = ListResult(
+        #    page = movie_list.page,
+        #    results = results,
+        #    total_pages = total_pages,
+        #    total_results = movie_list.total_results + tv_list.total_results
+        #)
+        return list
 
     def list_result_to_json(self, list: ListResult):
         result = list.__dict__
@@ -262,12 +282,27 @@ class TMDB:
         films_list = []
 
         for i in list.results:
-            films_list.append(i.__dict__)
+            if (i != None):
+                films_list.append(i.__dict__)
 
         result["results"] = films_list
 
         return result
+    
+    def search_films(self, query: str, film_type: FilmType = FilmType.All, page: int = 1, includeAdult: str = "false"):
+        media_type = enum_to_string(film_type)
 
+        if media_type == FilmType.All.value:
+            media_type = "multi"
+
+        api = f"search/{media_type}?query={str(query)}&include_adult={str(includeAdult)}&language=en-US&page={str(page)}"
+        response = self.send_api(api)
+
+        if (response.status_code == 200):
+            response_json = response.json()
+            #print(response_json)
+            return self.json_to_list_result(response_json, film_type)
+        return None
 
 # Functions
 def sort_by_rating(film: Optional[Union[Movie, TV]]):
@@ -280,11 +315,15 @@ def enum_to_string(enum):
     return enum
 
 # TESTING
+
 """
 from os import environ
 api = TMDB(environ.get("TMDB_API_KEY"))
 #movies_list = api.get_movie_list(MovieListType.UpComing, 5)
 #tv_list = api.get_film_list(FilmType.TV, TVListType.AiringToday, 5)
-trending_film_list = api.get_trending_films_list(1, TimeWindow.Week)
-print(api.list_result_to_json(trending_film_list))
+#trending_film_list = api.get_trending_films_list(1, TimeWindow.Week)
+search_query = api.search_films("bojack", FilmType.All, 1, "false")
+dict = api.list_result_to_json(search_query)
+print(dict)
+#
 """

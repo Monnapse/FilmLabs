@@ -46,6 +46,23 @@ class FilmsController:
                     return i
         except:
             return None
+        
+    def null_check(self, string: str) -> any:
+        if string == None or string == "null":
+            return None
+        return string
+
+    def get_category_name(self, media_type: str = None, list_type: str = None, time_window: str = None) -> str:
+        try:
+            media_type = self.null_check(media_type)
+            list_type = self.null_check(list_type)
+            time_window = self.null_check(time_window)
+            for page in self.default_page_layout:
+                for list in page["categories"]:
+                    if list["media_type"] == media_type and list["list_type"] == list_type and list["time_window"] == time_window:
+                        return list["name"]
+        except:
+            return "No title"
 
     def get_next_categories(self, current_page: int) -> list[Category]:
         if self.default_page_layout != None and self.get_raw_category_by_page(current_page):

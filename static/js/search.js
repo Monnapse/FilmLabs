@@ -5,47 +5,57 @@ window.onload = function() {
 
     loadGlobal();
 
+    const mediaGrid = document.getElementById("media-grid");
+
+    
+    //    media_type
+    //    list_type
+    //    time_window
+    const params = new URLSearchParams(window.location.search);
+    const mediaType = params.get("media_type");
+    const query = params.get("query");
+    const includeAdult = params.get("include_adult") || true;
+
+    // search_media?media_type=multi&page=1&query=the%20100&include_adult=true
+    const apiString = `/search_media?media_type=${mediaType}&query=${query}&include_adult=${includeAdult}`;
+
+    addScrollWithRequest(apiString, mediaGrid);
+    /*
     let page = 1;
     let reachedPageLimit = false;
 
     const mediaGrid = document.getElementById("media-grid");
 
-    /*
-        media_type
-        list_type
-        time_window
-    */
+    
+    //    media_type
+    //    list_type
+    //    time_window
+    
     const params = new URLSearchParams(window.location.search);
 
     const mediaType = params.get("media_type");
-    const listType = params.get("list_type");
-    const timeWindow = params.get("time_window");
+    const query = params.get("query");
+    const includeAdult = params.get("include_adult") || true;
 
-    const apiString = `/get_category?media_type=${mediaType}&list_type=${listType}&time_window=${timeWindow}`;
-        
-    addScrollWithRequest(apiString, mediaGrid);
-    /*
     async function scroll()
     {
         if (isLoading || reachedPageLimit) { return; };
         isLoading = true;
         try {
-
-            //    /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null
-            //    get_category
-//
-            //    page
-            //    media_type
-            //    list_type
-            //    time_window
-
-            const response = await fetch(`/get_category?page=${page}&media_type=${mediaType}&list_type=${listType}&time_window=${timeWindow}`);
+            // search_media?media_type=multi&page=1&query=the%20100&include_adult=true
+            const response = await fetch(`/search_media?page=${page}&media_type=${mediaType}&query=${query}&include_adult=${includeAdult}`);
 
             reachedPageLimit = hasReachedPageLimit(response);
 
             if (reachedPageLimit) { return; }
 
             const data = await response.json();
+
+            if (data.data.results.length <= 0)
+            {
+                reachedPageLimit = true;
+                return false;
+            }
 
             // Category
             let cardsList = "";
