@@ -43,6 +43,7 @@ def run(app: web_class):
         #media_type = request.args.get("media_type")
         #list_type = request.args.get("list_type")
         #time_window = request.args.get("time_window")
+        query = request.args.get("query")
 
         authorization = app.get_authorization_data()
 
@@ -51,8 +52,20 @@ def run(app: web_class):
             template = "search.html",
             javascript = "search",
             authorization = authorization,
+            query=query
         )
     
+    @app.flask.route("/film/tv/<id>/<season>/<episode>")
+    def film(id, season, episode):
+        authorization = app.get_authorization_data()
+
+        return render_template(
+            app.base,
+            template = "film.html",
+            javascript = "film",
+            authorization = authorization
+        )
+
     # API
     @app.flask.route("/get_home_page_categories", methods=['GET'])
     @app.limiter.limit("30 per minute")

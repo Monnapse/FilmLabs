@@ -62,7 +62,7 @@ def run(app: web_class):
     @app.limiter.limit("10 per minute") # Stops any bruteforcers.
     def login_submit():
         data = authentication.bytes_to_json(request.get_data())
-        
+
         try:
             username = data["username"]
             password = data["password"]
@@ -85,10 +85,11 @@ def run(app: web_class):
                         "access_token", 
                         token, 
                         httponly=True, 
-                        secure=True, 
+                        #secure=True, 
                         samesite='Strict',
                         max_age=remember_time
                     ) # add expiration time
+
                 return response
             else:
                 return jsonify(success=False, message=account.account_message), 403

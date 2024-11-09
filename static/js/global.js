@@ -40,7 +40,7 @@ function dynamicScrollBarLoading(loadEvent)
 
         setTimeout(()=>{
             loadEvent().then((result) => {
-                console.log(result)
+                //console.log(result)
                 if (result) 
                 {
                     return call_until(isScrollingPossible(), passes+1);
@@ -63,6 +63,14 @@ function loadGlobal()
     // Search bar
     const searchbar = document.getElementById("searchbar");
     const searchbarBtn = document.getElementById("searchbar-btn");
+
+    const params = new URLSearchParams(window.location.search);;
+    const query = params.get("query");
+
+    if (query)
+    {
+        searchbar.value = query;
+    }
 
     searchbar.addEventListener('keydown', (e)=>{
         if (e.code == "Enter")
@@ -152,7 +160,7 @@ function addDropdown(button, list)
     addHideOnClick(list);
     addBlacklist(button);
     button.addEventListener("click", (e)=>{
-        console.log("toggle");
+        //console.log("toggle");
         list.classList.toggle("hide");
     })
 }
@@ -198,9 +206,14 @@ function createFilmCard(film)
     const year = film.media_type === "movie" ? film.release_date.split("-")[0] : film.media_type === "tv" ? film.first_air_date.split("-")[0] : "Loading";
     const rating = parseFloat(film.vote_average.toFixed(1));;
     const mediaType = film.media_type === "movie" ? "Movie" : film.media_type === "tv" ? "TV" : "Loading";
-    const img = film.poster_path;
+    let img = film.poster_path;
 
     console.log(img);
+
+    if (img == null)
+    {
+        img = "/static/media/movie_poster_not_found.jpg"
+    }
 
     //const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${time}</p><p>${ageRating}</p><p>${mediaType}</p></div></div></div><img src="${film.poster_path}"></div>`
     const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${mediaType}</p></div></div></div><img src="${img}"></div>`

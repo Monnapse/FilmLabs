@@ -1,404 +1,191 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FilmLabs | Dune: Part Two</title>
-        <link rel="icon" href="media/filmlabslogo.svg" type="image/svg+xml">
-        <link rel="stylesheet" href="styles/style.css">
-        <script src="js/global.js"></script>
-        <script src="js/film.js"></script>
-    </head>
-    <body>
-        <header>
-            <div class="header-container">
-                <a href="/" class="logo unselectable" draggable="false">
-                    <img src="media/filmlabslogo.svg">
-                    <h1>FilmLabs</h1>
+<main>
+    <div class="film-main">
+        <div class="film-viewer">
+            <img src="/static/media/dune_viewer.png">
+        </div>
+        <div class="film-top">
+            <h1 style="flex: 1;">Dune: Part Two</h1>
+            <div class="film-end">
+                <div class="rating">
+                    <img class="rating-img" src="/static/media/star.png" alt="Rating">
+                    <span>8.5/10</span>
+                </div>
+                <button class="button">
+                    Trailer
+                </button>
+                <button class="button">
+                    <img src="/static/media/heart.svg">
+                    Favorites
+                </button>
+            </div>
+        </div>
+        <div class="film-info-tags">
+            <span>2024</span>
+            <span>2h 46m</span>
+            <span>PG-13</span>
+            <span>TV</span>
+        </div>
+        <div class="genre-chips scroll-list unselectable">
+            <a href="" class="clear-chip">
+                <span>Action Epic</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Desert Adventure</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Epic</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Sci-Fi Epic</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Space Sci-Fi</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Action</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Adventure</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Drama</span>
+            </a>
+            <a href="" class="clear-chip">
+                <span>Sci-Fi</span>
+            </a>
+        </div>
+        <div class="film-description">
+            <p>
+                Paul Atreides unites with the Fremen while on a warpath of revenge against the conspirators who destroyed his family. 
+                Facing a choice between the love of his life and the fate of the universe, 
+                he endeavors to prevent a terrible future.
+            </p>
+            <p class="see-more">
+                <span>See more at</span>
+                <a class="styled-a" href="https://www.themoviedb.org" target=”_blank”>
+                    TMDB
                 </a>
-                <div class="searchbar">
-                    <button class="center-vertically">
-                        <img src="media/magnifying.svg" class="center">
-                    </button>
-                    <input type="text" placeholder="Search for a movie or a tv show">
-                </div>
-                <div class="account">
-                    <a href="login.html" id="logged-out" class="login-btn hide">
-                        <span>
-                            Login
-                        </span>
-                    </a>
-                    <div class="button account-btn hide unselectable" id="logged-in" hide>Monnapse</div>
-                    <div class="account-popout-box hide" id="account-popout-box">
-                        <div class="account-popout-box-list">
-                            <a href="account.html">Settings</a>
-                            <a href="selected.html">My Favorites</a>
-                            <a href="selected.html">Watch History</a>
-                            <hr>
-                            <a href="">Logout</a>
-                        </div>
+            </p>
+        </div>
+        <div class="film-episodes">
+            <div class="dropdown">
+                <button class="dropdown-button">
+                    <span class="unclickable">Season 4</span>
+                    <img src="/static/media/down_arrow.svg" class="unclickable">
+                </button>
+                <div class="dropdown-list-container hide">
+                    <div class="dropdown-button-list">
+                        <button>Season 1</button>
+                        <button>Season 2</button>
+                        <button>Season 3</button>
+                        <button class="dropdown-button-active">Season 4</button>
+                        <button>Season 5</button>
+                        <button>Season 6</button>
                     </div>
                 </div>
             </div>
-        </header>
-        <main>
-            <div class="film-main">
-                <div class="film-viewer">
-                    <img src="media/dune_viewer.png">
-                </div>
-                <div class="film-top">
-                    <h1 style="flex: 1;">Dune: Part Two</h1>
-                    <div class="film-end">
-                        <div class="rating">
-                            <img class="imdb-img" src="media/imdb.svg" alt="IMDB">
-                            <span>8.5/10</span>
-                        </div>
-                        <button class="button">
-                            Trailer
-                        </button>
-                        <button class="button">
-                            <img src="media/heart.svg">
-                            Favorites
-                        </button>
-                    </div>
-                </div>
-                <div class="film-info-tags">
-                    <span>2024</span>
-                    <span>2h 46m</span>
-                    <span>PG-13</span>
-                    <span>TV</span>
-                </div>
-                <div class="genre-chips scroll-list unselectable">
-                    <a href="" class="clear-chip">
-                        <span>Action Epic</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Desert Adventure</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Epic</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Sci-Fi Epic</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Space Sci-Fi</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Action</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Adventure</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Drama</span>
-                    </a>
-                    <a href="" class="clear-chip">
-                        <span>Sci-Fi</span>
-                    </a>
-                </div>
-                <div class="film-description">
-                    <p>
-                        Paul Atreides unites with the Fremen while on a warpath of revenge against the conspirators who destroyed his family. 
-                        Facing a choice between the love of his life and the fate of the universe, 
-                        he endeavors to prevent a terrible future.
-                    </p>
-                    <p class="see-more">
-                        <span>See more at</span>
-                        <a href="https://www.imdb.com" target=”_blank”>
-                            <img class="imdb-img" src="media/imdb.svg" alt="IMDB">
-                        </a>
-                    </p>
-                </div>
-                <div class="film-episodes">
-                    <div class="dropdown">
-                        <button class="dropdown-button">
-                            <span class="unclickable">Season 4</span>
-                            <img src="media/down_arrow.svg" class="unclickable">
-                        </button>
-                        <div class="dropdown-list-container hide">
-                            <div class="dropdown-button-list">
-                                <button>Season 1</button>
-                                <button>Season 2</button>
-                                <button>Season 3</button>
-                                <button class="dropdown-button-active">Season 4</button>
-                                <button>Season 5</button>
-                                <button>Season 6</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chips-grid">
-                        <button class="button-chip">
-                            <span>Episode 1</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 2</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 3</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 4</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 5</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 6</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 7</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 8</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 9</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 10</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 11</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 12</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 13</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 14</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 15</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 16</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 17</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 18</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 19</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                        <button class="button-chip">
-                            <span>Episode 20</span>
-                            <spam>∙</spam>
-                            <p>Episode Title</p>
-                        </button>
-                    </div>
-                </div>                
+            <div class="chips-grid">
+                <button class="button-chip">
+                    <span>Episode 1</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 2</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 3</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 4</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 5</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 6</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 7</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 8</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 9</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 10</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 11</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 12</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 13</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 14</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 15</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 16</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 17</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 18</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 19</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
+                <button class="button-chip">
+                    <span>Episode 20</span>
+                    <spam>∙</spam>
+                    <p>Episode Title</p>
+                </button>
             </div>
-
-            <section class="category">
-                <h2>More like this show</h2>
-                <div class="media-list">
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                    <div class="media-modal unselectable">
-                        <div class="media-info">
-                            <div>
-                                <h3>Dune: Part Two</h3>
-                                <div>
-                                    <p>2024</p>
-                                    <p>8.5/10</p>
-                                    <p>2h 46m</p>
-                                    <p>PG-13</p>
-                                    <p>Movie</p>
-                                </div>
-                            </div>
-                        </div>
-                        <img src="media/dune.jpg">
-                    </div>
-                </div>
-            </section>
-        </main>
-        <footer>
-            <p>
-                FilmLabs is your ultimate destination for a vast world of movies and TV shows, 
-                all completely ad-free. Dive into a premium streaming experience that offers high-quality entertainment across genres, 
-                thoughtfully curated and available anytime, anywhere—all in one convenient platform.
-            </p>
-            <p>
-                FilmLabs does not host or store any content on our servers. Instead, 
-                we provide access to an extensive collection of movies and shows through trusted third-party streaming services, 
-                ensuring a seamless and responsible viewing experience.
-            </p>
-        </footer>
-    </body>
-</html>
+        </div>                
+    </div>
+</main>

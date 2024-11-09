@@ -20,6 +20,7 @@ window.onload = function() {
     const apiString = `/search_media?media_type=${mediaType}&query=${query}&include_adult=${includeAdult}`;
 
     addScrollWithRequest(apiString, mediaGrid);
+
     /*
     let page = 1;
     let reachedPageLimit = false;
