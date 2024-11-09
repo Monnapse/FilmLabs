@@ -10,6 +10,7 @@ from flask_limiter import Limiter
 from server.packages.db import film_labs_db, account
 from server.packages import db
 from server.packages.films import FilmsController
+from server.packages.service import ServiceController
 import os, glob
 import importlib.util
 import json
@@ -31,6 +32,7 @@ class web_class:
             db_controller: film_labs_db, 
             jwt: JWTManager, 
             film_controller: FilmsController,
+            service_controller: ServiceController,
             token_max_days: int, 
             password_max_length: int, 
             password_min_length: int, 
@@ -43,6 +45,7 @@ class web_class:
         app.db_controller = db_controller
         app.jwt = jwt
         app.film_controller = film_controller
+        app.service_controller = service_controller
 
         # Settings
         app.token_max_days = token_max_days

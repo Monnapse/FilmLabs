@@ -2,23 +2,30 @@
     <div class="film-main">
         <div class="film-viewer">
             <!--<img src="/static/media/dune_viewer.png">-->
-            <iframe src="https://embed.su/embed/movie/693134"
-            title="Video player"
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-            </iframe>
+            {% if service_url %}
+                <iframe src="{{ service_url }}"
+                    id="media_iframe"
+                    class="loading"
+                    title="Video player"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            {% else %}
+                <iframe id="media_iframe" class="loading"></iframe>
+            {% endif %}
         </div>
         <div class="film-top">
-            <h1 style="flex: 1;">Dune: Part Two</h1>
+            <h1 style="flex: 1;">{{ title or "Title" }}</h1>
             <div class="film-end">
                 <div class="rating">
                     <img class="rating-img" src="/static/media/star.png" alt="Rating">
-                    <span>8.5/10</span>
+                    <span>{{ rating or "Rating" }}/10</span>
+                    
                 </div>
-                <button class="button">
+                <a class="button" href="{{ trailer_url }}">
                     Trailer
-                </button>
+                </a>
                 <button class="button">
                     <img src="/static/media/heart.svg">
                     Favorites
@@ -26,183 +33,86 @@
             </div>
         </div>
         <div class="film-info-tags">
-            <span>2024</span>
-            <span>2h 46m</span>
-            <span>PG-13</span>
-            <span>TV</span>
+            <span>{{ year or  "Year" }}</span>
+            <!--<span>2h 46m</span>-->
+            <!--<span>PG-13</span>-->
+            <span>{{ media_type or "Media Type" }}</span>
         </div>
-        <div class="genre-chips scroll-list unselectable">
-            <a href="" class="clear-chip">
-                <span>Action Epic</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Desert Adventure</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Epic</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Sci-Fi Epic</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Space Sci-Fi</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Action</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Adventure</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Drama</span>
-            </a>
-            <a href="" class="clear-chip">
-                <span>Sci-Fi</span>
-            </a>
-        </div>
+        {% if genres %}
+            <div class="genre-chips scroll-list unselectable"></div>
+            {% for genre in genres %}
+                <a href="{{ genre.url }}" class="clear-chip">
+                    <span>genre.name</span>
+                </a>
+            {% endfor %}
+            </div>
+        {% endif %}
         <div class="film-description">
             <p>
-                Paul Atreides unites with the Fremen while on a warpath of revenge against the conspirators who destroyed his family. 
-                Facing a choice between the love of his life and the fate of the universe, 
-                he endeavors to prevent a terrible future.
+                {{ overview or "Description" }}
             </p>
             <p class="see-more">
                 <span>See more at</span>
-                <a class="styled-a" href="https://www.themoviedb.org" target=”_blank”>
+                <a class="styled-a" href="{{ tmdb_url }}" target=”_blank”>
                     TMDB
                 </a>
             </p>
         </div>
         <div class="service-provider-container">
             <h2>Service Providers</h2>
-            <div class="chips-grid">
-                <button class="button-chip"><p>Service 1</p></button>
-                <button class="button-chip"><p>Service 2</p></button>
-                <button class="button-chip"><p>Service 3</p></button>
-                <button class="button-chip selected-button-chip"><p>Service 4</p></button>
-                <button class="button-chip"><p>Service 5</p></button>
-                <button class="button-chip"><p>Service 6</p></button>
-            </div>
+            {% if service_providers %}
+                <div class="chips-grid">
+                    {% for service in service_providers %}
+                        {% if service.name == selected_service %}
+                            <a href="?service={{ service.name }}" class="button-chip selected-button-chip"><p>{{ service.name }}</p></a>
+                        {% else %}
+                            <a href="?service={{ service.name }}" class="button-chip"><p>{{ service.name }}</p></a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-        <div class="film-episodes">
-            <div class="dropdown">
-                <button class="dropdown-button">
-                    <span class="unclickable">Season 4</span>
-                    <img src="/static/media/down_arrow.svg" class="unclickable">
-                </button>
-                <div class="dropdown-list-container hide">
-                    <div class="dropdown-button-list">
-                        <button>Season 1</button>
-                        <button>Season 2</button>
-                        <button>Season 3</button>
-                        <button class="dropdown-button-active">Season 4</button>
-                        <button>Season 5</button>
-                        <button>Season 6</button>
+        {% if media_type == "TV" %}
+            <div class="film-episodes">
+                <div class="dropdown">
+                    <button class="dropdown-button">
+                        <span class="unclickable">{{ selected_season }}</span>
+                        <img src="/static/media/down_arrow.svg" class="unclickable">
+                    </button>
+                    <div class="dropdown-list-container hide">
+                        <div class="dropdown-button-list">
+                            {% if seasons %}
+                                {% for season in seasons %}
+                                    {% if season == selected_season %}
+                                        <button class="dropdown-button-active">Season {{ season }}</button>
+                                    {% else %}
+                                        <button>Season {{ season }}</button>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="chips-grid">
-                <button class="button-chip">
-                    <span>Episode 1</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 2</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 3</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 4</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 5</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 6</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 7</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 8</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 9</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 10</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 11</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 12</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 13</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 14</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 15</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 16</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 17</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 18</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 19</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-                <button class="button-chip">
-                    <span>Episode 20</span>
-                    <spam>∙</spam>
-                    <p>Episode Title</p>
-                </button>
-            </div>
-        </div>                
+                {% if episodes %}
+                    <div class="chips-grid">
+                        {% for episode in episodes %}
+                            {% if episode["number"] == selected_episode %}
+                                <button class="button-chip selected-button-chip">
+                                    <span>Episode episode["number"]</span>
+                                    <spam>∙</spam>
+                                    <p>episode["name"]</p>
+                                </button>
+                            {% else %}
+                                <button class="button-chip">
+                                    <span>Episode episode["number"]</span>
+                                    <spam>∙</spam>
+                                    <p>episode["name"]</p>
+                                </button>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>       
+        {% endif %}   
     </div>
 </main>

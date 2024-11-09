@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Embed su",
+        "movie": "https://embed.su/embed/movie/{id}",
+        "tv": "https://embed.su/embed/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "Moviee",
+        "movie": "https://moviee.tv/embed/movie/{id}",
+        "tv": "https://moviee.tv/embed/tv/{id}?season={season}&episode={episode}"
+    }
+]

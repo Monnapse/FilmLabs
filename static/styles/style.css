@@ -763,7 +763,7 @@ side fog
 
     cursor: pointer;
 
-    width: 100%;
+    width: 75%;
 
     border-radius: 13px;
 
@@ -787,6 +787,24 @@ side fog
 /* service provider container */
 .service-provider-container {
     margin-top: 40px;
+}
+
+/*
+    __________
+
+    Animations
+    __________
+*/
+.loading {
+    background: #eee;
+    background: linear-gradient(110deg, var(--secondary-color) 8%, var(--hover-color) 18%, var(--secondary-color) 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+}
+@keyframes shine {
+    to {
+        background-position-x: -200%;
+    }
 }
 
 /*

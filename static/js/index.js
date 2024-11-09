@@ -27,21 +27,25 @@ window.onload = function() {
 
             data.data.forEach(item => {
                 // Category
-                cardsList = "";
-                item.film_list.results.forEach((item)=>{
-                    cardsList += createFilmCard(item);
-                })
+                //cardsList = "";
+                
 
-                category = createCategory(item.title, cardsList, item.media_type, item.list_type, item.time_window);
+                category = createCategory(item.title, item.media_type, item.list_type, item.time_window);
 
                 //console.log(category);
                 //categoryContainer.insertAdjacentElement("beforeend", category)
 
-                const container = document.createElement('div');
+                //const container = document.createElement('div');
+//
+                //container.innerHTML = category;
 
-                container.innerHTML = category;
+                categoryContainer.appendChild(category);
 
-                categoryContainer.appendChild(container.firstChild);
+                const categoryMediaList = document.getElementById(`scroll-${item.title}`);
+
+                item.film_list.results.forEach((item)=>{
+                    categoryMediaList.appendChild(createFilmCard(item, getFilmUrl(item)));
+                })
 
                 addScrollList(document.getElementById(`scroll-${item.title}`));
             });

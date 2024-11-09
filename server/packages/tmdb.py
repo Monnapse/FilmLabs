@@ -303,6 +303,27 @@ class TMDB:
             #print(response_json)
             return self.json_to_list_result(response_json, film_type)
         return None
+    
+    def get_details(self, film_type: FilmType = FilmType.All, id: str = None) -> Optional[Union[Movie, TV]]:
+        # Movies "movie/693134?language=en-US"
+        # TV "tv/series_id?language=en-US"
+
+        media_type = enum_to_string(film_type)
+
+        api = f"{media_type}/{str(id)}?language=en-US"
+
+        response = self.send_api(api)
+
+        if (response.status_code == 200):
+            response_json = response.json()
+
+            if media_type == FilmType.Movie.value:
+                return self.to_movie(response_json)
+            elif media_type == FilmType.TV.value:
+                return self.to_tv(response_json)
+            #return self.json_to_list_result(response_json, film_type)
+            
+        return None
 
 # Functions
 def sort_by_rating(film: Optional[Union[Movie, TV]]):
@@ -315,15 +336,15 @@ def enum_to_string(enum):
     return enum
 
 # TESTING
-
 """
 from os import environ
 api = TMDB(environ.get("TMDB_API_KEY"))
 #movies_list = api.get_movie_list(MovieListType.UpComing, 5)
 #tv_list = api.get_film_list(FilmType.TV, TVListType.AiringToday, 5)
 #trending_film_list = api.get_trending_films_list(1, TimeWindow.Week)
-search_query = api.search_films("bojack", FilmType.All, 1, "false")
-dict = api.list_result_to_json(search_query)
-print(dict)
+#search_query = api.search_films("bojack", FilmType.All, 1, "false")
+#dict = api.list_result_to_json(search_query)
+details = api.get_details(FilmType.Movie, "693134")
+print(details.title)
 #
 """

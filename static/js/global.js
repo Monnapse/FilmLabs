@@ -178,7 +178,7 @@ function hasReachedPageLimit(data)
     }
 }
 
-function createFilmCard(film)
+function createFilmCard(film, url)
 {
     /*
         <div class="media-modal unselectable">
@@ -208,7 +208,7 @@ function createFilmCard(film)
     const mediaType = film.media_type === "movie" ? "Movie" : film.media_type === "tv" ? "TV" : "Loading";
     let img = film.poster_path;
 
-    console.log(img);
+    //console.log(img);
 
     if (img == null)
     {
@@ -218,10 +218,30 @@ function createFilmCard(film)
     //const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${time}</p><p>${ageRating}</p><p>${mediaType}</p></div></div></div><img src="${film.poster_path}"></div>`
     const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${mediaType}</p></div></div></div><img src="${img}"></div>`
 
-    return html;
+    const container = document.createElement('div');
+    container.innerHTML = html;
+
+    const card = container.firstChild;
+
+    function onClick()
+    {
+        window.location.href = url;
+    }
+
+    if (isMobile()) {
+        card.addEventListener('dblclick', onClick);
+    } else {
+        card.addEventListener('click', onClick);
+    }
+
+    return container.firstChild;
 }
 
-function createCategory(title, filmCards, mediaType, listType, timeWindow)
+function isMobile() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
+function createCategory(title, mediaType, listType, timeWindow)
 {
     /*
         <section class="category">
@@ -237,11 +257,13 @@ function createCategory(title, filmCards, mediaType, listType, timeWindow)
 
     const timeHtml = timeWindow != null ? `&time_window=${timeWindow}` : ""
 
-    const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${title}" class="media-list scroll-list">${filmCards}</div></section>`
+    const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${title}" class=" media-list scroll-list"></div></section>`
 
-    return html
+    const container = document.createElement('div');
+    container.innerHTML = html;
+
+    return container.firstChild;
 }
-
 
 function addScrollWithRequest(apiString, mediaGrid)
 {
@@ -277,17 +299,18 @@ function addScrollWithRequest(apiString, mediaGrid)
             }
 
             // Category
-            let cardsList = "";
+            //let cardsList = "";
             data.data.results.forEach((item)=>{
-                cardsList += createFilmCard(item);
+                const card = createFilmCard(item, getFilmUrl(item));
+                mediaGrid.appendChild(card);
             })
 
-            const container = document.createElement('div');
-            container.innerHTML = cardsList;
-
-            Array.from(container.children).forEach(child => {
-                mediaGrid.appendChild(child);
-            });
+            //const container = document.createElement('div');
+            //container.innerHTML = cardsList;
+//
+            //Array.from(container.children).forEach(child => {
+            //    mediaGrid.appendChild(child);
+            //});
 
             page++;
         } catch (error) {
@@ -299,4 +322,15 @@ function addScrollWithRequest(apiString, mediaGrid)
         }
     }
     dynamicScrollBarLoading(scroll);
+}
+
+function getFilmUrl(film)
+{
+    const media_type = film.media_type
+    let url = `/film/${media_type}/${film.id}`
+    if (media_type == "tv")
+    {
+        url += "/1/1"
+    }
+    return url;
 }

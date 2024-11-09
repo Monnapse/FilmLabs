@@ -12,7 +12,7 @@ from server.web import web_class
 from flask import Flask, render_template, session, request, jsonify, redirect, make_response
 import json
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 def run(app: web_class):
     print("Films >>> Films directories loaded")
@@ -40,9 +40,6 @@ def run(app: web_class):
     
     @app.flask.route("/search")
     def category_time():
-        #media_type = request.args.get("media_type")
-        #list_type = request.args.get("list_type")
-        #time_window = request.args.get("time_window")
         query = request.args.get("query")
 
         authorization = app.get_authorization_data()
@@ -58,25 +55,82 @@ def run(app: web_class):
     @app.flask.route("/film/tv/<id>/<season>/<episode>")
     def tv(id, season, episode):
         authorization = app.get_authorization_data()
+        current_service = request.args.get("service")
 
-        return render_template(
-            app.base,
-            template = "film.html",
-            javascript = "film",
-            authorization = authorization
-        )
+        service = app.service_controller.get_service_data(current_service)
+
+        film_details = app.film_controller.tmdb.get_details(FilmType.TV, id)
+
+        if film_details != None:
+            return render_template(
+                app.base,
+                template = "film.html",
+                javascript = "film",
+                authorization = authorization,
+
+                service_url=service.get_tv_url(id, season, episode),
+
+                # SERVICES
+                selected_service=service.name,
+                service_providers=app.service_controller.get_services(),
+
+                # Film Details
+                title = film_details.name,
+                year = datetime.strptime(film_details.first_air_date, "%Y-%m-%d").year,
+                media_type = film_details.media_type,
+                overview = film_details.overview,
+                rating = round(film_details.vote_average, 1),
+                tmdb_url = f"https://www.themoviedb.org/tv/{id}"
+            )
+        else:
+            return render_template(
+                app.base,
+                template = "film.html",
+                javascript = "film",
+                authorization = authorization,
+                title = "Could not find movie",
+            )
     
     @app.flask.route("/film/movie/<id>")
     def movie(id):
         authorization = app.get_authorization_data()
+        current_service = request.args.get("service")
 
-        return render_template(
-            app.base,
-            template = "film.html",
-            javascript = "film",
-            authorization = authorization
-        )
+        service = app.service_controller.get_service_data(current_service)
 
+        film_details = app.film_controller.tmdb.get_details(FilmType.Movie, id)
+
+        if film_details != None:
+            return render_template(
+                app.base,
+                template = "film.html",
+                javascript = "film",
+                authorization = authorization,
+
+                service_url=service.get_movie_url(id),
+
+                # SERVICES
+                selected_service=service.name,
+                service_providers=app.service_controller.get_services(),
+
+                # Film Details
+                title = film_details.title,
+                year = datetime.strptime(film_details.release_date, "%Y-%m-%d").year,
+                media_type = film_details.media_type,
+                overview = film_details.overview,
+                rating = round(film_details.vote_average, 1),
+                tmdb_url = f"https://www.themoviedb.org/movie/{id}"
+            )
+        else:
+            return render_template(
+                app.base,
+                template = "film.html",
+                javascript = "film",
+                authorization = authorization,
+                title = "Could not find movie",
+            )
+
+    
     # API
     @app.flask.route("/get_home_page_categories", methods=['GET'])
     @app.limiter.limit("30 per minute")

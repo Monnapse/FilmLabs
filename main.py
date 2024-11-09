@@ -20,7 +20,7 @@ from flask_jwt_extended import JWTManager
 import json
 
 import server.web as web
-from server.packages import db, films, tmdb, json_controller
+from server.packages import db, films, tmdb, json_controller, service
 from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult
 
 # Settings
@@ -56,6 +56,11 @@ film_controller = films.FilmsController(
     api,
     json_controller.load_json("home_page.json")
 )
+service_controller = service.ServiceController(
+    json_controller.load_json("services.json")
+)
+
+#print(service_controller.get_services()[0].get_tv_url("693134", 1, 1))
 
 #print(film_controller.get_next_categories(2))
 
@@ -71,6 +76,7 @@ web_controller = web.web_class(
     db_controller,
     jwt,
     film_controller,
+    service_controller,
     token_max_days,
     password_max_length, 
     password_min_length,
