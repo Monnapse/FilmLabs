@@ -57,6 +57,9 @@ values (2, 2, 1);
 insert into episode_history 
 (account_history_id, episode_id, progress) 
 values (1, 1, "00:00:00");
+insert into episode_history 
+(account_history_id, episode_id, progress) 
+values (1, 2, "00:00:00");
 
 # MOVIE
 insert into movie_history  
@@ -72,4 +75,15 @@ join film f on awh.tmdb_id = f.tmdb_id
 left join episode_history tv on f.media_type = "tv" and awh.account_history_id = tv.account_history_id
 left join movie_history movie on f.media_type = "movie" and awh.account_history_id = movie.account_history_id
 where awh.user_id = 1
-group by f.tmdb_id;
+group by tv.episode_id;
+
+# Get Account Watch History Table
+select * from account_watch_history where user_id = 1;
+
+# Get History Movie Table
+select * from movie_history where account_history_id = 2;
+
+# Get TV Episode Table
+select * from episode_history where account_history_id = 1;
+
+delete * from episode_history;
