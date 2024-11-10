@@ -5,8 +5,13 @@ let autoLoadGlobal = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", (e) => {
+        console.log(e.target)
+        if (e.target.id == "media-iframe-overlay")
+        {
+            mediaFrameClicked();
+        }
         hideOnClickList.forEach((element)=>{
-            if (e.target != element && !isBlacklisted(e.target))
+            if (e.target != element && !isBlacklisted(e.target) && element != null)
             {
                 element.classList.add("hide");
                 element.classList.remove("show");
@@ -93,7 +98,7 @@ function search(query) {
     // search_media?media_type=multi&page=1&query=the%20100&include_adult=true
     if (query)
     {
-        window.location.href = `search?media_type=all&page=1&query=${encodeURIComponent(query)}&include_adult=false`;
+        redirect(`/search?media_type=all&page=1&query=${encodeURIComponent(query)}&include_adult=false`);
     }
 }
 
@@ -218,14 +223,11 @@ function createFilmCard(film, url)
     //const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${time}</p><p>${ageRating}</p><p>${mediaType}</p></div></div></div><img src="${film.poster_path}"></div>`
     const html = `<div class="media-modal unselectable"><div class="media-info"><div><h3>${title}</h3><div><p>${year}</p><p>${rating}</p><p>${mediaType}</p></div></div></div><img src="${img}"></div>`
 
-    const container = document.createElement('div');
-    container.innerHTML = html;
-
-    const card = container.firstChild;
+    const card = createHtmlElement(html);
 
     function onClick()
     {
-        window.location.href = url;
+        redirect(url)
     }
 
     if (isMobile()) {
@@ -234,12 +236,14 @@ function createFilmCard(film, url)
         card.addEventListener('click', onClick);
     }
 
-    return container.firstChild;
+    return card;
 }
 
 function isMobile() {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
+
+function redirect(url) { window.location.href = url; }
 
 function createCategory(title, mediaType, listType, timeWindow)
 {
@@ -259,9 +263,13 @@ function createCategory(title, mediaType, listType, timeWindow)
 
     const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${title}" class=" media-list scroll-list"></div></section>`
 
-    const container = document.createElement('div');
-    container.innerHTML = html;
+    return createHtmlElement(html);
+}
 
+function createHtmlElement(htmlString)
+{
+    const container = document.createElement('div');
+    container.innerHTML = htmlString;
     return container.firstChild;
 }
 

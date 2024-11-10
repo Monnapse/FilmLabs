@@ -1,6 +1,8 @@
 window.onload = function() {
     console.log("account.js loaded");
 
+    loadGlobal();
+
     const sections = document.getElementsByClassName("account-properties-container");
     const buttons = document.getElementsByClassName("side-button-empty");
     

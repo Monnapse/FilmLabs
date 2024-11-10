@@ -9,10 +9,12 @@
                     title="Video player"
                     frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
+                    allowfullscreen
+                    >
                 </iframe>
+                <div id="media-iframe-overlay"></div>
             {% else %}
-                <iframe id="media_iframe" class="loading"></iframe>
+                <iframe id="media-iframe" class="loading"></iframe>
             {% endif %}
         </div>
         <div class="film-top">
@@ -21,15 +23,41 @@
                 <div class="rating">
                     <img class="rating-img" src="/static/media/star.png" alt="Rating">
                     <span>{{ rating or "Rating" }}/10</span>
-                    
                 </div>
-                <a class="button" href="{{ trailer_url }}">
+
+                <button id="watch-now" class="button">
+                    Watch Now
+                </button>
+                <button id="trailer" class="button">
                     Trailer
-                </a>
-                <button class="button">
+                </button>
+                <button id="favorite" class="button">
                     <img src="/static/media/heart.svg">
                     Favorites
                 </button>
+
+                <script>
+                    // Watch now
+                    const watchBtn = document.getElementById("watch-now");
+
+                    watchBtn.addEventListener("click", ()=>{
+                        setMediaIFrame("{{ service_url }}");
+                    })
+
+                    // Trailer
+                    const trailerBtn = document.getElementById("trailer");
+
+                    trailerBtn.addEventListener("click", ()=>{
+                        setTrailer("{{ media_type }}", "{{ id }}");
+                    })
+                    
+                    // Favorite
+                    const favoriteBtn = document.getElementById("favorite");
+
+                    favoriteBtn.addEventListener("click", ()=>{
+                        toggleFavorite("{{ id }}");
+                    })
+                </script>
             </div>
         </div>
         <div class="film-info-tags">
@@ -64,29 +92,41 @@
                 <div class="chips-grid">
                     {% for service in service_providers %}
                         {% if service.name == selected_service %}
-                            <a href="?service={{ service.name }}" class="button-chip selected-button-chip"><p>{{ service.name }}</p></a>
+                            <button class="button-chip selected-button-chip"><p>{{ service.name }}</p></button>
                         {% else %}
-                            <a href="?service={{ service.name }}" class="button-chip"><p>{{ service.name }}</p></a>
+                            <button id="service-{{ service.name }}" class="button-chip"><p>{{ service.name }}</p></button>
+                            <script>
+                                (()=>{
+                                    const btn = document.getElementById("service-{{ service.name }}");
+                                    btn.addEventListener("click",()=>{ redirect("?service={{ service.name }}"); })
+                                })();
+                            </script>
                         {% endif %}
                     {% endfor %}
                 </div>
             {% endif %}
         </div>
-        {% if media_type == "TV" %}
+        {% if media_type == "tv" %}
             <div class="film-episodes">
                 <div class="dropdown">
                     <button class="dropdown-button">
-                        <span class="unclickable">{{ selected_season }}</span>
+                        <span class="unclickable">Season {{ current_season }}</span>
                         <img src="/static/media/down_arrow.svg" class="unclickable">
                     </button>
                     <div class="dropdown-list-container hide">
                         <div class="dropdown-button-list">
                             {% if seasons %}
                                 {% for season in seasons %}
-                                    {% if season == selected_season %}
-                                        <button class="dropdown-button-active">Season {{ season }}</button>
+                                    {% if season.season_number == current_season %}
+                                        <button class="dropdown-button-active">Season {{ season.season_number }}</button>
                                     {% else %}
-                                        <button>Season {{ season }}</button>
+                                        <button id="season-{{ season.season_number }}">Season {{ season.season_number }}</button>
+                                        <script>
+                                            (()=>{
+                                                const btn = document.getElementById("season-{{ season.season_number }}");
+                                                btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ season.season_number }}/1"); })
+                                            })();
+                                        </script>
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
@@ -96,19 +136,25 @@
                 {% if episodes %}
                     <div class="chips-grid">
                         {% for episode in episodes %}
-                            {% if episode["number"] == selected_episode %}
-                                <button class="button-chip selected-button-chip">
-                                    <span>Episode episode["number"]</span>
+                            {% if episode.episode_number == current_episode %}
+                                <button id="episode-{{ episode.episode_number }}" class="button-chip selected-button-chip">
+                                    <span>Episode {{episode.episode_number}}</span>
                                     <spam>∙</spam>
-                                    <p>episode["name"]</p>
+                                    <p>{{episode.name}}</p>
                                 </button>
                             {% else %}
-                                <button class="button-chip">
-                                    <span>Episode episode["number"]</span>
+                                <button id="episode-{{ episode.episode_number }}" class="button-chip">
+                                    <span>Episode {{episode.episode_number}}</span>
                                     <spam>∙</spam>
-                                    <p>episode["name"]</p>
+                                    <p>{{episode.name}}</p>
                                 </button>
                             {% endif %}
+                            <script>
+                                (()=>{
+                                    const btn = document.getElementById("episode-{{ episode.episode_number }}");
+                                    btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ current_season }}/{{ episode.episode_number }}"); })
+                                })();
+                            </script>
                         {% endfor %}
                     </div>
                 {% endif %}

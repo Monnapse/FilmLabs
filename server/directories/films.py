@@ -31,6 +31,7 @@ def run(app: web_class):
 
     # Routes
     @app.flask.route("/category")
+    @app.limiter.limit("30 per minute")
     def category():
         # /<media_type>/<list_type>/<time_window>
         media_type = request.args.get("media_type")
@@ -39,6 +40,7 @@ def run(app: web_class):
         return category_base(media_type, list_type, time_window)
     
     @app.flask.route("/search")
+    @app.limiter.limit("30 per minute")
     def category_time():
         query = request.args.get("query")
 
@@ -53,15 +55,30 @@ def run(app: web_class):
         )
     
     @app.flask.route("/film/tv/<id>/<season>/<episode>")
+    @app.limiter.limit("30 per minute")
     def tv(id, season, episode):
+        current_season = season
         authorization = app.get_authorization_data()
         current_service = request.args.get("service")
 
         service = app.service_controller.get_service_data(current_service)
 
-        film_details = app.film_controller.tmdb.get_details(FilmType.TV, id)
+        film_details = app.film_controller.tmdb.get_details(FilmType.TV, id, True)
 
         if film_details != None:
+            episodes = []
+
+            try:
+                current_season = int(season)
+                if film_details.seasons[current_season]:
+                    episodes = film_details.seasons[current_season].episodes
+            except:
+                current_season = int(season)-1
+                if film_details.seasons[current_season]:
+                    episodes = film_details.seasons[current_season].episodes
+            finally:
+                pass
+
             return render_template(
                 app.base,
                 template = "film.html",
@@ -80,7 +97,15 @@ def run(app: web_class):
                 media_type = film_details.media_type,
                 overview = film_details.overview,
                 rating = round(film_details.vote_average, 1),
-                tmdb_url = f"https://www.themoviedb.org/tv/{id}"
+                tmdb_url = f"https://www.themoviedb.org/tv/{id}",
+                
+                # TV
+                current_season = int(season),
+                seasons = film_details.seasons,
+                current_episode = int(episode),
+                episodes = episodes,
+
+                id=id
             )
         else:
             return render_template(
@@ -92,6 +117,7 @@ def run(app: web_class):
             )
     
     @app.flask.route("/film/movie/<id>")
+    @app.limiter.limit("30 per minute")
     def movie(id):
         authorization = app.get_authorization_data()
         current_service = request.args.get("service")
@@ -119,7 +145,9 @@ def run(app: web_class):
                 media_type = film_details.media_type,
                 overview = film_details.overview,
                 rating = round(film_details.vote_average, 1),
-                tmdb_url = f"https://www.themoviedb.org/movie/{id}"
+                tmdb_url = f"https://www.themoviedb.org/movie/{id}",
+
+                id=id
             )
         else:
             return render_template(
@@ -132,6 +160,26 @@ def run(app: web_class):
 
     
     # API
+    def get_trailer(film_type, id):
+        try:
+            trailer = app.film_controller.tmdb.get_trailer(film_type, id)
+            if trailer != None:
+                return jsonify(success=True, embed=trailer.embed_url), 200
+            else:
+                return jsonify(success=False, message="Please specify a valid id"), 403
+        except: 
+            return jsonify(success=False, message="Something went wrong"), 403
+    @app.flask.route("/trailer/tv", methods=['GET'])
+    @app.limiter.limit("10 per minute")
+    def tv_trailer():
+        id = request.args.get("id")
+        return get_trailer(FilmType.TV, id)
+    @app.flask.route("/trailer/movie", methods=['GET'])
+    @app.limiter.limit("10 per minute")
+    def movie_trailer():
+        id = request.args.get("id")
+        return get_trailer(FilmType.Movie, id)
+
     @app.flask.route("/get_home_page_categories", methods=['GET'])
     @app.limiter.limit("30 per minute")
     def get_home_page_categories():
@@ -189,11 +237,11 @@ def run(app: web_class):
     @app.flask.route("/search_media", methods=['GET'])
     @app.limiter.limit("30 per minute")
     def search_media():
-        page = request.args.get("page") or 1
+        page = request.args.get("page") or "1"
         mediaType = request.args.get("media_type") or "all"
         query = request.args.get("query")
         includeAdult = request.args.get("include_adult") or "false"
-#
+
         try:
             if query != None:
                 search_results = app.film_controller.tmdb.search_films(
@@ -202,7 +250,7 @@ def run(app: web_class):
                     page,
                     includeAdult
                 )
-                #print(f"{query}, {mediaType}, {page}, {includeAdult}")
+                print(f"{query}, {mediaType}, {page}, {includeAdult}")
                 if search_results != None:
                     search_json = app.film_controller.tmdb.list_result_to_json(search_results)
 

@@ -16,6 +16,7 @@ def run(app: web_class):
     print("Home >>> Home directories loaded")
 
     @app.flask.route("/")
+    @app.limiter.limit("30 per minute")
     def home():
         authorization = app.get_authorization_data()
 

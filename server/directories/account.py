@@ -16,6 +16,7 @@ def run(app: web_class):
     print("Account >>> Account directories loaded")
 
     @app.flask.route("/account")
+    @app.limiter.limit("30 per minute")
     def account():
         authorization = app.get_authorization_data()
 

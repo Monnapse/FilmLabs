@@ -35,6 +35,10 @@ DROP TABLE IF EXISTS `filmlabs`.`film` ;
 
 CREATE TABLE IF NOT EXISTS `filmlabs`.`film` (
   `tmdb_id` INT NOT NULL,
+  `media_type` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(85) NOT NULL,
+  `year` VARCHAR(8) NOT NULL,
+  `rating` FLOAT NOT NULL,
   PRIMARY KEY (`tmdb_id`))
 ENGINE = InnoDB;
 
@@ -45,13 +49,20 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `filmlabs`.`account_watch_history` ;
 
 CREATE TABLE IF NOT EXISTS `filmlabs`.`account_watch_history` (
-  `history_id` INT NOT NULL,
+  `account_history_id` INT NOT NULL AUTO_INCREMENT,
+  `tmdb_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  INDEX `fk_watch_history_account1_idx` (`user_id` ASC) VISIBLE,
-  PRIMARY KEY (`history_id`),
-  CONSTRAINT `fk_watch_history_account1`
+  INDEX `fk_account_watch_history_account1_idx` (`user_id` ASC) VISIBLE,
+  PRIMARY KEY (`account_history_id`),
+  INDEX `fk_account_watch_history_film1_idx` (`tmdb_id` ASC) VISIBLE,
+  CONSTRAINT `fk_account_watch_history_account1`
     FOREIGN KEY (`user_id`)
     REFERENCES `filmlabs`.`account` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_account_watch_history_film1`
+    FOREIGN KEY (`tmdb_id`)
+    REFERENCES `filmlabs`.`film` (`tmdb_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -80,26 +91,34 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `filmlabs`.`account_history_film`
+-- Table `filmlabs`.`movie_history`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `filmlabs`.`account_history_film` ;
+DROP TABLE IF EXISTS `filmlabs`.`movie_history` ;
 
-CREATE TABLE IF NOT EXISTS `filmlabs`.`account_history_film` (
-  `history_id` INT NOT NULL AUTO_INCREMENT,
-  `tmdb_id` INT NOT NULL,
-  `progress` VARCHAR(45) NULL,
-  `season` INT NULL,
-  `episode` INT NULL,
-  PRIMARY KEY (`history_id`),
-  INDEX `fk_history_tv_watch_history1_idx` (`history_id` ASC) VISIBLE,
-  CONSTRAINT `fk_history_movie_film10`
-    FOREIGN KEY (`tmdb_id`)
-    REFERENCES `filmlabs`.`film` (`tmdb_id`)
+CREATE TABLE IF NOT EXISTS `filmlabs`.`movie_history` (
+  `account_history_id` INT NOT NULL,
+  `progress` VARCHAR(10) NULL,
+  INDEX `fk_movie_history_account_watch_history1_idx` (`account_history_id` ASC) VISIBLE,
+  CONSTRAINT `fk_movie_history_account_watch_history1`
+    FOREIGN KEY (`account_history_id`)
+    REFERENCES `filmlabs`.`account_watch_history` (`account_history_id`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_history_tv_watch_history1`
-    FOREIGN KEY (`history_id`)
-    REFERENCES `filmlabs`.`account_watch_history` (`history_id`)
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `filmlabs`.`episode_history`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `filmlabs`.`episode_history` ;
+
+CREATE TABLE IF NOT EXISTS `filmlabs`.`episode_history` (
+  `account_history_id` INT NOT NULL,
+  `episode_id` INT NOT NULL,
+  `progress` VARCHAR(10) NULL,
+  CONSTRAINT `fk_episode_history_account_watch_history1`
+    FOREIGN KEY (`account_history_id`)
+    REFERENCES `filmlabs`.`account_watch_history` (`account_history_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

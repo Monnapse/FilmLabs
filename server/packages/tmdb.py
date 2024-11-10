@@ -70,6 +70,59 @@ class Movie:
         self.vote_average = vote_average
         self.vote_count = vote_count
 
+class TVEpisode:
+    def __init__(self,
+        air_date: str = None,
+        episode_number: int = None,
+        episode_type: str = None,
+        id: int = None,
+        name: str = None,
+        overview: str = None,
+        production_code: str = None,
+        runtime: int = None,
+        season_number: int = None,
+        show_id: int = None,
+        still_path: str = None,
+        vote_average: float = None,
+        vote_count: int = None
+    ) -> None:
+        self.air_date = air_date
+        self.episode_number = episode_number
+        self.episode_type = episode_type
+        self.id = id
+        self.name = name
+        self.overview = overview
+        self.production_code = production_code
+        self.runtime = runtime
+        self.season_number = season_number
+        self.show_id = show_id
+        self.still_path = still_path
+        self.vote_average = vote_average
+        self.vote_count = vote_count
+        
+
+class TVSeason:
+    def __init__(self, 
+            air_date: str = None,
+            episode_count: int = None,
+            id: int = None,
+            name: str = None,
+            overview: str = None,
+            poster_path: str = None,
+            season_number: int = None,
+            vote_average: float = None,
+            episodes: list[TVEpisode] = []
+        ) -> None:
+        self.air_date = air_date
+        self.episode_count = episode_count
+        self.id = id
+        self.name = name
+        self.overview = overview
+        self.poster_path = poster_path
+        self.season_number = season_number
+        self.vote_average = vote_average
+        self.episodes = episodes
+
 class TV:
     def __init__(
             self,
@@ -86,7 +139,9 @@ class TV:
             first_air_date: str = None,
             name: str = None,
             vote_average: float = None,
-            vote_count: int = None
+            vote_count: int = None,
+
+            seasons: list[TVSeason] = [],
         ):
         self.media_type = "tv"
 
@@ -104,6 +159,34 @@ class TV:
         self.name = name
         self.vote_average = vote_average
         self.vote_count = vote_count
+
+        self.seasons = seasons
+
+class FilmVideo:
+    def __init__(self,
+            iso_639_1: str = None,
+            iso_3166_1: str = None,
+            name: str = None,
+            key: str = None,
+            site: str = None,
+            size: int = None,
+            type: str = None,
+            official: bool = None,
+            published_at: str = None,
+            id: str = None,
+            url: str = None,
+            embed_url: str = None
+        ) -> None:
+        self.name = name
+        self.key = key
+        self.site = site
+        self.size = size
+        self.type = type
+        self.official = official
+        self.published_at = published_at
+        self.id = id
+        self.url = url
+        self.embed_url = embed_url
 
 class ListResult:
     def __init__(self,
@@ -155,7 +238,100 @@ class TMDB:
         except:
             return path
 
-    def to_movie(self, data: str) -> Movie:
+    def video_to_watch_url(self, site: str = "", key: str = ""):
+        # https://www.youtube.com/watch?v={key}
+        site = str(site).lower()
+        if site == "youtube":
+            return f"https://www.youtube.com/watch?v={key}"
+        
+    def video_to_embed_url(self, site: str = "", key: str = ""):
+        # https://www.youtube.com/embed/XZ8daibM3AE
+        site = str(site).lower()
+        if site == "youtube":
+            return f"https://www.youtube.com/embed/{key}"    
+
+    def to_film_video(self, data: dict) -> FilmVideo:
+        site = data.get("site")
+        key = data.get("key")
+        url = self.video_to_watch_url(site, key)
+        embed_url = self.video_to_embed_url(site, key)
+
+        video_class = FilmVideo(
+            iso_639_1 = data.get("iso_639_1"),
+            iso_3166_1 = data.get("iso_3166_1"),
+            name = data.get("name"),
+            key = key,
+            site = site,
+            size = data.get("size"),
+            type = data.get("type"),
+            official = data.get("official"),
+            published_at = data.get("published_at"),
+            id = data.get("id"),
+            url = url,
+            embed_url = embed_url
+        )
+
+        return video_class
+
+    def to_tv_episode(self, data: dict) -> TVEpisode:
+        episode_class = TVEpisode(
+            air_date = data.get("air_date"),
+            episode_number = data.get("episode_number"),
+            episode_type = data.get("episode_type"),
+            id = data.get("id"),
+            name = data.get("name"),
+            overview = data.get("overview"),
+            production_code = data.get("production_code"),
+            runtime = data.get("runtime"),
+            season_number = data.get("season_number"),
+            show_id = data.get("show_id"),
+            still_path = data.get("still_path"),
+            vote_average = data.get("vote_average"),
+            vote_count = data.get("vote_count")
+        )
+        return episode_class
+
+    def get_tv_season_episodes(self, tv_id: int, season: int) -> list[TVEpisode]:
+        # tv/1396/season/0?language=en-US"
+        api = f"tv/{str(tv_id)}/season/{str(season)}?language=en-US"
+
+        response = self.send_api(api)
+
+        if (response.status_code == 200):
+            response_json = response.json()
+
+            episodes = []
+
+            if (response_json["episodes"] != None):
+                for episode in response_json["episodes"]:
+                    episodes.append(self.to_tv_episode(episode))
+
+            return episodes
+            
+        return []
+
+    def to_tv_season(self, data: dict, get_episodes: bool = False, tv_id: int = None) -> TVSeason:
+        episodes = []
+        season_number = data.get("season_number")
+
+        if get_episodes:
+            episodes = self.get_tv_season_episodes(tv_id, season_number)
+        
+        season_class = TVSeason(
+            air_date = data.get("air_date"),
+            episode_count = data.get("episode_count"),
+            id = data.get("id"),
+            name = data.get("name"),
+            overview = data.get("overview"),
+            poster_path = data.get("poster_path"),
+            season_number = season_number,
+            vote_average = data.get("vote_average"),
+            episodes = episodes
+        )
+
+        return season_class
+
+    def to_movie(self, data: dict) -> Movie:
         movie_class = Movie(
             adult = data.get("adult"),
             backdrop_path = self.to_img_url(data.get("backdrop_path")),
@@ -174,7 +350,7 @@ class TMDB:
         )
         return movie_class
     
-    def to_tv(self, data: str) -> TV:
+    def to_tv(self, data: dict, get_episodes: bool = False) -> TV:
         tv_class = TV(
             adult = data.get("adult"),
             backdrop_path = self.to_img_url(data.get("backdrop_path")),
@@ -191,6 +367,16 @@ class TMDB:
             vote_average = data.get("vote_average"),
             vote_count = data.get("vote_count")
         )
+
+        try:
+            if data["seasons"] != None:
+                seasons = []
+                for season in data["seasons"]:
+                    seasons.append(self.to_tv_season(season, get_episodes, str(tv_class.id)))
+                tv_class.seasons = seasons
+        except:
+            return tv_class
+
         return tv_class
 
     def to_film_class(self, film: dict, film_type: FilmType):
@@ -251,29 +437,8 @@ class TMDB:
         return None
 
     def get_trending_films_list(self, page: int = 1, time_window: TimeWindow = TimeWindow.Day) -> ListResult:
-        #tv_list = self.get_film_list(FilmType.TV, TVListType.Trending, page, time_window) or []
-        #movie_list = self.get_film_list(FilmType.Movie, MovieListType.Trending, page, time_window) or []
         list = self.get_film_list(FilmType.All, MovieListType.Trending, page, time_window) or ListResult()
         
-        #total_pages = 0
-        #if movie_list.total_pages > tv_list.total_pages:
-        #    total_pages = movie_list.total_pages
-        #elif tv_list.total_pages > movie_list.total_pages:
-        #    total_pages = tv_list.total_pages
-
-        #results = tv_list.results + movie_list.results
-
-        #results.sort(reverse=True, key=sort_by_rating)
-
-        #for i in results:
-        #    print(f"media type: {i.media_type}, rating: {i.vote_average}%")
-
-        #list_result = ListResult(
-        #    page = movie_list.page,
-        #    results = results,
-        #    total_pages = total_pages,
-        #    total_results = movie_list.total_results + tv_list.total_results
-        #)
         return list
 
     def list_result_to_json(self, list: ListResult):
@@ -304,7 +469,7 @@ class TMDB:
             return self.json_to_list_result(response_json, film_type)
         return None
     
-    def get_details(self, film_type: FilmType = FilmType.All, id: str = None) -> Optional[Union[Movie, TV]]:
+    def get_details(self, film_type: FilmType = FilmType.All, id: str = None, get_episodes: bool = False) -> Optional[Union[Movie, TV]]:
         # Movies "movie/693134?language=en-US"
         # TV "tv/series_id?language=en-US"
 
@@ -320,14 +485,51 @@ class TMDB:
             if media_type == FilmType.Movie.value:
                 return self.to_movie(response_json)
             elif media_type == FilmType.TV.value:
-                return self.to_tv(response_json)
-            #return self.json_to_list_result(response_json, film_type)
+                return self.to_tv(response_json, get_episodes)
             
         return None
+    
+    def get_videos(self, film_type: FilmType = FilmType.All, id: str = None) -> list[FilmVideo]:
+        # movie/693134/videos?language=en-US
+        # tv/1396/videos?language=en-US"
+
+        media_type = enum_to_string(film_type)
+
+        api = f"{media_type}/{str(id)}/videos?language=en-US"
+
+        response = self.send_api(api)
+
+        if (response.status_code == 200):
+            response_json = response.json()
+
+            video_list = []
+
+            for video in response_json["results"]:
+                video_list.append(self.to_film_video(video))
+                
+            return video_list
+        return None
+    
+    def get_trailer(self, film_type: FilmType = FilmType.All, id: str = None) -> FilmVideo:
+        videos = self.get_videos(film_type, id)
+
+        trailers = []
+
+        for video in videos:
+            try:
+                if video.type.lower() == "trailer":
+                    trailers.append(video)
+            except:
+                pass
+            #print(f"{video.type}, {video.name}")
+
+        if len(trailers) > 0:
+            return trailers[len(trailers)-1]
+        else:
+            return None
 
 # Functions
 def sort_by_rating(film: Optional[Union[Movie, TV]]):
-    #print(f"media type: {film.media_type}, rating: {film.vote_average * 10}%")
     return film.vote_average
 
 def enum_to_string(enum):
@@ -344,7 +546,9 @@ api = TMDB(environ.get("TMDB_API_KEY"))
 #trending_film_list = api.get_trending_films_list(1, TimeWindow.Week)
 #search_query = api.search_films("bojack", FilmType.All, 1, "false")
 #dict = api.list_result_to_json(search_query)
-details = api.get_details(FilmType.Movie, "693134")
-print(details.title)
+#details = api.get_details(FilmType.TV, 1396, True)
+#print(details.seasons[3].episodes[3].name)
+films_video = api.get_trailer(FilmType.TV, 1396)
+print(f"Trailer Url: {films_video.url}, Trailer Name: {films_video.name}")
 #
 """

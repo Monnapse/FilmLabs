@@ -18,6 +18,7 @@ def run(app: web_class):
 
     # Directories
     @app.flask.route("/login")
+    @app.limiter.limit("30 per minute")
     def login():
         return render_template(
             app.base,
@@ -34,6 +35,7 @@ def run(app: web_class):
         )
     
     @app.flask.route("/register")
+    @app.limiter.limit("30 per minute")
     def register():
         return render_template(
             app.base,
@@ -51,6 +53,7 @@ def run(app: web_class):
     
     # Middle ground
     @app.flask.route("/logout")
+    @app.limiter.limit("30 per minute")
     def logout():
         # Remove cookie so it doesnt go into infinite loops and self ddos
         response = make_response(redirect("/"))
