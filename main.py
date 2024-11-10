@@ -64,7 +64,7 @@ service_controller = service.ServiceController(
 
 #print(film_controller.get_next_categories(2))
 
-db_controller = db.film_labs_db(
+db_controller = db.FilmLabsDB(
     password_max_length, 
     password_min_length,
     username_min_length,
@@ -83,7 +83,6 @@ web_controller = web.web_class(
     username_min_length,
     username_max_length
 )
-
 if __name__ == '__main__':
     # Connect to database
     db_controller.connect(

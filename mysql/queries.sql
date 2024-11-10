@@ -9,7 +9,7 @@ select * from account;
 
 # Account Create
 insert into account (user_id, username, password) 
-values (2, "Monnapse", "password");
+values (1, "Monnapse", "password");
 
 # Account Login
 select user_id, username, password 
@@ -22,13 +22,14 @@ where username = "Monnapse";
 
 # Select film ids
 select * from film where tmdb_id = 1;
+select * from film ;
 
 # Add film
-insert into film values (1, "tv", "test", "2024", 10);
-insert into film values (2, "movie", "test", "2024", 10);
+insert into film values (1, "tv", "test", "2024", 10, "https.com");
+insert into film values (2, "movie", "test", "2024", 10, "https.com");
 
 # Get Favorites
-select distinct f.tmdb_id, f.media_type, f.name, f.year, f.rating 
+select distinct f.*
 from account_favorites af 
 join film f on af.tmdb_id = f.tmdb_id 
 where af.user_id = 1 
@@ -36,9 +37,12 @@ group by f.tmdb_id;
 
 select distinct * from account_favorites af where af.user_id = 1;
 
-# Favorite
+# Add Favorite
 insert into account_favorites values(1, 1); 
 insert into account_favorites values(2, 1); 
+
+# Remove Favorite
+delete from account_favorites where tmdb_id = 2 and user_id = 1;
 
 # Add to watch history 
 insert into account_watch_history 

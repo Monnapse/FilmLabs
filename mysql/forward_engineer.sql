@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `filmlabs`.`film` (
   `name` VARCHAR(85) NOT NULL,
   `year` VARCHAR(8) NOT NULL,
   `rating` FLOAT NOT NULL,
+  `poster` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`tmdb_id`))
 ENGINE = InnoDB;
 
