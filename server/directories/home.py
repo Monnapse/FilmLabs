@@ -18,11 +18,14 @@ def run(app: WebClass):
     @app.flask.route("/")
     @app.limiter.limit("30 per minute")
     def home():
-        authorization = app.get_authorization_data()
+        try:
+            authorization = app.get_authorization_data()
 
-        return render_template(
-            app.base,
-            template = "index.html",
-            javascript = "index",
-            authorization=authorization
-        )
+            return render_template(
+                app.base,
+                template = "index.html",
+                javascript = "index",
+                authorization=authorization
+            )
+        except Exception as e:
+            print(f"Error in home controller at {home.__name__}: {e}")

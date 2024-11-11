@@ -104,51 +104,126 @@ class FilmsController:
         list_result = ListResult(results=tmdb_films)
         return list_result
 
+    def do_db_history_pass(self, user_id: int, film: Optional[list[Union[Movie, TV]]]) -> Optional[Union[Movie, TV]]:
+        try:
+            if user_id == None: return film
+            
+            seen_film = self.db.has_seen(user_id, film.id, True)
+            #print(seen_film)
+            if seen_film:
+                if film.media_type == "movie":
+                    film.progress = seen_film
+                elif film.media_type == "tv":
+                    highest_episode = self.db.get_most_recent_history_episode(seen_film.tmdb_id, seen_film.user_id, seen_film.episode_history)
+                    film.current_season = highest_episode.season_number
+                    film.current_episode = highest_episode.episode_number
+            return film
+        except Exception as e:
+            print(f"Error in films controller at {self.do_db_history_pass.__name__}")
+
+        return film
+
+    def do_db_history_passes(self, user_id: int, films: ListResult) -> ListResult:
+        try:
+            if user_id == None: return films
+            new_list = []
+
+            if films and films.results and len(films.results) > 0:
+                for film in films.results:
+                    #film = self.db.has_seen(user_id, film.id)
+                    #if film:
+                    new_list.append(self.do_db_history_pass(user_id, film))
+
+            return ListResult(results=new_list)
+        except Exception as e:
+            print(f"Error in films controller at {self.do_db_history_passes.__name__}: {e}")
+
+        return films
+
+    def get_category(self,
+        user_id: int,
+        title: str, 
+        media_type: FilmType, 
+        list_type: Optional[Union[TVListType, MovieListType]], 
+        time_window: TimeWindow = TimeWindow.Day,
+        has_more_pages: bool = False,
+        page: int = 1
+    ) -> Category:
+        try:
+            category = Category(
+                title=title,
+                media_type=media_type,
+                list_type=list_type,
+                time_window=time_window,
+                has_more_pages=has_more_pages
+            )
+
+            if category.media_type == None or category.media_type == "null":
+                # Media type is both
+                #print("category.media_type == None")
+                # trending
+                #category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
+                if category.list_type == "trending":
+                    category.film_list = self.tmdb.get_trending_films_list(page, category.time_window)
+                    #print("Trending")
+                elif category.list_type == "favorites" and user_id != None:
+                    #print("favorites")
+                    favorites = self.db.get_favorites(user_id)
+                    favorites_result = self.db_films_to_tmdb_films(favorites)
+                    category.film_list = favorites_result
+                    category.has_more_pages = False
+                    category.film_list.has_more_pages = False
+                    #print(favorites)
+                elif category.list_type == "watch_history" and user_id != None:
+                    #print("watch_history")
+                    history = self.db.get_history(user_id)
+
+                    history_result = self.db_films_to_tmdb_films(history)
+                    category.film_list = history_result
+                    category.has_more_pages = False
+                    category.film_list.has_more_pages = False
+            #elif category.media_type == None and category.list_type == "favorites":
+            #    # Get favorited films
+
+            elif category.media_type == FilmType.Movie.value:
+                # Is movie list type
+                category.film_list = self.tmdb.get_film_list(FilmType.Movie, category.list_type, page, category.time_window)
+            elif category.media_type == FilmType.TV.value:
+                # Is tv list type
+                category.film_list = self.tmdb.get_film_list(FilmType.TV, category.list_type, page, category.time_window)
+
+            if category.film_list != None:
+                category.film_list = self.do_db_history_passes(user_id, category.film_list)
+
+            #print(category.film_list.results)
+            return category
+        except Exception as e:
+            print(f"Error in films controller at {self.get_category.__name__}: {e}")
+        
+
     def get_next_categories(self, current_page: int, user_id: int) -> list[Category]:
-        if self.default_page_layout != None and self.get_raw_category_by_page(current_page):
-            page = self.get_raw_category_by_page(current_page)
+        try:
+            if self.default_page_layout != None and self.get_raw_category_by_page(current_page):
+                page = self.get_raw_category_by_page(current_page)
 
-            if page == None: return
+                if page == None: return
+    
+                categories = []
+    
+                for category_data in page["categories"]:
+                    category = self.get_category(
+                        user_id=user_id,
+                        title=category_data["name"],
+                        media_type=category_data["media_type"],
+                        list_type=category_data["list_type"],
+                        time_window=category_data["time_window"],
+                        has_more_pages=True,
+                        page=1
+                    )
+                    
+                    if category.film_list and len(category.film_list.results) > 0:
+                        categories.append(category)
 
-            categories = []
-
-            for category_data in page["categories"]:
-                category = Category(
-                    title=category_data["name"],
-                    media_type=category_data["media_type"],
-                    list_type=category_data["list_type"],
-                    time_window=category_data["time_window"],
-                    has_more_pages=True
-                )
-                #print(category.media_type)
-                if category.media_type == None:
-                    # Media type is both
-                    #print(category.list_type)
-                    # trending
-                    #category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
-                    if category.list_type == "trending":
-                        category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
-                    elif category.list_type == "favorites" and user_id != None:
-                        #print("favorites")
-                        favorites = self.db.get_favorites(user_id)
-                        favorites_result = self.db_films_to_tmdb_films(favorites)
-                        category.film_list = favorites_result
-                        category.has_more_pages = False
-                        #print(favorites)
-                    #elif category.list_type == "watch_history" and user_id != None:
-                    #    print("watch_history")
-                    #    category.has_more_pages = False
-                #elif category.media_type == None and category.list_type == "favorites":
-                #    # Get favorited films
-
-                elif category.media_type == FilmType.Movie.value:
-                    # Is movie list type
-                    category.film_list = self.tmdb.get_film_list(FilmType.Movie, category.list_type, 1, category.time_window)
-                elif category.media_type == FilmType.TV.value:
-                    # Is tv list type
-                    category.film_list = self.tmdb.get_film_list(FilmType.TV, category.list_type, 1, category.time_window)
-
-                if category.film_list and len(category.film_list.results) > 0:
-                    categories.append(category)
-
-            return categories
+                return categories
+        except Exception as e:
+            print(f"Error in films controller at {self.get_next_categories.__name__}: {e}")

@@ -21,7 +21,13 @@
                     "media_type": null,
                     "list_type": "trending",
                     "time_window": "day"
-                },
+                }
+            ]
+        },
+        {
+            "current_page": 2,
+
+            "categories": [
                 {
                     "name": "Trending this week",
                     "media_type": null,
@@ -31,24 +37,6 @@
                 {
                     "name": "Popular movies",
                     "media_type": "movie",
-                    "list_type": "popular",
-                    "time_window": null
-                }
-            ]
-        },
-        {
-            "current_page": 2,
-
-            "categories": [
-                {
-                    "name": "Now playing movies",
-                    "media_type": "movie",
-                    "list_type": "now_playing",
-                    "time_window": null
-                },
-                {
-                    "name": "Popular tv series",
-                    "media_type": "tv",
                     "list_type": "popular",
                     "time_window": null
                 },
@@ -77,9 +65,9 @@
                     "time_window": null
                 },
                 {
-                    "name": "On the air tv series",
+                    "name": "Popular tv series",
                     "media_type": "tv",
-                    "list_type": "on_the_air",
+                    "list_type": "popular",
                     "time_window": null
                 }
             ]
@@ -89,15 +77,21 @@
 
             "categories": [
                 {
-                    "name": "Upcoming movies",
-                    "media_type": "movie",
-                    "list_type": "upcoming",
-                    "time_window": null
-                },
-                {
                     "name": "Airing today tv series",
                     "media_type": "tv",
                     "list_type": "airing_today",
+                    "time_window": null
+                },
+                {
+                    "name": "On the air tv series",
+                    "media_type": "tv",
+                    "list_type": "on_the_air",
+                    "time_window": null
+                },
+                {
+                    "name": "Upcoming movies",
+                    "media_type": "movie",
+                    "list_type": "upcoming",
                     "time_window": null
                 }
             ]

@@ -65,6 +65,8 @@ class TVEpisode:
         self.vote_average = vote_average
         self.vote_count = vote_count
 
+        self.progress = "00:00:00"
+
 class TVSeason:
     def __init__(self, 
             air_date: str = None,
@@ -122,6 +124,8 @@ class Movie:
         self.vote_average = vote_average
         self.vote_count = vote_count
 
+        self.progress = None
+
 class TV:
     def __init__(
             self,
@@ -160,6 +164,8 @@ class TV:
         self.vote_count = vote_count
 
         self.seasons = seasons
+        self.current_season = 1
+        self.current_episode = 1
 
     def get_season(self, season_number: int) -> TVSeason:
         for season in self.seasons:

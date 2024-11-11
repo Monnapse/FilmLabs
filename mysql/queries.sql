@@ -91,7 +91,7 @@ group by f.tmdb_id;
 select * from account_watch_history where user_id = 1;
 
 # Get History Movie Table
-select * from movie_history where account_history_id = 2;
+select * from movie_history where account_history_id = 1;
 
 # Get TV Episode Table
 select * from episode_history where account_history_id = 1;

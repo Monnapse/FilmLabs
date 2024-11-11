@@ -335,11 +335,21 @@ function addScrollWithRequest(apiString, mediaGrid)
 
 function getFilmUrl(film)
 {
+    let season = null;
+    let episode = null;
+
     const media_type = film.media_type
     let url = `/film/${media_type}/${film.id}`
+
+    if (item.media_type == "tv")
+    {
+        season = item.current_season
+        episode = item.current_episode
+    }
+
     if (media_type == "tv")
     {
-        url += "/1/1"
+        url += `/${season}/${episode}`
     }
     return url;
 }

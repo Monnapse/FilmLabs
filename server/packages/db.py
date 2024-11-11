@@ -38,7 +38,10 @@ class Film:
             name: str = None,
             release_date: str = None,
             rating: float = None,
-            poster: str = None
+            poster: str = None,
+
+            current_season: int = 1,
+            current_episode = 1
         ) -> None:
         self.tmdb_id = tmdb_id
         self.media_type = media_type
@@ -46,6 +49,8 @@ class Film:
         self.release_date = release_date
         self.rating = rating
         self.poster = poster
+        self.current_season = current_season
+        self.current_episode = current_episode
 
 class MovieHistory:
     def __init__(self,
@@ -73,7 +78,7 @@ class WatchHistory:
             tmdb_id: int = None,
             user_id: int = None,
             movie_history: MovieHistory = None,
-            episode_history: list[EpisodeHistory] = None
+            episode_history: list[EpisodeHistory] = []
         ) -> None:
         self.account_history_id = account_history_id
         self.tmdb_id = tmdb_id
@@ -150,7 +155,7 @@ class FilmLabsDB:
                     account_message=f"Password & Reenter Password inputs must match.\nPassword must be atleast {self.password_min_length} characters long and less than {self.password_max_length} characters"
                 )
         except Exception as e:
-            print(f"DB Error occurred inside create_account: {e}")
+            print(f"DB Error occurred inside {self.create_account.__name__}: {e}")
     
     def does_username_exist(self, username: str) -> bool:
         try:
@@ -164,7 +169,7 @@ class FilmLabsDB:
                 return True
             return False
         except Exception as e:
-            print(f"DB Error occurred inside does_username_exist: {e}")
+            print(f"DB Error occurred inside {self.does_username_exist.__name__}: {e}")
     
     def get_account(self, user_id: str) -> Account:
         try:
@@ -188,7 +193,7 @@ class FilmLabsDB:
                 account_message="Account doesnt exist"
             )
         except Exception as e:
-            print(f"DB Error occurred inside get_account: {e}")
+            print(f"DB Error occurred inside {self.get_account.__name__}: {e}")
 
     def login(self, username: str, password: str) -> Account:
         try:
@@ -224,7 +229,7 @@ class FilmLabsDB:
                 account_message="Account doesnt exist"
             )
         except Exception as e:
-            print(f"DB Error occurred inside login: {e}")
+            print(f"DB Error occurred inside {self.login.__name__}: {e}")
 
     def add_film(self, 
         tmdb_id: int = None,
@@ -257,7 +262,7 @@ class FilmLabsDB:
                     poster
                 )
         except Exception as e:
-            print(f"DB Error occurred inside add_film: {e}")
+            print(f"DB Error occurred inside {self.add_film.__name__}: {e}")
 
     def get_film(self, tmdb_id: int) -> Film:
         # select * from film where tmdb_id = 1;
@@ -280,7 +285,7 @@ class FilmLabsDB:
                 )
                 return film
         except Exception as e:
-            print(f"DB Error occurred inside get_film: {e}")
+            print(f"DB Error occurred inside {self.get_film.__name__}: {e}")
 
     def check_film(self, 
         tmdb_id: int = None,
@@ -324,7 +329,7 @@ class FilmLabsDB:
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
         except Exception as e:
-            print(f"DB Error occurred inside remove_favorite: {e}")
+            print(f"DB Error occurred inside {self.remove_favorite.__name__}: {e}")
 
     def add_favorite(self, tmdb_id: int, user_id: int):
         # insert into account_favorites values(1, 1) 
@@ -337,9 +342,9 @@ class FilmLabsDB:
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
         except Exception as e:
-            print(f"DB Error occurred inside add_favorite: {e}")
+            print(f"DB Error occurred inside {self.add_favorite.__name__}: {e}")
 
-    def get_favorites(self, user_id: int,) -> list[Film]:
+    def get_favorites(self, user_id: int) -> list[Film]:
         # select distinct f.* from account_favorites af join film f on af.tmdb_id = f.tmdb_id where af.user_id = 1 group by f.tmdb_id
         try:
             query = "select distinct f.* from account_favorites af join film f on af.tmdb_id = f.tmdb_id where af.user_id = %s group by f.tmdb_id"
@@ -364,7 +369,7 @@ class FilmLabsDB:
 
             return favorites
         except Exception as e:
-            print(f"DB Error occurred inside get_favorites: {e}")
+            print(f"DB Error occurred inside {self.get_favorites.__name__}: {e}")
 
     def is_favorited(self, tmdb_id: int, user_id: int) -> bool:
         # select distinct * from account_favorites af where af.user_id = 1 and af.tmdb_id = 1
@@ -382,7 +387,7 @@ class FilmLabsDB:
 
             return False
         except Exception as e:
-            print(f"DB Error occurred inside is_favorited: {e}")
+            print(f"DB Error occurred inside {self.is_favorited.__name__}: {e}")
 
     def toggle_favorite(self, tmdb_id: int, user_id: int, 
             media_type: str = None,
@@ -415,7 +420,7 @@ class FilmLabsDB:
                 return True
 
         except Exception as e:
-            print(f"DB Error occurred inside toggle_favorite: {e}")
+            print(f"DB Error occurred inside {self.toggle_favorite.__name__}: {e}")
 
     def get_movie_history(self,
         account_history_id: int
@@ -438,7 +443,7 @@ class FilmLabsDB:
             
             return None
         except Exception as e:
-            print(f"DB Error occurred inside get_movie_history: {e}")
+            print(f"DB Error occurred inside {self.get_movie_history.__name__}: {e}")
 
     def get_episodes_history(self,
         account_history_id: int
@@ -465,7 +470,71 @@ class FilmLabsDB:
             
             return None
         except Exception as e:
-            print(f"DB Error occurred inside get_episodes_history: {e}")
+            print(f"DB Error occurred inside {self.get_episodes_history.__name__}: {e}")
+
+    #def do_history_pass(self, user_id, films: list[])
+
+    def has_seen(self, user_id: int, tmdb_id: int, completely_fill: bool = True) -> WatchHistory:
+        # select * from account_watch_history where user_id = 1 and tmdb_id = 94605
+        try:
+            query = "select * from account_watch_history where user_id = %s and tmdb_id = %s"
+            values = (user_id, tmdb_id)
+            self.db_cursor.execute(query, values)
+
+            results = self.db_cursor.fetchall()
+            
+            if results and len(results) > 0:
+                result = results[0]
+
+                watch_history = WatchHistory(
+                    result[0],
+                    result[1],
+                    result[2]
+                )
+
+                if completely_fill:
+                    watch_history.movie_history = self.get_movie_history(watch_history.account_history_id)
+                    watch_history.episode_history = self.get_episodes_history(watch_history.account_history_id)
+
+                return watch_history
+            
+            return None
+        except Exception as e:
+            print(f"DB Error occurred inside {self.get_episodes_history.__name__}: {e}")
+
+    def get_history(self, user_id: int) -> list[Film]:
+        try:
+            history = self.get_watch_history(user_id, True)
+
+            history_films = []
+
+            if history and len(history) > 0:
+                for watch_history in history:
+                    db_film_details = self.get_film(watch_history.tmdb_id)
+                    
+                    season = None
+                    episode = None
+
+                    if db_film_details.media_type == "tv" and watch_history.episode_history != None and len(watch_history.episode_history) > 0:
+                        current_episode_details = watch_history.episode_history[len(watch_history.episode_history)-1]
+                        season = current_episode_details.season_number
+                        episode = current_episode_details.episode_number
+
+                    film = Film(
+                        db_film_details.tmdb_id,
+                        db_film_details.media_type,
+                        db_film_details.name,
+                        db_film_details.release_date,
+                        db_film_details.rating,
+                        db_film_details.poster,
+
+                        current_episode_details.season_number,
+                        current_episode_details.episode_number
+                    )
+                    history_films.append(film)
+            return history_films
+        except Exception as e:
+            print(f"DB Error occurred inside {self.get_history.__name__}: {e}")
 
     def get_watch_history(self,
         user_id: int,
@@ -495,7 +564,7 @@ class FilmLabsDB:
                     history.append(watch_history)
             return history
         except Exception as e:
-            print(f"DB Error occurred inside get_watch_history: {e}")
+            print(f"DB Error occurred inside {self.get_watch_history.__name__}: {e}")
 
     def add_movie_history(self,
         account_history_id: int,
@@ -514,7 +583,7 @@ class FilmLabsDB:
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
         except Exception as e:
-            print(f"DB Error occurred inside add_movie_history: {e}")
+            print(f"DB Error occurred inside {self.add_movie_history.__name__}: {e}")
 
     def add_episode_history(self,
         account_history_id: int,
@@ -528,7 +597,7 @@ class FilmLabsDB:
             episodes = self.get_episodes_history(account_history_id)
             if episodes != None:
                 for episode in episodes:
-                    if episode.account_history_id == account_history_id:
+                    if episode.episode_number == episode_number and season_number == season_number:
                         return
 
             # First Query
@@ -537,17 +606,33 @@ class FilmLabsDB:
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
         except Exception as e:
-            print(f"DB Error occurred inside add_episode_history: {e}")
+            print(f"DB Error occurred inside {self.add_episode_history.__name__}: {e}")
 
     def add_watch_history(self,
         tmdb_id: int,
         user_id: int,
+
+        media_type: str = None,
+        name: str = None,
+        release_date: str = None,
+        rating: float = None,
+        poster: str = None
     ) -> int:
         """
         returns `account_history_id`
         """
         # insert into account_watch_history (tmdb_id, user_id) values (1, 1)
         try:
+            # Check if film is in db, because if isnt than gives error
+            self.check_film(
+                tmdb_id = tmdb_id,
+                media_type = media_type,
+                name = name,
+                release_date = release_date,
+                rating = rating,
+                poster = poster
+            )
+
             # First Query
             query = "insert into account_watch_history (tmdb_id, user_id) values (%s, %s)"
             values = (tmdb_id, user_id)
@@ -557,34 +642,95 @@ class FilmLabsDB:
             watch_history_id = self.db_cursor.lastrowid
             return watch_history_id
         except Exception as e:
-            print(f"DB Error occurred inside add_watch_history: {e}")
+            print(f"DB Error occurred inside {self.add_watch_history.__name__}: {e}")
+
+    def get_episode(self, episode_history: list[EpisodeHistory], season: int, episode: int) -> EpisodeHistory:
+        if episode_history != None and len(episode_history) > 0:
+            for current_episode in episode_history:
+                if current_episode.episode_number == int(episode) and current_episode.season_number == int(season):
+                    return current_episode
+        return None
+
+    def get_watch_history_by_id(self,
+        tmdb_id: int,
+        user_id: int
+    ) -> WatchHistory:
+        history = self.get_watch_history(user_id, True)
+        
+        if len(history) > 0:
+            for i in history:
+                #print(i.tmdb_id)
+                if i.tmdb_id == int(tmdb_id):
+                    return i
+        return None
 
     def add_film_history(self,
             tmdb_id: int,
             user_id: int,
             season: int,
-            episode: int
-        ):
-        history = self.get_watch_history(user_id, True)
+            episode: int,
 
-        if not history:
-            history = self.add_watch_history(tmdb_id, user_id)
+            media_type: str = None,
+            name: str = None,
+            release_date: str = None,
+            rating: float = None,
+            poster: str = None
+        ) -> bool:
+        try:
+            history = self.get_watch_history_by_id(tmdb_id, user_id)
+                    
+            if not history:
+                self.add_watch_history(
+                    tmdb_id = tmdb_id, 
+                    user_id = user_id,
 
-        if history:
-            for watch_history in history:
-                if watch_history.tmdb_id == tmdb_id:
-                    # Already exists
-                    if season == None and watch_history.movie_history == None:
-                        # Is Movie without movie history
-                        self.add_movie_history(watch_history.account_history_id, "00:00:00")
-                    elif season != None:
-                        # Is TV Show
-                        added = False
-                        for episode in watch_history.episode_history:
-                            if episode.episode_number == episode and episode.season_number == season:
-                                added = True
-                        if not added:
-                            self.add_episode_history(watch_history.account_history_id, episode, season, "00:00:00")
+                    media_type = media_type,
+                    name = name,
+                    release_date = release_date,
+                    rating = rating,
+                    poster = poster
+                )
+                history = self.get_watch_history_by_id(tmdb_id, user_id)
+
+            #print(history)
+            if history:
+                # Already exists
+                if season == None and episode == None and history.movie_history == None:
+                    # Is Movie without movie history
+                    #print("is movie")
+                    self.add_movie_history(history.account_history_id, "00:00:00")
+                elif season != None and episode != None:
+                    # Is TV Show
+                    #print("is tv show")
+                    has_episode = self.get_episode(history.episode_history, season, episode)
+                    #print(has_episode)
+                    if has_episode == None:
+                        self.add_episode_history(history.account_history_id, episode, season, "00:00:00")
+                else:
+                    return False
+
+                return True           
+        except Exception as e:
+            print(f"DB Error occurred inside {self.add_film_history.__name__}: {e}")
+
+        return False
+    
+    def get_most_recent_history_episode(self, tmdb_id, user_id, history: list[EpisodeHistory]):
+        try:
+            watch_history = history
+            if watch_history == None:
+                watch_history = self.get_watch_history_by_id(tmdb_id, user_id).episode_history
+
+            if watch_history and len(watch_history) > 0:
+                highest_episode = watch_history[0]
+
+                for episode in watch_history:
+                    if episode.season_number > highest_episode.season_number and episode.episode_number > highest_episode.episode_number:
+                        highest_episode = episode
+                return highest_episode
+            return None
+        except Exception as e:
+            print(f"DB Error occurred inside {self.get_watch_history_by_id.__name__}: {e}")
 
     # TODO
     # Add film progress support

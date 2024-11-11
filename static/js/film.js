@@ -25,13 +25,13 @@ function mediaFrameClicked()
     const url = window.location.pathname;
     const urlPaths = url.split("/");
     console.log(urlPaths);
-    // http://127.0.0.1:2400/film/tv/48866/1/1
+    // /film/tv/48866/1/1
 
     let mediaType = urlPaths[2];
     let tmdbId = urlPaths[3];
-    let season, episode = null;
+    let season = null, episode = null;
 
-    if (mediaType == "tv")
+    if (mediaType.toLowerCase() == "tv")
     {
         season = urlPaths[4];
         episode = urlPaths[5];

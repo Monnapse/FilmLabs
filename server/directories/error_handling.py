@@ -17,8 +17,11 @@ def run(app: WebClass):
     @app.jwt.expired_token_loader
     @app.limiter.limit("30 per minute")
     def expired_token_callback(jwt_header, jwt_payload):
-        # Remove cookie so it doesnt go into infinite loops and self ddos
-        response = make_response(redirect("/"))
-        response.delete_cookie("access_token")
-        return response
+        try:
+            # Remove cookie so it doesnt go into infinite loops and self ddos
+            response = make_response(redirect("/"))
+            response.delete_cookie("access_token")
+            return response
+        except Exception as e:
+            print(f"Error in films error handling at {expired_token_callback.__name__}: {e}")
     

@@ -20,45 +20,54 @@ def run(app: WebClass):
     @app.flask.route("/login")
     @app.limiter.limit("30 per minute")
     def login():
-        return render_template(
-            app.base,
-            template = "login.html",
-            title = "Login",
-            javascript = "customForm",
-            no_header_additional = True,
-            no_footer = True,
+        try:
+            return render_template(
+                app.base,
+                template = "login.html",
+                title = "Login",
+                javascript = "customForm",
+                no_header_additional = True,
+                no_footer = True,
 
-            username_min = app.username_min_length,
-            username_max = app.username_max_length,
-            password_min = app.password_min_length,
-            password_max = app.password_max_length
-        )
+                username_min = app.username_min_length,
+                username_max = app.username_max_length,
+                password_min = app.password_min_length,
+                password_max = app.password_max_length
+            )
+        except Exception as e:
+            print(f"Error in authentication controller at {login.__name__}: {e}")
     
     @app.flask.route("/register")
     @app.limiter.limit("30 per minute")
     def register():
-        return render_template(
-            app.base,
-            template = "register.html",
-            title = "Register",
-            javascript = "customForm",
-            no_header_additional = True,
-            no_footer = True,
+        try:
+            return render_template(
+                app.base,
+                template = "register.html",
+                title = "Register",
+                javascript = "customForm",
+                no_header_additional = True,
+                no_footer = True,
 
-            username_min = app.username_min_length,
-            username_max = app.username_max_length,
-            password_min = app.password_min_length,
-            password_max = app.password_max_length
-        )
+                username_min = app.username_min_length,
+                username_max = app.username_max_length,
+                password_min = app.password_min_length,
+                password_max = app.password_max_length
+            )
+        except Exception as e:
+            print(f"Error in authentication controller at {register.__name__}: {e}")
     
     # Middle ground
     @app.flask.route("/logout")
     @app.limiter.limit("30 per minute")
     def logout():
-        # Remove cookie so it doesnt go into infinite loops and self ddos
-        response = make_response(redirect("/"))
-        response.delete_cookie("access_token")
-        return response
+        try:
+            # Remove cookie so it doesnt go into infinite loops and self ddos
+            response = make_response(redirect("/"))
+            response.delete_cookie("access_token")
+            return response
+        except Exception as e:
+            print(f"Error in authentication controller at {logout.__name__}: {e}")
     # API
 
     @app.flask.route("/login_submit", methods=['POST'])
@@ -96,7 +105,8 @@ def run(app: WebClass):
                 return response
             else:
                 return jsonify(success=False, message=account.account_message), 400
-        except: 
+        except Exception as e:
+            print(f"Error in authentication controller at {login_submit.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
     
     @app.flask.route("/register_submit", methods=['POST'])
@@ -116,5 +126,6 @@ def run(app: WebClass):
                 return jsonify(success=True, message="Successfully created account"), 200
             else:
                 return jsonify(success=False, message=new_account.account_message), 400
-        except: 
+        except Exception as e:
+            print(f"Error in authentication controller at {register_submit.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500

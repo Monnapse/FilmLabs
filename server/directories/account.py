@@ -18,18 +18,21 @@ def run(app: WebClass):
     @app.flask.route("/account")
     @app.limiter.limit("30 per minute")
     def account():
-        authorization = app.get_authorization_data()
+        try:
+            authorization = app.get_authorization_data()
 
-        if (authorization["logged_in"]):
-            # If logged in then continue to account page
-            return render_template(
-                app.base,
-                template = "account.html",
-                title = "Account",
-                javascript = "account",
-                no_footer = True,
-                authorization=authorization
-            )
-        else:
-            # If not logged in then redirect to login page
-            return redirect("/login")
+            if (authorization["logged_in"]):
+                # If logged in then continue to account page
+                return render_template(
+                    app.base,
+                    template = "account.html",
+                    title = "Account",
+                    javascript = "account",
+                    no_footer = True,
+                    authorization=authorization
+                )
+            else:
+                # If not logged in then redirect to login page
+                return redirect("/login")
+        except Exception as e:
+            print(f"Error in authentication controller at {account.__name__}: {e}")

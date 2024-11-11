@@ -19,148 +19,163 @@ def run(app: WebClass):
 
     # Function Routes
     def category_base(media_type = None, list_type = None, time_window = None):
-        authorization = app.get_authorization_data()
+        try:
+            authorization = app.get_authorization_data()
 
-        return render_template(
-            app.base,
-            template = "selected.html",
-            javascript = "selectedFilms",
-            authorization = authorization,
-            title = app.film_controller.get_category_name(media_type, list_type, time_window)
-        )
+            return render_template(
+                app.base,
+                template = "selected.html",
+                javascript = "selectedFilms",
+                authorization = authorization,
+                title = app.film_controller.get_category_name(media_type, list_type, time_window)
+            )
+        except Exception as e:
+            print(f"Error in films controller at {category_base.__name__}: {e}")
 
     # Routes
     @app.flask.route("/category")
     @app.limiter.limit("30 per minute")
     def category():
-        # /<media_type>/<list_type>/<time_window>
-        media_type = request.args.get("media_type")
-        list_type = request.args.get("list_type")
-        time_window = request.args.get("time_window")
-        return category_base(media_type, list_type, time_window)
-    
+        try:
+            # /<media_type>/<list_type>/<time_window>
+            media_type = request.args.get("media_type")
+            list_type = request.args.get("list_type")
+            time_window = request.args.get("time_window")
+            return category_base(media_type, list_type, time_window)
+        except Exception as e:
+            print(f"Error in films controller at {category.__name__}: {e}")
+
     @app.flask.route("/search")
     @app.limiter.limit("30 per minute")
     def category_time():
-        query = request.args.get("query")
+        try:
+            query = request.args.get("query")
 
-        authorization = app.get_authorization_data()
+            authorization = app.get_authorization_data()
 
-        return render_template(
-            app.base,
-            template = "search.html",
-            javascript = "search",
-            authorization = authorization,
-            query=query
-        )
+            return render_template(
+                app.base,
+                template = "search.html",
+                javascript = "search",
+                authorization = authorization,
+                query=query
+            )
+        except Exception as e:
+            print(f"Error in films controller at {category_time.__name__}: {e}")
     
     @app.flask.route("/film/tv/<id>/<season>/<episode>")
     @app.limiter.limit("30 per minute")
     def tv(id, season, episode):
-        #current_season = season
-        authorization = app.get_authorization_data()
-        current_service = request.args.get("service")
+        try:
+            #current_season = season
+            authorization = app.get_authorization_data()
+            current_service = request.args.get("service")
 
-        service = app.service_controller.get_service_data(current_service)
+            service = app.service_controller.get_service_data(current_service)
 
-        film_details = app.film_controller.tmdb.get_details(FilmType.TV, id, True)
+            film_details = app.film_controller.tmdb.get_details(FilmType.TV, id, True)
 
-        if film_details != None:
-            season_details = film_details.get_season(season)
-            episodes = season_details.episodes
+            if film_details != None:
+                season_details = film_details.get_season(season)
+                episodes = season_details.episodes
 
-            #try:
-            #    current_season = int(season)
-            #    if film_details.seasons[current_season]:
-            #        episodes = film_details.seasons[current_season].episodes
-            ##except:
-            ##    current_season = int(season)-1
-            ##    if film_details.seasons[current_season]:
-            ##        episodes = film_details.seasons[current_season].episodes
-            #except:
-            #    pass
+                #try:
+                #    current_season = int(season)
+                #    if film_details.seasons[current_season]:
+                #        episodes = film_details.seasons[current_season].episodes
+                ##except:
+                ##    current_season = int(season)-1
+                ##    if film_details.seasons[current_season]:
+                ##        episodes = film_details.seasons[current_season].episodes
+                #except:
+                #    pass
 
-            return render_template(
-                app.base,
-                template = "film.html",
-                javascript = "film",
-                authorization = authorization,
+                return render_template(
+                    app.base,
+                    template = "film.html",
+                    javascript = "film",
+                    authorization = authorization,
 
-                service_url=service.get_tv_url(id, season, episode),
+                    service_url=service.get_tv_url(id, season, episode),
 
-                # SERVICES
-                selected_service=service.name,
-                service_providers=app.service_controller.get_services(),
+                    # SERVICES
+                    selected_service=service.name,
+                    service_providers=app.service_controller.get_services(),
 
-                # Film Details
-                title = film_details.name,
-                year = datetime.strptime(film_details.release_date, "%Y-%m-%d").year,
-                media_type = film_details.media_type,
-                overview = film_details.overview,
-                rating = round(film_details.vote_average, 1),
-                tmdb_url = f"https://www.themoviedb.org/tv/{id}",
-                
-                # TV
-                current_season = season_details.season_number,
-                seasons = film_details.seasons,
-                current_episode = int(episode),
-                episodes = episodes,
+                    # Film Details
+                    title = film_details.name,
+                    year = datetime.strptime(film_details.release_date, "%Y-%m-%d").year,
+                    media_type = film_details.media_type,
+                    overview = film_details.overview,
+                    rating = round(film_details.vote_average, 1),
+                    tmdb_url = f"https://www.themoviedb.org/tv/{id}",
 
-                id=id,
+                    # TV
+                    current_season = season_details.season_number,
+                    seasons = film_details.seasons,
+                    current_episode = int(episode),
+                    episodes = episodes,
 
-                is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
-            )
-        else:
-            return render_template(
-                app.base,
-                template = "film.html",
-                javascript = "film",
-                authorization = authorization,
-                title = "Could not find movie",
-            )
+                    id=id,
+
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                )
+            else:
+                return render_template(
+                    app.base,
+                    template = "film.html",
+                    javascript = "film",
+                    authorization = authorization,
+                    title = "Could not find movie",
+                )
+        except Exception as e:
+            print(f"Error in films controller at {tv.__name__}: {e}")
     
     @app.flask.route("/film/movie/<id>")
     @app.limiter.limit("30 per minute")
     def movie(id):
-        authorization = app.get_authorization_data()
-        current_service = request.args.get("service")
+        try:
+            authorization = app.get_authorization_data()
+            current_service = request.args.get("service")
 
-        service = app.service_controller.get_service_data(current_service)
+            service = app.service_controller.get_service_data(current_service)
 
-        film_details = app.film_controller.tmdb.get_details(FilmType.Movie, id)
+            film_details = app.film_controller.tmdb.get_details(FilmType.Movie, id)
 
-        if film_details != None:
-            return render_template(
-                app.base,
-                template = "film.html",
-                javascript = "film",
-                authorization = authorization,
+            if film_details != None:
+                return render_template(
+                    app.base,
+                    template = "film.html",
+                    javascript = "film",
+                    authorization = authorization,
 
-                service_url=service.get_movie_url(id),
+                    service_url=service.get_movie_url(id),
 
-                # SERVICES
-                selected_service=service.name,
-                service_providers=app.service_controller.get_services(),
+                    # SERVICES
+                    selected_service=service.name,
+                    service_providers=app.service_controller.get_services(),
 
-                # Film Details
-                title = film_details.name,
-                year = datetime.strptime(film_details.release_date, "%Y-%m-%d").year,
-                media_type = film_details.media_type,
-                overview = film_details.overview,
-                rating = round(film_details.vote_average, 1),
-                tmdb_url = f"https://www.themoviedb.org/movie/{id}",
+                    # Film Details
+                    title = film_details.name,
+                    year = datetime.strptime(film_details.release_date, "%Y-%m-%d").year,
+                    media_type = film_details.media_type,
+                    overview = film_details.overview,
+                    rating = round(film_details.vote_average, 1),
+                    tmdb_url = f"https://www.themoviedb.org/movie/{id}",
 
-                id=id,
-                is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
-            )
-        else:
-            return render_template(
-                app.base,
-                template = "film.html",
-                javascript = "film",
-                authorization = authorization,
-                title = "Could not find movie",
-            )
+                    id=id,
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                )
+            else:
+                return render_template(
+                    app.base,
+                    template = "film.html",
+                    javascript = "film",
+                    authorization = authorization,
+                    title = "Could not find movie",
+                )
+        except Exception as e:
+            print(f"Error in films controller at {movie.__name__}: {e}")
 
     
     # API
@@ -171,7 +186,8 @@ def run(app: WebClass):
                 return jsonify(success=True, embed=trailer.embed_url), 200
             else:
                 return jsonify(success=False, message="Please specify a valid id"), 400
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {get_trailer.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
     @app.flask.route("/trailer/tv", methods=['GET'])
     @app.limiter.limit("10 per minute")
@@ -197,15 +213,17 @@ def run(app: WebClass):
                     user_id = authorized_account.user_id
                 #print(f"authorization: {authorized_account}")
                 categories = app.film_controller.get_next_categories(int(page), user_id)
-
+                
                 if categories != None:
                     categories_json = app.film_controller.categories_to_json(categories)
+                    print("Success True")
                     return jsonify(success=True, data=categories_json), 200
                 else:
                     return jsonify(success=False, message="Could not find page"), 404
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {get_home_page_categories.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
 
     # /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null
@@ -223,38 +241,50 @@ def run(app: WebClass):
             if authorized_account != None and authorized_account.account_exists:
                 user_id = authorized_account.user_id
             if page != None and mediaType != None and listType != None:
-                category_results = []
-                if mediaType == FilmType.Movie.value:
-                    # Is movie list type
-                    category_results = app.film_controller.tmdb.get_film_list(FilmType.Movie, listType, int(page), timeWindow)
+                category = app.film_controller.get_category(
+                    user_id=user_id,
+                    title=None,
+                    media_type=mediaType,
+                    list_type=listType,
+                    time_window=timeWindow,
+                    has_more_pages=True,
+                    page=page
+                )
+                print(category)
+                #category_results = []
+                #if mediaType == FilmType.Movie.value:
+                #    # Is movie list type
+                #    category_results = app.film_controller.tmdb.get_film_list(FilmType.Movie, listType, int(page), timeWindow)
+#
+                #elif mediaType == FilmType.TV.value:
+                #    # Is tv list type
+                #    category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, listType, int(page), timeWindow)
+#
+                #else:
+                #    #print("not tv or movie")
+                #    if listType == "trending":
+                #        category_results = app.film_controller.tmdb.get_trending_films_list(int(page), timeWindow)
+                #    elif listType == "favorites" and user_id != None:
+                #        #print("favorites")
+                #        favorites = app.db_controller.get_favorites(user_id)
+                #        favorites_result = app.film_controller.db_films_to_tmdb_films(favorites)
+                #        category_results = favorites_result
+                #        category_results.has_more_pages = False
+#
+                #        #print(favorites)
+                #        #print(favorites_result.results)
+                #    #elif listType == "watch_history" and user_id != None:
+                #    
 
-                elif mediaType == FilmType.TV.value:
-                    # Is tv list type
-                    category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, listType, int(page), timeWindow)
-
-                else:
-                    #print("not tv or movie")
-                    if listType == "trending":
-                        category_results = app.film_controller.tmdb.get_trending_films_list(int(page), timeWindow)
-                    elif listType == "favorites" and user_id != None:
-                        #print("favorites")
-                        favorites = app.db_controller.get_favorites(user_id)
-                        favorites_result = app.film_controller.db_films_to_tmdb_films(favorites)
-                        category_results = favorites_result
-                        category_results.has_more_pages = False
-
-                        #print(favorites)
-                        #print(favorites_result.results)
-                    
-
-                if category_results != None:
-                    categories_json = app.film_controller.tmdb.list_result_to_json(category_results)
+                if category != None:
+                    categories_json = app.film_controller.tmdb.list_result_to_json(category.film_list)
                     return jsonify(success=True, data=categories_json), 200
                 else:
                     return jsonify(success=False, message="Page, media type, list type or time window is invalid."), 404
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {category_api.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     #
@@ -283,7 +313,8 @@ def run(app: WebClass):
                     return jsonify(success=False, message="Query did not work"), 404
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {search_media.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     # toggle_favorite
@@ -317,7 +348,8 @@ def run(app: WebClass):
                     return jsonify(success=False, message="Enter a correct tmdb_id"), 400
             else:
                 return jsonify(success=False, message="Please specify a valid token"), 401
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {toggle_favorite.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     @app.flask.route("/add_to_watch_history", methods=['POST'])
@@ -328,17 +360,40 @@ def run(app: WebClass):
         try:
             tmdb_id = data["tmdb_id"]
             media_type = data["media_type"].lower()
-            season = data["season"].lower()
-            episode = data["episode"].lower()
+            season = None
+            episode = None
+
+            if media_type.lower() == "tv":
+                season = data["season"].lower()
+                episode = data["episode"].lower()
+
+        
+            film_data = app.film_controller.tmdb.get_details(
+                film_type=media_type,
+                id=tmdb_id,
+                get_episodes=True
+            )
 
             authorized_account = app.get_authorized_account()
+
             if authorized_account != None and authorized_account.account_exists:
-                app.db_controller.add_watch_history()
-                #if (toggled_favorite != None):
-                #    return jsonify(success=True, favorited=toggled_favorite), 200
-                #else:
-                #    return jsonify(success=False, message="Enter a correct tmdb_id"), 400
+                history_added = app.db_controller.add_film_history(
+                    tmdb_id=tmdb_id,
+                    user_id=authorized_account.user_id,
+                    season=season,
+                    episode=episode,
+                    media_type=film_data.media_type,
+                    name=film_data.name,
+                    release_date=film_data.release_date,
+                    rating=film_data.vote_average,
+                    poster=film_data.poster_path
+                )
+                if (history_added):
+                    return jsonify(success=True), 200
+                else:
+                    return jsonify(success=False, message="Maybe incorrect tmdb_id"), 400
             else:
                 return jsonify(success=False, message="Please specify a valid token"), 401
-        except: 
+        except Exception as e:
+            print(f"Error in films controller at {add_to_watch_history.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500

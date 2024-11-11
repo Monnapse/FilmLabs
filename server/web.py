@@ -87,7 +87,7 @@ class WebClass:
 
             selected_account = app.db_controller.get_account(user_id)
 
-            if (selected_account.account_exists):
+            if (selected_account and selected_account.account_exists):
                 return selected_account
             else:
                 return Account(
@@ -103,8 +103,13 @@ class WebClass:
         return app.check_authentication() != None
     def get_authorization_data(app) -> dict[bool, str]:
         authorized_account = app.get_authorized_account()
-        return {
-            "logged_in": authorized_account.account_exists,
-            "username": authorized_account.username,
-            "user_id": authorized_account.user_id
-        }
+        if authorized_account.account_exists:
+            return {
+                "logged_in": authorized_account.account_exists,
+                "username": authorized_account.username,
+                "user_id": authorized_account.user_id
+            }
+        else:
+            return {
+                "logged_in": authorized_account.account_exists
+            }

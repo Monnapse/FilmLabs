@@ -24,7 +24,7 @@ window.onload = function() {
             if (reachedPageLimit) { return; }
 
             const data = await response.json();
-            //console.log(data)
+            console.log(data)
             data.data.forEach(item => {
                 // Category
                 //cardsList = "";
@@ -42,9 +42,9 @@ window.onload = function() {
                 categoryContainer.appendChild(category);
 
                 const categoryMediaList = document.getElementById(`scroll-${item.title}`);
-
-                item.film_list.results.forEach((item)=>{
-                    categoryMediaList.appendChild(createFilmCard(item, getFilmUrl(item)));
+                
+                item.film_list.results.forEach((film)=>{
+                    categoryMediaList.appendChild(createFilmCard(film, getFilmUrl(film)));
                 })
 
                 addScrollList(document.getElementById(`scroll-${item.title}`));
