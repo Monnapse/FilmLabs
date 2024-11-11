@@ -601,6 +601,17 @@ side fog
 .button:hover {
     background-color: var(--hover-color);
 }
+/* favorited */
+.favorited {
+    background-color: var(--red-color);
+    color: var(--white-color);
+}
+.favorited img {
+    filter: brightness(800%);
+}
+.favorited:hover{
+    background-color: #ff7777;
+}
 /* film info tags */
 .film-info-tags {
     margin-top: 10px;
