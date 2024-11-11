@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `filmlabs`.`film` (
   `tmdb_id` INT NOT NULL,
   `media_type` VARCHAR(8) NOT NULL,
   `name` VARCHAR(100) NOT NULL,
-  `year` VARCHAR(8) NOT NULL,
+  `release_date` VARCHAR(8) NOT NULL,
   `rating` FLOAT NOT NULL,
   `poster` VARCHAR(120) NOT NULL,
   PRIMARY KEY (`tmdb_id`))

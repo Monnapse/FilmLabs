@@ -293,13 +293,13 @@ function addScrollWithRequest(apiString, mediaGrid)
                 time_window
             */
             const response = await fetch(`${apiString}&page=${page}`); //`/get_category?page=${page}&media_type=${mediaType}&list_type=${listType}&time_window=${timeWindow}`);
-
             if (reachedPageLimit) { return; }
             reachedPageLimit = hasReachedPageLimit(response);
             if (reachedPageLimit) { return; }
 
             const data = await response.json();
-
+            console.log(data)
+            if (!data.data.has_more_pages) { reachedPageLimit = true; }
             if (data.data.results.length <= 0)
             {
                 reachedPageLimit = true;
@@ -312,7 +312,7 @@ function addScrollWithRequest(apiString, mediaGrid)
                 const card = createFilmCard(item, getFilmUrl(item));
                 mediaGrid.appendChild(card);
             })
-
+            
             //const container = document.createElement('div');
             //container.innerHTML = cardsList;
 //

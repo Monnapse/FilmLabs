@@ -265,7 +265,7 @@ main {
 /* category */
 .category, .films-grid {
     position: relative;
-    width: 90vw;
+    /*width: 90vw;*/
     overflow-x: auto;
     margin-top: 20px;
 }
@@ -281,25 +281,6 @@ main {
 .media-list::-webkit-scrollbar {
     display: none;
 }
-/*
-side fog
-.media-list::before,
-.media-list::after {
-    content: '';
-    position: absolute;
-    height: 90%;
-    width: 20%;
-    z-index: 1;
-}
-.media-list::before {
-    left: 0;
-    background: linear-gradient(to left, #1c1f2600, #1c1f26);
-}
-.media-list::after {
-    right: 0;
-    background: linear-gradient(to left, #1C1F26, #1c1f2600);
-}
-*/
 /* media modal */
 .media-modal {
     position: relative;
@@ -615,6 +596,17 @@ side fog
 }
 .button:hover {
     background-color: var(--hover-color);
+}
+/* favorited */
+.favorited {
+    background-color: var(--red-color);
+    color: var(--white-color);
+}
+.favorited img {
+    filter: brightness(800%);
+}
+.favorited:hover{
+    background-color: #ff7777;
 }
 /* film info tags */
 .film-info-tags {

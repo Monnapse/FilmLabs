@@ -52,10 +52,6 @@ api = tmdb.TMDB(
     environ.get("TMDB_API_KEY"), 
     poster_sizing
 )
-film_controller = films.FilmsController(
-    api,
-    json_controller.load_json("home_page.json")
-)
 service_controller = service.ServiceController(
     json_controller.load_json("services.json")
 )
@@ -69,6 +65,11 @@ db_controller = db.FilmLabsDB(
     password_min_length,
     username_min_length,
     username_max_length
+)
+film_controller = films.FilmsController(
+    api,
+    db_controller,
+    json_controller.load_json("home_page.json")
 )
 web_controller = web.WebClass(
     app, 

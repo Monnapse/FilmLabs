@@ -208,6 +208,7 @@ class ListResult:
         self.results = results
         self.total_pages = total_pages
         self.total_results = total_results
+        self.has_more_pages = True
 
 class TMDB:
     def __init__(self, key, poster_sizing:  str = "original"):

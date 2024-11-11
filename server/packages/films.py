@@ -6,26 +6,29 @@
 """
 
 from typing import Optional, Union
-from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult, Movie, TV
+from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult, Movie, TV, ListResult
+from server.packages.db import FilmLabsDB, Film
 
 class Category:
     def __init__(self, 
             title: str, 
             media_type: FilmType, 
             list_type: Optional[Union[TVListType, MovieListType]], 
-            time_window: TimeWindow = TimeWindow.Day
+            time_window: TimeWindow = TimeWindow.Day,
+            has_more_pages: bool = False
         ) -> None:
 
         self.title = title
         self.media_type = media_type
         self.list_type = list_type
         self.time_window = time_window
-
         self.film_list: ListResult = None
+        self.has_more_pages = has_more_pages
 
 class FilmsController:
-    def __init__(self, tmdb: TMDB, default_page_layout: dict) -> None:
+    def __init__(self, tmdb: TMDB, db: FilmLabsDB, default_page_layout: dict) -> None:
         self.tmdb = tmdb
+        self.db = db
         self.default_page_layout = default_page_layout["pages"]
 
     def categories_to_json(self, categories: list[Category]):
@@ -64,7 +67,45 @@ class FilmsController:
         except:
             return "No title"
 
-    def get_next_categories(self, current_page: int) -> list[Category]:
+    def db_film_to_tmdb_film(self, film: Film) -> Optional[Union[TV, Movie]]:
+        if film.media_type == "tv":
+            return TV(
+                #tmdb_id
+                #media_type
+                #name 
+                #year 
+                #rating
+                #poster
+                id = film.tmdb_id,
+                name = film.name,
+                release_date = film.release_date,
+                vote_average = film.rating,
+                poster_path = film.poster
+            )
+        elif film.media_type == "movie":
+            if film.media_type == "tv":
+                return Movie(
+                    #tmdb_id
+                    #media_type
+                    #name 
+                    #year 
+                    #rating
+                    #poster
+                    id = film.tmdb_id,
+                    title = film.name,
+                    release_date = film.release_date,
+                    vote_average = film.rating,
+                    poster_path = film.poster
+                )
+
+    def db_films_to_tmdb_films(self, db_films: list[Film]) -> ListResult:
+        tmdb_films = []
+        for db_film in db_films:
+            tmdb_films.append(self.db_film_to_tmdb_film(db_film))
+        list_result = ListResult(results=tmdb_films)
+        return list_result
+
+    def get_next_categories(self, current_page: int, user_id: int) -> list[Category]:
         if self.default_page_layout != None and self.get_raw_category_by_page(current_page):
             page = self.get_raw_category_by_page(current_page)
 
@@ -77,12 +118,30 @@ class FilmsController:
                     title=category_data["name"],
                     media_type=category_data["media_type"],
                     list_type=category_data["list_type"],
-                    time_window=category_data["time_window"]
+                    time_window=category_data["time_window"],
+                    has_more_pages=True
                 )
-
+                #print(category.media_type)
                 if category.media_type == None:
                     # Media type is both
-                    category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
+                    #print(category.list_type)
+                    # trending
+                    #category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
+                    if category.list_type == "trending":
+                        category.film_list = self.tmdb.get_trending_films_list(1, category.time_window)
+                    elif category.list_type == "favorites" and user_id != None:
+                        #print("favorites")
+                        favorites = self.db.get_favorites(user_id)
+                        favorites_result = self.db_films_to_tmdb_films(favorites)
+                        category.film_list = favorites_result
+                        category.has_more_pages = False
+                        #print(favorites)
+                    #elif category.list_type == "watch_history" and user_id != None:
+                    #    print("watch_history")
+                    #    category.has_more_pages = False
+                #elif category.media_type == None and category.list_type == "favorites":
+                #    # Get favorited films
+
                 elif category.media_type == FilmType.Movie.value:
                     # Is movie list type
                     category.film_list = self.tmdb.get_film_list(FilmType.Movie, category.list_type, 1, category.time_window)
@@ -90,6 +149,7 @@ class FilmsController:
                     # Is tv list type
                     category.film_list = self.tmdb.get_film_list(FilmType.TV, category.list_type, 1, category.time_window)
 
-                categories.append(category)
+                if category.film_list and len(category.film_list.results) > 0:
+                    categories.append(category)
 
             return categories

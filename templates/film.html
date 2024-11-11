@@ -31,10 +31,17 @@
                 <button id="trailer" class="button">
                     Trailer
                 </button>
-                <button id="favorite" class="button">
-                    <img src="/static/media/heart.svg">
-                    Favorite
-                </button>
+                {% if is_favorited %}
+                    <button id="favorite" class="button favorited">
+                        <img src="/static/media/heart.svg">
+                        <span>Favorited</span>
+                    </button>
+                {% else %}
+                    <button id="favorite" class="button">
+                        <img src="/static/media/heart.svg">
+                        <span>Favorite</span>
+                    </button>
+                {% endif %}
 
                 <script>
                     // Watch now

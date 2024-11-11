@@ -189,10 +189,14 @@ def run(app: WebClass):
     def get_home_page_categories():
         #print(request.args.get("page"))
         page = request.args.get("page")
-#
         try:
             if page != None:
-                categories = app.film_controller.get_next_categories(int(page))
+                authorized_account = app.get_authorized_account()
+                user_id = None
+                if authorized_account != None and authorized_account.account_exists:
+                    user_id = authorized_account.user_id
+                #print(f"authorization: {authorized_account}")
+                categories = app.film_controller.get_next_categories(int(page), user_id)
 
                 if categories != None:
                     categories_json = app.film_controller.categories_to_json(categories)
@@ -214,6 +218,10 @@ def run(app: WebClass):
         timeWindow = request.args.get("time_window")
 #
         try:
+            authorized_account = app.get_authorized_account()
+            user_id = None
+            if authorized_account != None and authorized_account.account_exists:
+                user_id = authorized_account.user_id
             if page != None and mediaType != None and listType != None:
                 category_results = []
                 if mediaType == FilmType.Movie.value:
@@ -225,7 +233,19 @@ def run(app: WebClass):
                     category_results = app.film_controller.tmdb.get_film_list(FilmType.TV, listType, int(page), timeWindow)
 
                 else:
-                    category_results = app.film_controller.tmdb.get_trending_films_list(int(page), timeWindow)
+                    #print("not tv or movie")
+                    if listType == "trending":
+                        category_results = app.film_controller.tmdb.get_trending_films_list(int(page), timeWindow)
+                    elif listType == "favorites" and user_id != None:
+                        #print("favorites")
+                        favorites = app.db_controller.get_favorites(user_id)
+                        favorites_result = app.film_controller.db_films_to_tmdb_films(favorites)
+                        category_results = favorites_result
+                        category_results.has_more_pages = False
+
+                        #print(favorites)
+                        #print(favorites_result.results)
+                    
 
                 if category_results != None:
                     categories_json = app.film_controller.tmdb.list_result_to_json(category_results)
@@ -254,7 +274,7 @@ def run(app: WebClass):
                     page,
                     includeAdult
                 )
-                print(f"{query}, {mediaType}, {page}, {includeAdult}")
+                #print(f"{query}, {mediaType}, {page}, {includeAdult}")
                 if search_results != None:
                     search_json = app.film_controller.tmdb.list_result_to_json(search_results)
 
@@ -277,7 +297,7 @@ def run(app: WebClass):
             media_type = data["media_type"].lower()
 
             authorized_account = app.get_authorized_account()
-            if authorized_account.account_exists:
+            if authorized_account != None and authorized_account.account_exists:
                 film_data = app.film_controller.tmdb.get_details(media_type, tmdb_id, False)
 
                 name = film_data.name
@@ -290,7 +310,7 @@ def run(app: WebClass):
                     film_data.poster_path
                 )
 
-                print(toggled_favorite)
+                #print(toggled_favorite)
                 if (toggled_favorite != None):
                     return jsonify(success=True, favorited=toggled_favorite), 200
                 else:

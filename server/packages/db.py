@@ -36,14 +36,14 @@ class Film:
             tmdb_id: int = None,
             media_type: str = None,
             name: str = None,
-            year: str = None,
+            release_date: str = None,
             rating: float = None,
             poster: str = None
         ) -> None:
         self.tmdb_id = tmdb_id
         self.media_type = media_type
         self.name = name
-        self.year = year
+        self.release_date = release_date
         self.rating = rating
         self.poster = poster
 
@@ -230,7 +230,7 @@ class FilmLabsDB:
         tmdb_id: int = None,
         media_type: str = None,
         name: str = None,
-        year: str = None,
+        release_date: str = None,
         rating: float = None,
         poster: str = None
     ) -> Film:
@@ -238,13 +238,13 @@ class FilmLabsDB:
         # tmdb_id int PK 
         # media_type varchar(20) 
         # name varchar(85) 
-        # year varchar(8) 
+        # release_date varchar(8) 
         # rating float
         # poster varchar(45)
 
         try:
             query = "insert into film values (%s, %s, %s, %s, %s, %s)"
-            values = (tmdb_id, media_type, name, year, rating, poster)
+            values = (tmdb_id, media_type, name, release_date, rating, poster)
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
 
@@ -252,7 +252,7 @@ class FilmLabsDB:
                     tmdb_id,
                     media_type,
                     name,
-                    year,
+                    release_date,
                     rating,
                     poster
                 )
@@ -286,7 +286,7 @@ class FilmLabsDB:
         tmdb_id: int = None,
         media_type: str = None,
         name: str = None,
-        year: str = None,
+        release_date: str = None,
         rating: float = None,
         poster: str = None
     ) -> Film:
@@ -298,7 +298,7 @@ class FilmLabsDB:
                 tmdb_id,
                 media_type,
                 name,
-                year,
+                release_date,
                 rating,
                 poster
             )
@@ -307,7 +307,7 @@ class FilmLabsDB:
                 tmdb_id,
                 media_type,
                 name,
-                year,
+                release_date,
                 rating,
                 poster
             )
@@ -331,6 +331,7 @@ class FilmLabsDB:
         # tmdb_id int 
         # user_id int
         try:
+            #print("ADDING FAVORITE")
             query = "insert into account_favorites values(%s, %s)"
             values = (tmdb_id, user_id)
             self.db_cursor.execute(query, values)
@@ -351,7 +352,7 @@ class FilmLabsDB:
 
             if results and len(results) > 0:
                 for result in results:
-                    film = self.to_film(
+                    film = Film(
                         result[0],
                         result[1],
                         result[2],
@@ -386,7 +387,7 @@ class FilmLabsDB:
     def toggle_favorite(self, tmdb_id: int, user_id: int, 
             media_type: str = None,
             name: str = None,
-            year: str = None,
+            release_date: str = None,
             rating: float = None,
             poster: str = None
         ) -> bool:
@@ -399,7 +400,7 @@ class FilmLabsDB:
                 tmdb_id,
                 media_type,
                 name,
-                year,
+                release_date,
                 rating,
                 poster
             ) # Check film

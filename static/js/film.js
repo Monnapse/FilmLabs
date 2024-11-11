@@ -65,7 +65,21 @@ function toggleFavorite(id, media)
         return response.json();
     })
     .then(data => {
-        console.log(data);
+        if (data.success)
+        {
+            const favoriteBtn = document.getElementById("favorite");
+            const favoriteBtnText = document.querySelector("#favorite span");
+            if (data.favorited)
+            {
+                favoriteBtn.classList.add("favorited");
+                favoriteBtnText.textContent = "Favorited"
+            }
+            else 
+            {
+                favoriteBtn.classList.remove("favorited");
+                favoriteBtnText.textContent = "Favorite"
+            }
+        }
     })
     .catch((error) => {
         

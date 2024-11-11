@@ -5,6 +5,18 @@
             
             "categories": [
                 {
+                    "name": "My watch history",
+                    "media_type": null,
+                    "list_type": "watch_history",
+                    "time_window": null
+                },
+                {
+                    "name": "My favorites",
+                    "media_type": null,
+                    "list_type": "favorites",
+                    "time_window": null
+                },
+                {
                     "name": "Trending today",
                     "media_type": null,
                     "list_type": "trending",
