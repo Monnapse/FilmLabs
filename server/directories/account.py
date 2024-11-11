@@ -5,14 +5,14 @@
     11/7/2024
 """
 
-from server.web import web_class
+from server.web import WebClass
 
 from flask import Flask, render_template, session, redirect
 from flask_jwt_extended import jwt_required
 
 # SETTINGS
 
-def run(app: web_class):
+def run(app: WebClass):
     print("Account >>> Account directories loaded")
 
     @app.flask.route("/account")

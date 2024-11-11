@@ -58,11 +58,13 @@ class MovieHistory:
 class EpisodeHistory:
     def __init__(self,
         account_history_id: int = None,
-        episode_id: int = None,
+        episode_number: int = None,
+        season_number: int = None,
         progress: str = None
     ) -> None:
         self.account_history_id = account_history_id
-        self.episode_id = episode_id
+        self.episode_number = episode_number
+        self.season_number = season_number
         self.progress = progress
 
 class WatchHistory:
@@ -199,7 +201,7 @@ class FilmLabsDB:
             # Check if there are any results if not then that means
             # no account with that username exists
             if results and len(results) > 0:
-                hashes_password = results[0][2].encode()
+                hashed_password = results[0][2].encode()
                 current_account = Account(
                     results[0][0],
                     results[0][1],
@@ -207,7 +209,7 @@ class FilmLabsDB:
                 )
     
                 # Check if password is correct
-                is_password_correct = authentication.check_password(hashes_password, password)
+                is_password_correct = authentication.check_password(hashed_password, password)
                 #print("Password Correct: " + str(is_password_correct))
     
                 if is_password_correct:
@@ -291,6 +293,7 @@ class FilmLabsDB:
         film = self.get_film(tmdb_id)
 
         if film == None:
+            #print(poster)
             self.add_film(
                 tmdb_id,
                 media_type,
@@ -335,7 +338,7 @@ class FilmLabsDB:
         except Exception as e:
             print(f"DB Error occurred inside add_favorite: {e}")
 
-    def get_favorites(self, user_id: int) -> list[Film]:
+    def get_favorites(self, user_id: int,) -> list[Film]:
         # select distinct f.* from account_favorites af join film f on af.tmdb_id = f.tmdb_id where af.user_id = 1 group by f.tmdb_id
         try:
             query = "select distinct f.* from account_favorites af join film f on af.tmdb_id = f.tmdb_id where af.user_id = %s group by f.tmdb_id"
@@ -362,11 +365,11 @@ class FilmLabsDB:
         except Exception as e:
             print(f"DB Error occurred inside get_favorites: {e}")
 
-    def toggle_favorite(self, user_id: int, tmdb_id: int) -> bool:
-        # 
+    def is_favorited(self, tmdb_id: int, user_id: int) -> bool:
+        # select distinct * from account_favorites af where af.user_id = 1 and af.tmdb_id = 1
         try:
-            query = ""
-            values = (user_id, )
+            query = "select distinct * from account_favorites af where af.user_id = %s and af.tmdb_id = %s"
+            values = (user_id, tmdb_id)
             self.db_cursor.execute(query, values)
 
             results = self.db_cursor.fetchall()
@@ -374,11 +377,44 @@ class FilmLabsDB:
             favorites = []
 
             if results and len(results) > 0:
-                results[0]
+                return True
 
-            return favorites
+            return False
         except Exception as e:
-            print(f"DB Error occurred inside get_favorites: {e}")
+            print(f"DB Error occurred inside is_favorited: {e}")
+
+    def toggle_favorite(self, tmdb_id: int, user_id: int, 
+            media_type: str = None,
+            name: str = None,
+            year: str = None,
+            rating: float = None,
+            poster: str = None
+        ) -> bool:
+        """
+        return (bool) the outcome of the toggle/switch
+        """
+        # select distinct * from account_favorites af where af.user_id = 1 and af.tmdb_id = 1
+        try:
+            self.check_film(
+                tmdb_id,
+                media_type,
+                name,
+                year,
+                rating,
+                poster
+            ) # Check film
+
+            is_favorited = self.is_favorited(tmdb_id, user_id)
+
+            if is_favorited == True:
+                self.remove_favorite(tmdb_id, user_id)
+                return False
+            elif is_favorited == False:
+                self.add_favorite(tmdb_id, user_id)
+                return True
+
+        except Exception as e:
+            print(f"DB Error occurred inside toggle_favorite: {e}")
 
     def get_movie_history(self,
         account_history_id: int
@@ -420,7 +456,8 @@ class FilmLabsDB:
                     episode = EpisodeHistory(
                         result[0],
                         result[1],
-                        result[2]
+                        result[2],
+                        result[3]
                     )
                     episodes.append(episode)
                 return episodes
@@ -480,10 +517,11 @@ class FilmLabsDB:
 
     def add_episode_history(self,
         account_history_id: int,
-        episode_id: int,
+        episode_number: int,
+        season_number: int,
         progress: str
     ):
-        # insert into episode_history values (1, 1, "00:00:00")
+        # insert into episode_history values (1, 1, 1, "00:00:00")
         try:
             # Check if episode already added
             episodes = self.get_episodes_history(account_history_id)
@@ -493,8 +531,8 @@ class FilmLabsDB:
                         return
 
             # First Query
-            query = "insert into episode_history values (%s, %s, %s)"
-            values = (account_history_id, episode_id, progress)
+            query = "insert into episode_history values (%s, %s, %s, %s)"
+            values = (account_history_id, episode_number, season_number, progress)
             self.db_cursor.execute(query, values)
             self.db_connection.commit()
         except Exception as e:

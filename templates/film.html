@@ -4,7 +4,7 @@
             <!--<img src="/static/media/dune_viewer.png">-->
             {% if service_url %}
                 <iframe src="{{ service_url }}"
-                    id="media_iframe"
+                    id="media-iframe"
                     class="loading"
                     title="Video player"
                     frameborder="0" 
@@ -33,7 +33,7 @@
                 </button>
                 <button id="favorite" class="button">
                     <img src="/static/media/heart.svg">
-                    Favorites
+                    Favorite
                 </button>
 
                 <script>
@@ -55,7 +55,7 @@
                     const favoriteBtn = document.getElementById("favorite");
 
                     favoriteBtn.addEventListener("click", ()=>{
-                        toggleFavorite("{{ id }}");
+                        toggleFavorite("{{ id }}",  "{{ media_type }}");
                     })
                 </script>
             </div>
@@ -109,18 +109,23 @@
         {% if media_type == "tv" %}
             <div class="film-episodes">
                 <div class="dropdown">
-                    <button class="dropdown-button">
-                        <span class="unclickable">Season {{ current_season }}</span>
-                        <img src="/static/media/down_arrow.svg" class="unclickable">
-                    </button>
+                    {% if seasons %}
+
+                    {% for season in seasons %}
+                        {% if season.season_number == current_season %}
+                            <button class="dropdown-button">
+                                <span class="unclickable">{{ season.name }}</span>
+                                <img src="/static/media/down_arrow.svg" class="unclickable">
+                            </button>
+                        {% endif %}
+                    {% endfor %}
                     <div class="dropdown-list-container hide">
                         <div class="dropdown-button-list">
-                            {% if seasons %}
-                                {% for season in seasons %}
+                            {% for season in seasons %}
                                     {% if season.season_number == current_season %}
-                                        <button class="dropdown-button-active">Season {{ season.season_number }}</button>
+                                        <button class="dropdown-button-active">{{ season.name }}</button>
                                     {% else %}
-                                        <button id="season-{{ season.season_number }}">Season {{ season.season_number }}</button>
+                                        <button id="season-{{ season.season_number }}">{{ season.name }}</button>
                                         <script>
                                             (()=>{
                                                 const btn = document.getElementById("season-{{ season.season_number }}");
@@ -129,9 +134,9 @@
                                         </script>
                                     {% endif %}
                                 {% endfor %}
-                            {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 {% if episodes %}
                     <div class="chips-grid">

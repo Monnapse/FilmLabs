@@ -5,13 +5,13 @@
     11/7/2024
 """
 
-from server.web import web_class
+from server.web import WebClass
 
 from flask import Flask, render_template, session, redirect, make_response
 from flask_jwt_extended import jwt_required
 
 # SETTINGS
-def run(app: web_class):
+def run(app: WebClass):
     print("Error Handler >>> Error directories loaded")
 
     @app.jwt.expired_token_loader

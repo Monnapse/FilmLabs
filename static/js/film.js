@@ -18,6 +18,10 @@ function mediaFrameClicked()
 {
     // Add to watch history
     addedToWatchHistory = true;
+
+    iframeOverlay = document.getElementById("media-iframe-overlay");
+    iframeOverlay.style.pointerEvents = 'none';
+
 }
 
 async function setTrailer(mediaType, id)
@@ -34,18 +38,37 @@ async function setTrailer(mediaType, id)
     }
 }
 
-function toggleFavorite(id)
+function toggleFavorite(id, media)
 {
     const formData = {
-        id: id
+        tmdb_id: id,
+        media_type: media
     };
 
-    const response = fetch(`/toggle_favorite`, {
+    fetch(`/toggle_favorite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(formData)
+    }).then(response => {
+        if (response.status == 429)
+        {
+            alert("To many request's, please try again later.");
+        }
+        else if (!response.ok) {
+            return response.json().then(errorData => {
+                
+            });
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+    })
+    .catch((error) => {
+        
     });
 }
 

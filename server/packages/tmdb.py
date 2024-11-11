@@ -35,41 +35,6 @@ class TVListType(Enum):
     Trending = "trending"
 
 # Classes
-class Movie:
-    def __init__(
-            self,
-            adult: bool = None,
-            backdrop_path: str = None,
-            genre_ids: list[int] = None,
-            id: int = None,
-            original_language: str = None,
-            original_title: str = None,
-            overview: str = None,
-            popularity: float = None,
-            poster_path: str = None,
-            release_date: str = None,
-            title: str = None,
-            video: bool = None,
-            vote_average: int = None,
-            vote_count: int = None
-        ):
-        self.media_type = "movie"
-
-        self.adult = adult
-        self.backdrop_path = backdrop_path
-        self.genre_ids = genre_ids
-        self.id = id
-        self.original_language = original_language
-        self.original_title = original_title
-        self.overview = overview
-        self.popularity = popularity
-        self.poster_path = poster_path
-        self.release_date = release_date
-        self.title = title
-        self.video = video
-        self.vote_average = vote_average
-        self.vote_count = vote_count
-
 class TVEpisode:
     def __init__(self,
         air_date: str = None,
@@ -99,7 +64,6 @@ class TVEpisode:
         self.still_path = still_path
         self.vote_average = vote_average
         self.vote_count = vote_count
-        
 
 class TVSeason:
     def __init__(self, 
@@ -123,6 +87,41 @@ class TVSeason:
         self.vote_average = vote_average
         self.episodes = episodes
 
+class Movie:
+    def __init__(
+            self,
+            adult: bool = None,
+            backdrop_path: str = None,
+            genre_ids: list[int] = None,
+            id: int = None,
+            original_language: str = None,
+            original_title: str = None,
+            overview: str = None,
+            popularity: float = None,
+            poster_path: str = None,
+            release_date: str = None,
+            title: str = None,
+            video: bool = None,
+            vote_average: int = None,
+            vote_count: int = None
+        ):
+        self.media_type = "movie"
+
+        self.adult = adult
+        self.backdrop_path = backdrop_path
+        self.genre_ids = genre_ids
+        self.id = id
+        self.original_language = original_language
+        self.original_name = original_title
+        self.overview = overview
+        self.popularity = popularity
+        self.poster_path = poster_path
+        self.release_date = release_date
+        self.name = title
+        self.video = video
+        self.vote_average = vote_average
+        self.vote_count = vote_count
+
 class TV:
     def __init__(
             self,
@@ -136,7 +135,7 @@ class TV:
             overview: str = None,
             popularity: float = None,
             poster_path: str = None,
-            first_air_date: str = None,
+            release_date: str = None,
             name: str = None,
             vote_average: float = None,
             vote_count: int = None,
@@ -155,12 +154,18 @@ class TV:
         self.overview = overview
         self.popularity = popularity
         self.poster_path = poster_path
-        self.first_air_date = first_air_date
+        self.release_date = release_date
         self.name = name
         self.vote_average = vote_average
         self.vote_count = vote_count
 
         self.seasons = seasons
+
+    def get_season(self, season_number: int) -> TVSeason:
+        for season in self.seasons:
+            if season.season_number == int(season_number):
+                return season
+        return None
 
 class FilmVideo:
     def __init__(self,
@@ -303,9 +308,10 @@ class TMDB:
             episodes = []
 
             if (response_json["episodes"] != None):
+                
                 for episode in response_json["episodes"]:
+                    
                     episodes.append(self.to_tv_episode(episode))
-
             return episodes
             
         return []
@@ -328,7 +334,6 @@ class TMDB:
             vote_average = data.get("vote_average"),
             episodes = episodes
         )
-
         return season_class
 
     def to_movie(self, data: dict) -> Movie:
@@ -362,7 +367,7 @@ class TMDB:
             overview = data.get("overview"),
             popularity = data.get("popularity"),
             poster_path = self.to_img_url(data.get("poster_path")),
-            first_air_date = data.get("first_air_date"),
+            release_date = data.get("first_air_date"),
             name = data.get("name"),
             vote_average = data.get("vote_average"),
             vote_count = data.get("vote_count")
@@ -374,6 +379,7 @@ class TMDB:
                 for season in data["seasons"]:
                     seasons.append(self.to_tv_season(season, get_episodes, str(tv_class.id)))
                 tv_class.seasons = seasons
+                #print(seasons[1].episodes)
         except:
             return tv_class
 

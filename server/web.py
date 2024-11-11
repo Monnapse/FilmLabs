@@ -7,7 +7,7 @@
 
 from flask import Flask, render_template, session, request
 from flask_limiter import Limiter
-from server.packages.db import film_labs_db, account
+from server.packages.db import FilmLabsDB, Account
 from server.packages import db
 from server.packages.films import FilmsController
 from server.packages.service import ServiceController
@@ -18,7 +18,7 @@ from flask_jwt_extended import JWTManager, decode_token
 import time
 from datetime import timedelta
 
-class web_class:
+class WebClass:
     # This defines the main attributes of the class
     base = "base.html"
     flask: Flask = None
@@ -29,7 +29,7 @@ class web_class:
             app, 
             flask_app: Flask, 
             limiter: Limiter, 
-            db_controller: film_labs_db, 
+            db_controller: FilmLabsDB, 
             jwt: JWTManager, 
             film_controller: FilmsController,
             service_controller: ServiceController,
@@ -67,7 +67,7 @@ class web_class:
            spec.loader.exec_module(module)
            module.run(app)
 
-    def get_authorized_account(app) -> account:
+    def get_authorized_account(app) -> Account:
         #current_user = get_jwt_identity()
         token = request.cookies.get("access_token")
         if (token):
@@ -90,12 +90,12 @@ class web_class:
             if (selected_account.account_exists):
                 return selected_account
             else:
-                return account(
+                return Account(
                     account_exists=False,
                     account_message="Could not find account with that user_id"
                 )
             
-        return account(
+        return Account(
             account_exists=False,
             account_message="Token is invalid"
         )
@@ -105,5 +105,6 @@ class web_class:
         authorized_account = app.get_authorized_account()
         return {
             "logged_in": authorized_account.account_exists,
-            "username": authorized_account.username
+            "username": authorized_account.username,
+            "user_id": authorized_account.user_id
         }

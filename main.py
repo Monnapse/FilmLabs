@@ -70,7 +70,7 @@ db_controller = db.FilmLabsDB(
     username_min_length,
     username_max_length
 )
-web_controller = web.web_class(
+web_controller = web.WebClass(
     app, 
     limiter,
     db_controller,

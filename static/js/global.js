@@ -5,7 +5,7 @@ let autoLoadGlobal = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", (e) => {
-        console.log(e.target)
+        //console.log(e.target)
         if (e.target.id == "media-iframe-overlay")
         {
             mediaFrameClicked();
@@ -207,8 +207,8 @@ function createFilmCard(film, url)
 
     //console.log(film);
 
-    const title = film.media_type === "movie" ? film.title : film.media_type === "tv" ? film.name : "Loading"
-    const year = film.media_type === "movie" ? film.release_date.split("-")[0] : film.media_type === "tv" ? film.first_air_date.split("-")[0] : "Loading";
+    const title = film.name;
+    const year = film.release_date.split("-")[0];
     const rating = parseFloat(film.vote_average.toFixed(1));;
     const mediaType = film.media_type === "movie" ? "Movie" : film.media_type === "tv" ? "TV" : "Loading";
     let img = film.poster_path;

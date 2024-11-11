@@ -24,7 +24,7 @@ window.onload = function() {
             if (reachedPageLimit) { return; }
 
             const data = await response.json();
-
+            //console.log(data)
             data.data.forEach(item => {
                 // Category
                 //cardsList = "";

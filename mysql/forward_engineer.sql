@@ -35,11 +35,11 @@ DROP TABLE IF EXISTS `filmlabs`.`film` ;
 
 CREATE TABLE IF NOT EXISTS `filmlabs`.`film` (
   `tmdb_id` INT NOT NULL,
-  `media_type` VARCHAR(20) NOT NULL,
-  `name` VARCHAR(85) NOT NULL,
+  `media_type` VARCHAR(8) NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
   `year` VARCHAR(8) NOT NULL,
   `rating` FLOAT NOT NULL,
-  `poster` VARCHAR(45) NOT NULL,
+  `poster` VARCHAR(120) NOT NULL,
   PRIMARY KEY (`tmdb_id`))
 ENGINE = InnoDB;
 
@@ -115,7 +115,8 @@ DROP TABLE IF EXISTS `filmlabs`.`episode_history` ;
 
 CREATE TABLE IF NOT EXISTS `filmlabs`.`episode_history` (
   `account_history_id` INT NOT NULL,
-  `episode_id` INT NOT NULL,
+  `episode_number` INT NOT NULL,
+  `season_number` INT NOT NULL,
   `progress` VARCHAR(10) NULL,
   CONSTRAINT `fk_episode_history_account_watch_history1`
     FOREIGN KEY (`account_history_id`)

@@ -6,14 +6,14 @@
 """
 
 from server.packages import authentication
-from server.web import web_class
+from server.web import WebClass
 
 from flask import Flask, render_template, session, request, jsonify, redirect, make_response
 import json
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 
-def run(app: web_class):
+def run(app: WebClass):
     print("Authentication >>> Authentication directories loaded")
 
     # Directories
@@ -95,9 +95,9 @@ def run(app: web_class):
 
                 return response
             else:
-                return jsonify(success=False, message=account.account_message), 403
+                return jsonify(success=False, message=account.account_message), 400
         except: 
-            return jsonify(success=False, message="Something went wrong"), 403
+            return jsonify(success=False, message="Something went wrong"), 500
     
     @app.flask.route("/register_submit", methods=['POST'])
     @app.limiter.limit("10 per minute") # Blocks any account creation bots from making an absurd amount.
@@ -115,6 +115,6 @@ def run(app: web_class):
             if (new_account.account_exists):
                 return jsonify(success=True, message="Successfully created account"), 200
             else:
-                return jsonify(success=False, message=new_account.account_message), 403
+                return jsonify(success=False, message=new_account.account_message), 400
         except: 
-            return jsonify(success=False, message="Something went wrong"), 403
+            return jsonify(success=False, message="Something went wrong"), 500

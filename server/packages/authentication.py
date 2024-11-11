@@ -8,6 +8,7 @@ def hash_password(plain_password):
     return hashed_password
 
 def check_password(stored_hash, plain_password):
+    print(stored_hash, plain_password)
     return bcrypt.checkpw(plain_password.encode(), stored_hash)
 
 def bytes_to_json(bytes_string):
