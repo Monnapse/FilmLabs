@@ -265,9 +265,16 @@ main {
 /* category */
 .category, .films-grid {
     position: relative;
-    /*width: 90vw;*/
+    width: 90vw;
     overflow-x: auto;
     margin-top: 20px;
+    
+    left: 0;
+    float: left;
+}
+/* categories */
+.categories {
+    width: 90vw;
 }
 /* media list */
 .media-list {

@@ -22,6 +22,37 @@ function mediaFrameClicked()
     iframeOverlay = document.getElementById("media-iframe-overlay");
     iframeOverlay.style.pointerEvents = 'none';
 
+    const url = window.location.pathname;
+    const urlPaths = url.split("/");
+    console.log(urlPaths);
+    // http://127.0.0.1:2400/film/tv/48866/1/1
+
+    let mediaType = urlPaths[2];
+    let tmdbId = urlPaths[3];
+    let season, episode = null;
+
+    if (mediaType == "tv")
+    {
+        season = urlPaths[4];
+        episode = urlPaths[5];
+    }
+
+    //alert(`Media Frame Clicked.\n TMDB Id: ${tmdbId}, Media Type: ${mediaType}, Season: ${season}, Episode: ${episode}`)
+
+    const formData = {
+        tmdb_id: tmdbId,
+        media_type: mediaType,
+        season: season,
+        episode: episode
+    };
+
+    fetch(`/add_to_watch_history`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    });
 }
 
 async function setTrailer(mediaType, id)

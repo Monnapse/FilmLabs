@@ -32,5 +32,5 @@ db.connect(
 #print(db.get_film(history[1].tmdb_id).media_type)
 #db.add_episode_history(1, 1, "00:00:00")
 #db.add_movie_history(2, "00:00:00")
-toggle = db.toggle_favorite(693134,1)
-print(toggle)
+#toggle = db.toggle_favorite(693134,1)
+print(db.get_favorites(1))

@@ -559,6 +559,33 @@ class FilmLabsDB:
         except Exception as e:
             print(f"DB Error occurred inside add_watch_history: {e}")
 
+    def add_film_history(self,
+            tmdb_id: int,
+            user_id: int,
+            season: int,
+            episode: int
+        ):
+        history = self.get_watch_history(user_id, True)
+
+        if not history:
+            history = self.add_watch_history(tmdb_id, user_id)
+
+        if history:
+            for watch_history in history:
+                if watch_history.tmdb_id == tmdb_id:
+                    # Already exists
+                    if season == None and watch_history.movie_history == None:
+                        # Is Movie without movie history
+                        self.add_movie_history(watch_history.account_history_id, "00:00:00")
+                    elif season != None:
+                        # Is TV Show
+                        added = False
+                        for episode in watch_history.episode_history:
+                            if episode.episode_number == episode and episode.season_number == season:
+                                added = True
+                        if not added:
+                            self.add_episode_history(watch_history.account_history_id, episode, season, "00:00:00")
+
     # TODO
     # Add film progress support
         

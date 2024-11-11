@@ -319,3 +319,26 @@ def run(app: WebClass):
                 return jsonify(success=False, message="Please specify a valid token"), 401
         except: 
             return jsonify(success=False, message="Something went wrong"), 500
+        
+    @app.flask.route("/add_to_watch_history", methods=['POST'])
+    @app.limiter.limit("20 per minute")
+    def add_to_watch_history():
+        data = authentication.bytes_to_json(request.get_data())
+
+        try:
+            tmdb_id = data["tmdb_id"]
+            media_type = data["media_type"].lower()
+            season = data["season"].lower()
+            episode = data["episode"].lower()
+
+            authorized_account = app.get_authorized_account()
+            if authorized_account != None and authorized_account.account_exists:
+                app.db_controller.add_watch_history()
+                #if (toggled_favorite != None):
+                #    return jsonify(success=True, favorited=toggled_favorite), 200
+                #else:
+                #    return jsonify(success=False, message="Enter a correct tmdb_id"), 400
+            else:
+                return jsonify(success=False, message="Please specify a valid token"), 401
+        except: 
+            return jsonify(success=False, message="Something went wrong"), 500

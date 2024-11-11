@@ -83,8 +83,7 @@ class FilmsController:
                 poster_path = film.poster
             )
         elif film.media_type == "movie":
-            if film.media_type == "tv":
-                return Movie(
+            return Movie(
                     #tmdb_id
                     #media_type
                     #name 

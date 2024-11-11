@@ -104,6 +104,7 @@ function search(query) {
 
 function addScrollList(listContainer)
 {
+    
     let isDown = false;
     let startX;
     let scrollLeft;
