@@ -1,8 +1,6 @@
-flask
-mysql-connector-python
-requests
-datetime
-os
-importlib
-bcrypt
-Flask-JWT-Extended
+Flask==3.0.3
+Flask_JWT_Extended==4.6.0
+Flask_Limiter==2.8.1
+flask_session==0.8.0
+python_bcrypt==0.3.2
+Requests==2.32.3

@@ -127,8 +127,8 @@ def run(app: WebClass):
                     episodes = episodes,
 
                     id=id,
-
-                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id")),
+                    current_service = current_service
                 )
             else:
                 return render_template(
@@ -174,7 +174,8 @@ def run(app: WebClass):
                     tmdb_url = f"https://www.themoviedb.org/movie/{id}",
 
                     id=id,
-                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id")),
+                    current_service=current_service
                 )
             else:
                 return render_template(
