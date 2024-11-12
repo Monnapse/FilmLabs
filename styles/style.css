@@ -787,6 +787,10 @@ side fog
     color: var(--smoke-color);
     font-weight: 100;
 }
+.button-chip img {
+    width: 25px;
+    height: auto;
+}
 /* chip button selected */
 .selected-button-chip {
     background-color: var(--gold-color);
