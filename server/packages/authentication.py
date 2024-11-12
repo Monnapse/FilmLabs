@@ -4,10 +4,6 @@ from flask import Flask, render_template, session, request, jsonify
 
 def hash_password(plain_password):
     salt = bcrypt.gensalt()
-    #if isinstance(plain_password, bytes):
-    #    plain_password = plain_password.decode("utf-8")
-    #print(type(plain_password))
-    #print(plain_password)
     hashed_password = bcrypt.hashpw(plain_password.encode(), salt)
     return hashed_password
 

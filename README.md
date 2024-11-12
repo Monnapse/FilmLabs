@@ -37,3 +37,6 @@ now restart `sudo reboot`
 once restarted go to your the FilmLabs folder and activate environemnt `source filmlabs-environment/bin/activate` now run your server `python3 main.py` enjoy.
 
 now start the server by running `python3 main.py`
+
+## Update files
+if you want to update the files to latest release you do, pull latest changes `git pull origin film-box-0.1.0`.
