@@ -125,7 +125,7 @@ class FilmLabsDB:
                     if (not self.does_username_exist(username)):
                         # Now create the account
                         hashed_password = authentication.hash_password(password)
-
+                        
                         # Create queire
                         query = "insert into account (username, password) values (%s, %s)"
                         values = (username, hashed_password)
