@@ -1,0 +1,865 @@
+/*
+    _______
+
+    Globals
+    _______
+*/
+:root {
+    --primary-color: #1e2434;
+    --secondary-color: #2d3344;
+    --hover-color: #3b4255;
+    --smoke-color: #838383;
+    --gold-color: #FFB834;
+    --white-color: #F5F5F7;
+    --red-color: #FF5757;
+}
+
+* {
+    font-family: 'Segoe UI';
+    color: var(--white-color);
+    margin: 0 auto;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    background-color: var(--primary-color);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+input,button,a {
+    border: none;
+    outline: none;
+    text-decoration: none;
+}
+a {
+    transition: color 0.15s ease;
+}
+a:hover {
+    color: var(--smoke-color);
+}
+.styled-a {
+    color: var(--gold-color);
+}
+h1 {
+    font-weight: 1000;
+}
+h5 {
+    font-weight: 1000;
+    color: var(--smoke-color);
+}
+.h3 {
+    font-weight: 1000;
+    font-size: 1.5em;
+}
+
+hr {
+    border-color: var(--smoke-color);
+    width: 100%;
+}
+header {
+    position: fixed;
+    width: 100%;
+    height: 120px;
+    z-index: 10;
+
+    background-color: var(--primary-color);
+}
+aside {
+    position: fixed;
+    left: 0;
+    width: 30%;
+    padding: 10px;
+    top: 150px;
+}
+main {
+    position: relative;
+    top: 150px;
+}
+footer {
+    position: relative;
+    bottom: 0;
+    top: 200px;
+
+    background-color: var(--secondary-color);
+    padding: 30px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+}
+
+.unselectable {
+    -webkit-user-select: none; /* For Safari and older Chrome */
+    -moz-user-select: none;    /* For older Firefox */
+    -ms-user-select: none;     /* For Internet Explorer and Edge */
+    user-select: none;         /* Standard */
+}
+.unclickable {
+    pointer-events: none;
+}
+.center-vertically {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.center-horizontally {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.gold {
+    color: var(--gold-color)
+}
+.show {
+    display: block !important;
+}
+.hide {
+    display: none !important;
+}
+
+/*
+    ______________
+
+    Top Navigation
+    ______________
+*/
+.header-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+/* logo */
+.logo {
+    display: flex;
+    gap: 20px;
+    float: left;
+    text-decoration: none;
+}
+.logo:hover{
+    cursor: pointer;
+}
+.logo img {
+    width: 40;
+    height: auto;
+    pointer-events: none;
+}
+/* searchbar */
+.searchbar {
+    position: relative;
+    height: 30px;
+    width: 50%;
+}
+.searchbar button {
+    position: absolute;
+    width: 35px;
+    height: 25px;
+    left: 5px;
+    background-color: transparent;
+    cursor: pointer;
+}
+.searchbar button img {
+    width: 15px;
+    height: auto;
+}
+.searchbar input {
+    background-color: var(--secondary-color);
+    text-indent: 40px;
+    width: 100%;
+    height: 100%;
+    border-radius: 13px;
+    font-weight: 400;
+}
+.searchbar input::placeholder {
+    color: var(--smoke-color);
+}
+/* account */
+.account-btn {
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    padding: 15px 50px 15px 50px;
+    border-radius: 100px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+/* account login button */
+.login-btn {
+    display: block;
+    background-color: var(--red-color);
+    width: 150px;
+    height: 30px;
+    border-radius: 13px;
+    font-weight: 700;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+}
+.login-btn span {
+    display: inline;
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+.login-btn:hover {
+    cursor: pointer;
+    background-color: var(--gold-color);
+    color: var(--primary-color);
+}
+.login-btn p {
+    width: 100%;
+    height: 100%;
+}
+/* account */
+.account {
+    position: relative;
+    display: inline-block;
+}
+/* account popout box */
+.account-popout-box {
+    position: absolute;
+    background-color: var(--secondary-color);
+
+    margin-top: 15px;
+    width: 100%;
+    border-radius: 15px;
+    z-index: 2;
+}
+.account-popout-box a,hr {
+    width: 100%;
+    text-align: left;
+}
+/* account popout box list */
+.account-popout-box-list {
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+/*
+    ____
+
+    Main
+    ____
+*/
+main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+/* category */
+.category, .films-grid {
+    position: relative;
+    width: 90vw;
+    overflow-x: auto;
+    margin-top: 20px;
+    
+    left: 0;
+    float: left;
+}
+/* categories */
+.categories {
+    width: 90vw;
+}
+/* media list */
+.media-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 10px;
+}
+.media-list::-webkit-scrollbar {
+    display: none;
+}
+/* media modal */
+.media-modal {
+    position: relative;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+.media-modal img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* media info */
+.media-info {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    background: #00000073;
+
+    text-align: center;
+
+    /* animation */
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 1.0s ease;
+}
+.media-modal:hover .media-info {
+    cursor: pointer;
+    transform: translateY(0%);
+    opacity: 1;
+}
+.media-info div {
+    position: absolute;
+    width: 100%;
+    bottom: 25px;
+
+    display: flex;
+    flex-direction: column;
+}
+.media-info div div {
+    position: relative;
+    width: 90%;
+    top: 8px;
+    
+    font-size: 0.5em;
+
+    display: flex;
+    flex-direction: row;
+}
+
+/*
+    ___________________
+
+    Account Login Modal
+    ___________________
+*/
+.login-main {
+    width: 100%;
+}
+/* modal */
+.account-login-modal {
+    background-color: var(--secondary-color);
+    padding: 50px;
+    border-radius: 13px;
+    width: 50%;
+}
+/* top text */
+.account-modal-top-text {
+    text-align: center;
+}
+/* account form */
+.account-login-form, .account-input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: none;
+    padding: 0;
+}
+.account-login-form label {
+    width: 100%;
+    margin-top: 20px;
+}
+.account-input-container input {
+    width: 100%;
+    margin-top: 10px;
+    background-color: var(--primary-color);
+    border-radius: 13px;
+    height: 40px;
+    text-indent: 10px;
+}
+/* checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.checkbox-container span {
+    width: 100%;
+}
+.checkbox {
+    display: none;
+}
+.checkbox + .checkbox-box {
+    width: 20px;
+    height: 20px;
+    border: 4px solid var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    display: flex;
+    justify-content: center;
+}
+.checkbox:checked + .checkbox-box {
+    background-color: var(--gold-color);
+    border-color: var(--gold-color);
+}
+.checkbox:checked + .checkbox-box::after {
+    content: '✔';
+    width: 10px; 
+    height: 10px; 
+
+}
+/* account button */
+.submit-btn {
+    width: 30%;
+    height: 60px;
+    background-color: var(--red-color);
+    font-size: 1.3em;
+    font-weight: 700;
+    border-radius: 100px;
+    cursor: pointer;
+    margin-top: 30px;
+
+    transition: background-color .15s ease;
+}
+.submit-btn:hover {
+    background-color: #ff6f6f;
+}
+/* bottom text */
+.account-login-form-bottom {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/*
+    _______
+
+    Account
+    _______
+*/
+/* side list */
+.side-list {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    text-indent: 30px;
+}
+.side-list a {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+/* side button */
+.side-button {
+    height: 60px;
+    background-color: var(--secondary-color);
+    border-radius: 21px;
+
+    display: flex;
+    align-items: center;
+}
+.side-button span {
+    width: 100%;
+}
+/* account main tag */
+.account-main {
+    width: 60%;
+    float: right;
+    right: 5%;
+}
+/* account properties container */
+.account-properties-container {
+    width: 100%;
+
+}
+.account-properties-container span {
+    color: var(--smoke-color);
+}
+/* account properties container table */
+.account-property-container {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: 25%;
+    height: 200px;
+}
+/* account property */
+.account-property {
+    margin-top: 10px;
+}
+
+/* 
+    ______________
+
+    Selected films
+    ______________
+*/
+/* film grid*/
+.films-grid {
+    
+}
+/* media grid */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+/*
+    ____
+
+    Film
+    ____
+*/
+.film-main {
+    position: relative;
+    width: 90vw;
+
+    margin-bottom: 100px;
+}
+/* film viewer */
+.film-viewer {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* This is 16:9 aspect ratio */
+    overflow: hidden;
+}
+.film-viewer img {
+    width: 100%;
+    height: auto;
+}
+.film-viewer iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.film-viewer div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+/* film top */
+.film-top {
+    width: 100%;
+    height: 50px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+/* imdb */
+.rating-img {
+    width: 25px;
+    height: auto;
+}
+/* rating */
+.rating {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.film-end {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+/* button */
+.button {
+    padding: 10px 40px 10px 40px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 100px;
+
+    background-color: var(--secondary-color);
+    color: var(--smoke-color);
+
+    font-weight: 800;
+    gap: 15px;
+
+    cursor: pointer;
+
+    transition: background-color 0.15s ease;
+}
+.button img {
+    width: 20px;
+    height: auto;
+}
+.button:hover {
+    background-color: var(--hover-color);
+}
+/* favorited */
+.favorited {
+    background-color: var(--red-color);
+    color: var(--white-color);
+}
+.favorited img {
+    filter: brightness(800%);
+}
+.favorited:hover{
+    background-color: #ff7777;
+}
+/* film info tags */
+.film-info-tags {
+    margin-top: 10px;
+    font-weight: 100;
+}
+.film-info-tags span {
+    margin-right: 30px;
+}
+/* genre chips */
+.genre-chips {
+    margin-top: 30px;
+
+    display: inline-flex;                
+    gap: 8px;   
+
+    overflow-x: auto;             
+    white-space: nowrap;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    max-width: 100%;
+}
+.genre-chips::-webkit-scrollbar {
+    display: none;           /* Hides scrollbar in Chrome/Safari */
+}
+/* clear chips */
+.clear-chip {
+    border-color: var(--secondary-color);
+    border-radius: 13px;
+    border-width: 2px;
+    border-style: solid;
+
+    padding: 7px 15px 7px 15px;
+    flex: 0 0 auto;
+
+    white-space: nowrap;
+
+    transition: background-color 0.15s ease;
+}
+.clear-chip:hover {
+    background-color: var(--hover-color);
+}
+/* film description */
+.film-description {
+    margin-top: 15px;
+    font-weight: 100;
+}
+/* see more */
+.see-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+.see-more .rating-img {
+    vertical-align: middle;
+}
+/* film episodes */
+.film-episodes {
+    margin-top: 20px;
+}
+/* dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+
+    z-index: 2;
+}
+/* dropdown button */
+.dropdown-button {
+    position: relative;
+
+    background-color: var(--secondary-color);
+
+    border-radius: 13px;
+    padding: 10px 15px 10px 15px;
+    width: 100%;
+    text-align: start;
+
+    cursor: pointer;
+    z-index: 3;
+
+    text-indent: 6px;
+
+    font-size: 1.3em;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dropdown-button span {
+    margin-right: auto;
+    text-align: start;
+    width: 100%;
+}
+.dropdown-button img {
+    width: 20px;
+    height: 20px;
+}
+/* dropdown list */
+.dropdown-list-container {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-top: -20px;
+    width: 100%;
+
+    border-radius: 13px;
+
+    background-color: var(--secondary-color);
+}
+.dropdown-button-list button {
+    width: 100%;
+    cursor: pointer;
+
+    background-color: transparent;
+
+    text-align: left;
+
+    transition: background-color 0.15s ease;
+
+    height: 30px;
+    border-radius: 7px;
+}
+.dropdown-button-list button:hover {
+    background-color: var(--hover-color);
+}
+.dropdown-button-active {
+    background-color: var(--primary-color) !important;
+}
+.dropdown-button-list {
+    padding: 15px;
+    margin-top: 10px;
+    width: 90%;
+}
+/* chips grid */
+.chips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+/* chip buttons */
+.button-chip {
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    cursor: pointer;
+
+    width: 100%;
+
+    border-radius: 13px;
+
+    padding: 15px 50px;
+}
+.button-chip span {
+    font-size: 1.35em;
+}
+.button-chip p {
+    color: var(--smoke-color);
+    font-weight: 100;
+}
+.button-chip img {
+    width: 25px;
+    height: auto;
+}
+/* chip button selected */
+.selected-button-chip {
+    background-color: var(--gold-color);
+}
+.selected-button-chip p {
+    color: var(--white-color);
+    font-weight: 800;
+}
+.selected-button-chip img {
+    filter: brightness(800%);
+}
+/* service provider container */
+.service-provider-container {
+    margin-top: 40px;
+}
+
+/*
+    __________
+
+    Animations
+    __________
+*/
+.loading {
+    background: #eee;
+    background: linear-gradient(110deg, var(--secondary-color) 8%, var(--hover-color) 18%, var(--secondary-color) 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+}
+@keyframes shine {
+    to {
+        background-position-x: -200%;
+    }
+}
+
+/*
+    ____________
+
+    Screen Sizes
+    ____________
+*/
+@media (max-width: 768px), (max-height: 550px) {
+    header {
+        height: 100px;
+    }
+    .header-container {
+        flex-direction: column;
+        padding: 5px;
+        width: 80%;
+    }
+    .logo img {
+        width: 30px;
+    }
+    .searchbar {
+        width: 100%;
+    }
+    .account {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .login-btn {
+        width: 100%;
+    }
+    .submit-btn {
+        width: 100%;
+    }
+    .account-popout-box {
+        width: 75%;
+    }
+    .submit-btn {
+        height: 30px;
+    }
+    .login-main {
+        top: 90%;
+    }
+}

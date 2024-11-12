@@ -1,0 +1,235 @@
+<main>
+    <div class="film-main">
+        <div class="film-viewer">
+            <!--<img src="/static/media/dune_viewer.png">-->
+            {% if service_url %}
+                <iframe src="{{ service_url }}"
+                    id="media-iframe"
+                    class="loading"
+                    title="Video player"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen
+                    >
+                </iframe>
+                <div id="media-iframe-overlay"></div>
+            {% else %}
+                <iframe id="media-iframe" class="loading"></iframe>
+            {% endif %}
+        </div>
+        <div class="film-top">
+            <h1 style="flex: 1;">{{ title or "Title" }}</h1>
+            <div class="film-end">
+                <div class="rating">
+                    <img class="rating-img" src="/static/media/star.png" alt="Rating">
+                    <span>{{ rating or "Rating" }}/10</span>
+                </div>
+                
+                <button id="popout" class="button">
+                    Popout
+                </button>
+                <button id="watch-now" class="button">
+                    Watch Now
+                </button>
+                <button id="trailer" class="button">
+                    Trailer
+                </button>
+                {% if is_favorited %}
+                    <button id="favorite" class="button favorited">
+                        <img src="/static/media/heart.svg">
+                        <span>Favorited</span>
+                    </button>
+                {% else %}
+                    <button id="favorite" class="button">
+                        <img src="/static/media/heart.svg">
+                        <span>Favorite</span>
+                    </button>
+                {% endif %}
+
+                <script>
+                    // Popout
+                    const popoutbtn = document.getElementById("popout");
+                    const iframe = document.getElementById("media-iframe");
+                    
+                    
+                    //popoutbtn.addEventListener("click", (e)=>{
+                    //    iframe.contentWindow.postMessage('requestPiP', '{{ service_url }}');
+                    //});
+                    
+                    
+                    iframe.addEventListener("load", () => {
+
+                        // Get the video element inside the iframe
+                        const video = iframe.contentWindow.document.querySelector('video');
+                        console.log(video)
+                        // Add a button to trigger PiP
+                        //const pipButton = document.createElement('button');
+                        //pipButton.textContent = 'Enter Picture-in-Picture';
+                        //document.body.appendChild(pipButton);
+
+                        // Toggle PiP when the button is clicked
+                        popoutbtn.addEventListener('click', async () => {
+                            //var iframe = document.querySelector('iframe');
+                            //var video = iframe.contentWindow.document.getElementsByTagName('video');
+                           // console.log(video)
+                            console.log(video);
+                            console.log("Clicked")
+                            if (!document.pictureInPictureElement) {
+                              try {
+                                await video.requestPictureInPicture();
+                              } catch (error) {
+                                console.error('Error entering Picture-in-Picture mode:', error);
+                              }
+                            } else {
+                              try {
+                                await document.exitPictureInPicture();
+                              } catch (error) {
+                                console.error('Error exiting Picture-in-Picture mode:', error);
+                              }
+                            }
+                        });
+                    });
+                    
+                    //popoutbtn.addEventListener("click", ()=>{
+                    //    const videoUrl = iframe.src;
+                    //    window.open(videoUrl, "_blank", "width=800,height=450");
+                    //})
+
+                    // Watch now
+                    const watchBtn = document.getElementById("watch-now");
+
+                    watchBtn.addEventListener("click", ()=>{
+                        setMediaIFrame("{{ service_url }}");
+                    })
+
+                    // Trailer
+                    const trailerBtn = document.getElementById("trailer");
+
+                    trailerBtn.addEventListener("click", ()=>{
+                        setTrailer("{{ media_type }}", "{{ id }}");
+                    })
+                    
+                    // Favorite
+                    const favoriteBtn = document.getElementById("favorite");
+
+                    favoriteBtn.addEventListener("click", ()=>{
+                        toggleFavorite("{{ id }}",  "{{ media_type }}");
+                    })
+                </script>
+            </div>
+        </div>
+        <div class="film-info-tags">
+            <span>{{ year or  "Year" }}</span>
+            <!--<span>2h 46m</span>-->
+            <!--<span>PG-13</span>-->
+            <span>{{ media_type or "Media Type" }}</span>
+        </div>
+        {% if genres %}
+            <div class="genre-chips scroll-list unselectable"></div>
+            {% for genre in genres %}
+                <a href="{{ genre.url }}" class="clear-chip">
+                    <span>genre.name</span>
+                </a>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <div class="film-description">
+            <p>
+                {{ overview or "Description" }}
+            </p>
+            <p class="see-more">
+                <span>See more at</span>
+                <a class="styled-a" href="{{ tmdb_url }}" target=”_blank”>
+                    TMDB
+                </a>
+            </p>
+        </div>
+        <div class="service-provider-container">
+            <h2>Service Providers</h2>
+            {% if service_providers %}
+                <div class="chips-grid">
+                    {% for service in service_providers %}
+                        {% if service.name == selected_service %}
+                            <button class="button-chip selected-button-chip"><p>{{ service.name }}</p></button>
+                        {% else %}
+                            <button id="service-{{ service.name }}" class="button-chip"><p>{{ service.name }}</p></button>
+                            <script>
+                                (()=>{
+                                    const btn = document.getElementById("service-{{ service.name }}");
+                                    btn.addEventListener("click",()=>{ redirect("?service={{ service.name }}"); })
+                                })();
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% if media_type == "tv" %}
+            <div class="film-episodes">
+                <div class="dropdown">
+                    {% if seasons %}
+
+                    {% for season in seasons %}
+                        {% if season.season_number == current_season %}
+                            <button class="dropdown-button">
+                                <span class="unclickable">{{ season.name }}</span>
+                                <img src="/static/media/down_arrow.svg" class="unclickable">
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="dropdown-list-container hide">
+                        <div class="dropdown-button-list">
+                            {% for season in seasons %}
+                                    {% if season.season_number == current_season %}
+                                        <button class="dropdown-button-active">{{ season.name }}</button>
+                                    {% else %}
+                                        <button id="season-{{ season.season_number }}">{{ season.name }}</button>
+                                        <script>
+                                            (()=>{
+                                                const btn = document.getElementById("season-{{ season.season_number }}");
+                                                btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ season.season_number }}/1"); })
+                                            })();
+                                        </script>
+                                    {% endif %}
+                                {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if episodes %}
+                    <div class="chips-grid">
+                        {% for episode in episodes %}
+                            {% if episode.episode_number == current_episode %}
+                                <button id="episode-{{ episode.episode_number }}" class="button-chip selected-button-chip">
+                                    {% if episode.progress %}
+                                        <img src="/static/media/eye.svg">
+                                    {% endif %}
+
+                                    <span>Episode {{episode.episode_number}}</span>
+                                    <spam>∙</spam>
+                                    <p>{{episode.name}}</p>
+                                </button>
+                            {% else %}
+                                <button id="episode-{{ episode.episode_number }}" class="button-chip">
+                                    {% if episode.progress %}
+                                        <img src="/static/media/eye.svg">
+                                    {% endif %}
+                                    
+                                    <span>Episode {{episode.episode_number}}</span>
+                                    <spam>∙</spam>
+                                    <p>{{episode.name}}</p>
+                                </button>
+                            {% endif %}
+                            <script>
+                                (()=>{
+                                    const btn = document.getElementById("episode-{{ episode.episode_number }}");
+                                    btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ current_season }}/{{ episode.episode_number }}?service={{ current_service }}"); })
+                                })();
+                            </script>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>       
+        {% endif %}   
+    </div>
+</main>

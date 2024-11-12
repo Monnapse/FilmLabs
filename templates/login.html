@@ -1,0 +1,32 @@
+<main class="login-main center">
+    <div class="account-login-modal">
+        <div class="account-modal-top-text">
+            <h5>WELCOME BACK</h5>
+            <h2>Log Into your account</h2>
+        </div>
+
+        <form class="account-login-form">
+            <fieldset class="account-input-container">
+                <label for="username">
+                    Username
+                    <input type="text" id="username" name="username" placeholder="Enter your username" minlength="{{ username_min }}" maxlength="{{ username_max }}" required> 
+                </label>
+                <label for="password">
+                    Password
+                    <input type="password" id="password" name="password" placeholder="Enter your password" minlength="{{ password_min }}" maxlength="{{ password_max }}" required>
+                </label>
+                
+            </fieldset>
+
+            <label for="remember" class="checkbox-container">
+                <input type="checkbox" id="remember" name="remember" value="remember" class="checkbox">
+                <div class="checkbox-box"></div>
+                <span>Remember me</span>
+            </label>
+            
+            <button class="submit-btn" onclick="login()">Login</button>
+        </form>
+
+        <p class="account-login-form-bottom">Don't have an account? <a class="gold" href="register">Register here.</a><p>
+    </div>
+</main>

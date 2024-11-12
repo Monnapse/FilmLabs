@@ -1,0 +1,27 @@
+<aside>
+    <div class="side-list">
+        <!-- side-button -->
+        <a href="#profile" id="profile-btn" class="side-button-empty">
+            Profile
+        </a>
+
+        <hr>
+
+        <a href="/logout">
+            Logout
+        </a>
+    </div>
+</aside>
+<main class="account-main">
+    <div id="profile" class="account-properties-container">
+        <h1>Profile</h1>
+        <div class="account-property-container">
+            <div class="account-property">
+                <h3>Username</h3>
+                {% if authorization and authorization.logged_in %}
+                    <span>{{ authorization.username }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
