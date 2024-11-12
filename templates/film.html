@@ -50,11 +50,18 @@
                     // Popout
                     const popoutbtn = document.getElementById("popout");
                     const iframe = document.getElementById("media-iframe");
-                    iframe.addEventListener('load', () => {
+                    
+                    
+                    //popoutbtn.addEventListener("click", (e)=>{
+                    //    iframe.contentWindow.postMessage('requestPiP', '{{ service_url }}');
+                    //});
+                    
+                    
+                    iframe.addEventListener("load", () => {
 
                         // Get the video element inside the iframe
                         const video = iframe.contentWindow.document.querySelector('video');
-
+                        console.log(video)
                         // Add a button to trigger PiP
                         //const pipButton = document.createElement('button');
                         //pipButton.textContent = 'Enter Picture-in-Picture';
@@ -62,25 +69,27 @@
 
                         // Toggle PiP when the button is clicked
                         popoutbtn.addEventListener('click', async () => {
-                            var iframe = document.querySelector('iframe');
-                            var video = iframe.contentWindow.document.getElementsByTagName('video');
+                            //var iframe = document.querySelector('iframe');
+                            //var video = iframe.contentWindow.document.getElementsByTagName('video');
+                           // console.log(video)
                             console.log(video);
                             console.log("Clicked")
-                            //if (!document.pictureInPictureElement) {
-                            //  try {
-                            //    await video.requestPictureInPicture();
-                            //  } catch (error) {
-                            //    console.error('Error entering Picture-in-Picture mode:', error);
-                            //  }
-                            //} else {
-                            //  try {
-                            //    await document.exitPictureInPicture();
-                            //  } catch (error) {
-                            //    console.error('Error exiting Picture-in-Picture mode:', error);
-                            //  }
-                            //}
+                            if (!document.pictureInPictureElement) {
+                              try {
+                                await video.requestPictureInPicture();
+                              } catch (error) {
+                                console.error('Error entering Picture-in-Picture mode:', error);
+                              }
+                            } else {
+                              try {
+                                await document.exitPictureInPicture();
+                              } catch (error) {
+                                console.error('Error exiting Picture-in-Picture mode:', error);
+                              }
+                            }
                         });
                     });
+                    
                     //popoutbtn.addEventListener("click", ()=>{
                     //    const videoUrl = iframe.src;
                     //    window.open(videoUrl, "_blank", "width=800,height=450");
@@ -214,7 +223,7 @@
                             <script>
                                 (()=>{
                                     const btn = document.getElementById("episode-{{ episode.episode_number }}");
-                                    btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ current_season }}/{{ episode.episode_number }}"); })
+                                    btn.addEventListener("click",()=>{ redirect("/film/tv/{{ id }}/{{ current_season }}/{{ episode.episode_number }}?service={{ current_service }}"); })
                                 })();
                             </script>
                         {% endfor %}

@@ -9,7 +9,7 @@ from server.packages import authentication
 from server.packages.tmdb import FilmType
 from server.web import WebClass
 
-from flask import Flask, render_template, session, request, jsonify, redirect, make_response
+from flask import render_template, request, jsonify, redirect, make_response
 import json
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta, datetime
@@ -127,8 +127,8 @@ def run(app: WebClass):
                     episodes = episodes,
 
                     id=id,
-
-                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id")),
+                    current_service = current_service
                 )
             else:
                 return render_template(
@@ -174,7 +174,8 @@ def run(app: WebClass):
                     tmdb_url = f"https://www.themoviedb.org/movie/{id}",
 
                     id=id,
-                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id"))
+                    is_favorited = app.db_controller.is_favorited(id, authorization.get("user_id")),
+                    current_service=current_service
                 )
             else:
                 return render_template(
