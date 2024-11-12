@@ -17,7 +17,7 @@ First Install the files here ____
 ## WINDOWS
 
 ## LINUX
-clone/download the repository `git clone -b film-box-0.1.0 https://github.com/Monnapse/FilmLabs.git` go into directory `cd FilmLabs/` then if you want but not required you can create a virtual environment by `python3 -m venv filmlabs-environment` if you dont have venv package install by doing `apt install python3-venv` activate environemnt `source filmlabs-environment/bin/activate` now install requirements `pip install -r requirements.txt`
+clone/download the repository `git clone -b film-labs-0.1.0 https://github.com/Monnapse/FilmLabs.git` go into directory `cd FilmLabs/` then if you want but not required you can create a virtual environment by `python3 -m venv filmlabs-environment` if you dont have venv package install by doing `apt install python3-venv` activate environemnt `source filmlabs-environment/bin/activate` now install requirements `pip install -r requirements.txt`
 now install mysql `sudo apt install mysql-server` no you need to secure mysql by running `sudo mysql_secure_installation` say `y` then password security level do `2` and then all the following questions just say `y` to all of them. now enter mysql `sudo mysql -u root` 
 now add your mysql password `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_new_password';` replace `'your_new_password'` with your password now `FLUSH PRIVILEGES;`
 now create the database by running `source mysql/forward_engineer.sql`
@@ -39,4 +39,4 @@ once restarted go to your the FilmLabs folder and activate environemnt `source f
 now start the server by running `python3 main.py`
 
 ## Update files
-if you want to update the files to latest release you do, pull latest changes `git pull origin film-box-0.1.0`.
+if you want to update the files to latest release you do, pull latest changes `git pull origin film-labs-0.1.0`.
