@@ -39,4 +39,4 @@ once restarted go to your the FilmLabs folder and activate environemnt `source f
 now start the server by running `python3 main.py`
 
 ## Update files
-if you want to update the files to latest release you do, pull latest changes `git pull origin film-labs`.
+if you want to update the files to latest release you do, simply pull latest changes by `git pull origin film-labs`.
