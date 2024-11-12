@@ -784,6 +784,10 @@ main {
     color: var(--smoke-color);
     font-weight: 100;
 }
+.button-chip img {
+    width: 25px;
+    height: auto;
+}
 /* chip button selected */
 .selected-button-chip {
     background-color: var(--gold-color);
@@ -791,6 +795,9 @@ main {
 .selected-button-chip p {
     color: var(--white-color);
     font-weight: 800;
+}
+.selected-button-chip img {
+    filter: brightness(800%);
 }
 /* service provider container */
 .service-provider-container {

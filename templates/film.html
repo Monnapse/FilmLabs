@@ -151,7 +151,7 @@
                             {% if episode.episode_number == current_episode %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip selected-button-chip">
                                     {% if episode.progress %}
-                                        {{ episode.progress }}
+                                        <img src="/static/media/eye.svg">
                                     {% endif %}
 
                                     <span>Episode {{episode.episode_number}}</span>
@@ -161,7 +161,7 @@
                             {% else %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip">
                                     {% if episode.progress %}
-                                        {{ episode.progress }}
+                                        <img src="/static/media/eye.svg">
                                     {% endif %}
                                     
                                     <span>Episode {{episode.episode_number}}</span>
