@@ -6,8 +6,8 @@
 """
 
 from typing import Optional, Union
-from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult, Movie, TV, ListResult
-from server.packages.db import FilmLabsDB, Film
+from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult, Movie, TV, ListResult, TVSeason, TVEpisode
+from server.packages.db import FilmLabsDB, Film, EpisodeHistory
 
 class Category:
     def __init__(self, 
@@ -46,7 +46,7 @@ class FilmsController:
         try:
             for i in self.default_page_layout:
                 if i["current_page"] == page:
-                    return i
+                    return i 
         except:
             return None
         
@@ -81,6 +81,7 @@ class FilmsController:
                 release_date = film.release_date,
                 vote_average = film.rating,
                 poster_path = film.poster
+                
             )
         elif film.media_type == "movie":
             return Movie(
@@ -104,19 +105,57 @@ class FilmsController:
         list_result = ListResult(results=tmdb_films)
         return list_result
 
-    def do_db_history_pass(self, user_id: int, film: Optional[list[Union[Movie, TV]]]) -> Optional[Union[Movie, TV]]:
+    def seen_episode(self, current_episode: TVEpisode, episodes: list[EpisodeHistory]) -> EpisodeHistory:
+        for episode in episodes:
+            if current_episode.season_number == episode.season_number and current_episode.episode_number == episode.episode_number:
+                return episode
+        return None
+
+    def do_db_episodes_pass(self, episodes: list[TVEpisode], episodes_history: list[EpisodeHistory]):
+        episodes_pass = []
+
+        for episode in episodes:
+            print(f"Season: {episode.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
+            seen = self.seen_episode(episode, episodes_history)
+            if seen != None:
+                print(f"Seen: Season: {seen.season_number}, Episode: {seen.episode_number}, Progress: {seen.progress}")
+                episode.progress = seen.progress
+            episodes_pass.append(episode)
+        return episodes_pass
+
+    def do_db_history_pass(self, user_id: int, film: Optional[Union[Movie, TV]]) -> Optional[Union[Movie, TV]]:
         try:
             if user_id == None: return film
             
             seen_film = self.db.has_seen(user_id, film.id, True)
+            #for season in film_details.seasons:
+            #for episode in seen_film.episode_history:
+            #    print(f"Season: {episode.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
             #print(seen_film)
             if seen_film:
                 if film.media_type == "movie":
-                    film.progress = seen_film
+                    film.progress = seen_film.movie_history.progress
                 elif film.media_type == "tv":
                     highest_episode = self.db.get_most_recent_history_episode(seen_film.tmdb_id, seen_film.user_id, seen_film.episode_history)
-                    film.current_season = highest_episode.season_number
-                    film.current_episode = highest_episode.episode_number
+
+                    season_pass = []
+
+                    for season in film.seasons:
+                        new_episodes = self.do_db_episodes_pass(season.episodes, seen_film.episode_history)
+                        season.episodes = new_episodes
+                        #print(new_episodes)
+                        season_pass.append(season)
+
+                    film.seasons = season_pass
+                    #for season in film.seasons:
+                    #    for episode in season.episodes:
+                    #        print(f"Season: {episode.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
+                    if highest_episode != None:
+                        #print(seen_film.episode_history[0].progress)
+                        film.current_season = highest_episode.season_number
+                        film.current_episode = highest_episode.episode_number
+                        #film.progress = None
+                        #print(f"Season: {highest_episode.season_number}, Episode: {highest_episode.episode_number}, Progress: {highest_episode.progress}")
             return film
         except Exception as e:
             print(f"Error in films controller at {self.do_db_history_pass.__name__}")
@@ -184,7 +223,6 @@ class FilmsController:
                     category.film_list.has_more_pages = False
             #elif category.media_type == None and category.list_type == "favorites":
             #    # Get favorited films
-
             elif category.media_type == FilmType.Movie.value:
                 # Is movie list type
                 category.film_list = self.tmdb.get_film_list(FilmType.Movie, category.list_type, page, category.time_window)
@@ -196,6 +234,7 @@ class FilmsController:
                 category.film_list = self.do_db_history_passes(user_id, category.film_list)
 
             #print(category.film_list.results)
+            
             return category
         except Exception as e:
             print(f"Error in films controller at {self.get_category.__name__}: {e}")

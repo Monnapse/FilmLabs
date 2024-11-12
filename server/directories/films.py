@@ -30,7 +30,7 @@ def run(app: WebClass):
                 title = app.film_controller.get_category_name(media_type, list_type, time_window)
             )
         except Exception as e:
-            print(f"Error in films controller at {category_base.__name__}: {e}")
+            print(f"Error in films at {category_base.__name__}: {e}")
 
     # Routes
     @app.flask.route("/category")
@@ -43,7 +43,7 @@ def run(app: WebClass):
             time_window = request.args.get("time_window")
             return category_base(media_type, list_type, time_window)
         except Exception as e:
-            print(f"Error in films controller at {category.__name__}: {e}")
+            print(f"Error in films at {category.__name__}: {e}")
 
     @app.flask.route("/search")
     @app.limiter.limit("30 per minute")
@@ -61,7 +61,7 @@ def run(app: WebClass):
                 query=query
             )
         except Exception as e:
-            print(f"Error in films controller at {category_time.__name__}: {e}")
+            print(f"Error in films at {category_time.__name__}: {e}")
     
     @app.flask.route("/film/tv/<id>/<season>/<episode>")
     @app.limiter.limit("30 per minute")
@@ -74,6 +74,12 @@ def run(app: WebClass):
             service = app.service_controller.get_service_data(current_service)
 
             film_details = app.film_controller.tmdb.get_details(FilmType.TV, id, True)
+
+            user_id = None
+            if authorization != None and authorization["logged_in"]:
+                user_id = authorization["user_id"]
+
+            film_details = app.film_controller.do_db_history_pass(user_id, film_details)
 
             if film_details != None:
                 season_details = film_details.get_season(season)
@@ -89,6 +95,10 @@ def run(app: WebClass):
                 ##        episodes = film_details.seasons[current_season].episodes
                 #except:
                 #    pass
+                #print(film_details.seasons[1].episodes[6].progress)
+                #for season in film_details.seasons:
+                #    for episode in season.episodes:
+                #        print(f"Season: {season.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
 
                 return render_template(
                     app.base,
@@ -129,7 +139,7 @@ def run(app: WebClass):
                     title = "Could not find movie",
                 )
         except Exception as e:
-            print(f"Error in films controller at {tv.__name__}: {e}")
+            print(f"Error in films at {tv.__name__}: {e}")
     
     @app.flask.route("/film/movie/<id>")
     @app.limiter.limit("30 per minute")
@@ -175,9 +185,8 @@ def run(app: WebClass):
                     title = "Could not find movie",
                 )
         except Exception as e:
-            print(f"Error in films controller at {movie.__name__}: {e}")
+            print(f"Error in films at {movie.__name__}: {e}")
 
-    
     # API
     def get_trailer(film_type, id):
         try:
@@ -187,7 +196,7 @@ def run(app: WebClass):
             else:
                 return jsonify(success=False, message="Please specify a valid id"), 400
         except Exception as e:
-            print(f"Error in films controller at {get_trailer.__name__}: {e}")
+            print(f"Error in films at {get_trailer.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
     @app.flask.route("/trailer/tv", methods=['GET'])
     @app.limiter.limit("10 per minute")
@@ -216,14 +225,14 @@ def run(app: WebClass):
                 
                 if categories != None:
                     categories_json = app.film_controller.categories_to_json(categories)
-                    print("Success True")
+                    #print("Success True")
                     return jsonify(success=True, data=categories_json), 200
                 else:
                     return jsonify(success=False, message="Could not find page"), 404
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
         except Exception as e:
-            print(f"Error in films controller at {get_home_page_categories.__name__}: {e}")
+            print(f"Error in films at {get_home_page_categories.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
 
     # /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null
@@ -250,7 +259,7 @@ def run(app: WebClass):
                     has_more_pages=True,
                     page=page
                 )
-                print(category)
+                
                 #category_results = []
                 #if mediaType == FilmType.Movie.value:
                 #    # Is movie list type
@@ -277,6 +286,8 @@ def run(app: WebClass):
                 #    
 
                 if category != None:
+                    category.film_list.has_more_pages = category.has_more_pages
+                    #print(category.film_list.has_more_pages)
                     categories_json = app.film_controller.tmdb.list_result_to_json(category.film_list)
                     return jsonify(success=True, data=categories_json), 200
                 else:
@@ -284,7 +295,7 @@ def run(app: WebClass):
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
         except Exception as e:
-            print(f"Error in films controller at {category_api.__name__}: {e}")
+            print(f"Error in films at {category_api.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     #
@@ -304,6 +315,13 @@ def run(app: WebClass):
                     page,
                     includeAdult
                 )
+
+                authorized_account = app.get_authorized_account()
+                user_id = None
+                if authorized_account != None and authorized_account.account_exists:
+                    user_id = authorized_account.user_id
+
+                search_results = app.film_controller.do_db_history_passes(user_id, search_results)
                 #print(f"{query}, {mediaType}, {page}, {includeAdult}")
                 if search_results != None:
                     search_json = app.film_controller.tmdb.list_result_to_json(search_results)
@@ -314,7 +332,7 @@ def run(app: WebClass):
             else:
                 return jsonify(success=False, message="Please specify a page number"), 400
         except Exception as e:
-            print(f"Error in films controller at {search_media.__name__}: {e}")
+            print(f"Error in films at {search_media.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     # toggle_favorite
@@ -349,7 +367,7 @@ def run(app: WebClass):
             else:
                 return jsonify(success=False, message="Please specify a valid token"), 401
         except Exception as e:
-            print(f"Error in films controller at {toggle_favorite.__name__}: {e}")
+            print(f"Error in films at {toggle_favorite.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
         
     @app.flask.route("/add_to_watch_history", methods=['POST'])
@@ -395,5 +413,5 @@ def run(app: WebClass):
             else:
                 return jsonify(success=False, message="Please specify a valid token"), 401
         except Exception as e:
-            print(f"Error in films controller at {add_to_watch_history.__name__}: {e}")
+            print(f"Error in films at {add_to_watch_history.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500

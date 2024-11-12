@@ -65,7 +65,7 @@ class TVEpisode:
         self.vote_average = vote_average
         self.vote_count = vote_count
 
-        self.progress = "00:00:00"
+        self.progress = None
 
 class TVSeason:
     def __init__(self, 
@@ -299,7 +299,7 @@ class TMDB:
             show_id = data.get("show_id"),
             still_path = data.get("still_path"),
             vote_average = data.get("vote_average"),
-            vote_count = data.get("vote_count")
+            vote_count = data.get("vote_count"),
         )
         return episode_class
 
@@ -317,8 +317,9 @@ class TMDB:
             if (response_json["episodes"] != None):
                 
                 for episode in response_json["episodes"]:
-                    
-                    episodes.append(self.to_tv_episode(episode))
+                    new_episode_class = self.to_tv_episode(episode)
+                    #print(new_episode_class.progress)
+                    episodes.append(new_episode_class)
             return episodes
             
         return []
@@ -384,7 +385,10 @@ class TMDB:
             if data["seasons"] != None:
                 seasons = []
                 for season in data["seasons"]:
-                    seasons.append(self.to_tv_season(season, get_episodes, str(tv_class.id)))
+                    tv_season = self.to_tv_season(season, get_episodes, str(tv_class.id))
+                    #for i in tv_season.episodes:
+                    #    print(i.progress)
+                    seasons.append(tv_season)
                 tv_class.seasons = seasons
                 #print(seasons[1].episodes)
         except:
@@ -462,9 +466,11 @@ class TMDB:
         for i in list.results:
             if (i != None):
                 films_list.append(i.__dict__)
+                #if i.media_type == "tv" and len(i.seasons) > 0:
+                #    print(i.seasons)
 
         result["results"] = films_list
-
+        #print(result)
         return result
     
     def search_films(self, query: str, film_type: FilmType = FilmType.All, page: int = 1, includeAdult: str = "false"):

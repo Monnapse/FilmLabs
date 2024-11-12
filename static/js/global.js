@@ -340,11 +340,11 @@ function getFilmUrl(film)
 
     const media_type = film.media_type
     let url = `/film/${media_type}/${film.id}`
-
-    if (item.media_type == "tv")
+    //console.log(item)
+    if (film.media_type == "tv")
     {
-        season = item.current_season
-        episode = item.current_episode
+        season = film.current_season
+        episode = film.current_episode
     }
 
     if (media_type == "tv")

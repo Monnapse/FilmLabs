@@ -150,12 +150,20 @@
                         {% for episode in episodes %}
                             {% if episode.episode_number == current_episode %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip selected-button-chip">
+                                    {% if episode.progress %}
+                                        {{ episode.progress }}
+                                    {% endif %}
+
                                     <span>Episode {{episode.episode_number}}</span>
                                     <spam>∙</spam>
                                     <p>{{episode.name}}</p>
                                 </button>
                             {% else %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip">
+                                    {% if episode.progress %}
+                                        {{ episode.progress }}
+                                    {% endif %}
+                                    
                                     <span>Episode {{episode.episode_number}}</span>
                                     <spam>∙</spam>
                                     <p>{{episode.name}}</p>

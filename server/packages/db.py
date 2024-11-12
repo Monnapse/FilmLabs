@@ -40,6 +40,7 @@ class Film:
             rating: float = None,
             poster: str = None,
 
+            progress: str = None,
             current_season: int = 1,
             current_episode = 1
         ) -> None:
@@ -49,6 +50,7 @@ class Film:
         self.release_date = release_date
         self.rating = rating
         self.poster = poster
+        self.progress = progress
         self.current_season = current_season
         self.current_episode = current_episode
 
@@ -109,7 +111,8 @@ class FilmLabsDB:
             host=host,
             user=user,
             password=password,
-            database=database
+            database=database,
+            ssl_disabled = True
         )
 
         self.db_cursor = self.db_connection.cursor()
@@ -465,6 +468,7 @@ class FilmLabsDB:
                         result[2],
                         result[3]
                     )
+                    #print(episode.progress)
                     episodes.append(episode)
                 return episodes
             
@@ -723,11 +727,13 @@ class FilmLabsDB:
 
             if watch_history and len(watch_history) > 0:
                 highest_episode = watch_history[0]
-
+                #print(highest_episode)
                 for episode in watch_history:
-                    if episode.season_number > highest_episode.season_number and episode.episode_number > highest_episode.episode_number:
+                    if episode.season_number >= highest_episode.season_number and episode.episode_number > highest_episode.episode_number:
                         highest_episode = episode
+
                 return highest_episode
+                
             return None
         except Exception as e:
             print(f"DB Error occurred inside {self.get_watch_history_by_id.__name__}: {e}")
