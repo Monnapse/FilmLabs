@@ -4,3 +4,4 @@ Flask_Limiter==2.8.1
 flask_session==0.8.0
 python_bcrypt==0.3.2
 Requests==2.32.3
+mysql_connector_repackaged==0.3.1

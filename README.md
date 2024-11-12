@@ -14,5 +14,8 @@ The database uses mysql.
 First Install the files here ____
 
 ## 2
-clone/download the repository `git clone -b film-labs-0.1.0 https://github.com/Monnapse/FilmLabs.git` then if you want but not required you can create a virtual environment by `python3 -m venv filmlabs-environment`
-Install all required packages by opening command line and navigating to your installation directory and running ```pip install -r requirements.txt``` in your command line.
+## WINDOWS
+
+## LINUX
+clone/download the repository `git clone -b film-box-0.1.0 https://github.com/Monnapse/FilmLabs.git` go into directory `cd FilmLabs/` then if you want but not required you can create a virtual environment by `python3 -m venv filmlabs-environment` if you dont have venv package install by doing `apt install python3-venv` activate environemnt `source filmlabs-environment/bin/activate` now install requirements `pip install -r requirements.txt`
+now start the server by running `python3 main.py`
