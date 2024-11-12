@@ -9,7 +9,7 @@ from server.packages import authentication
 from server.packages.tmdb import FilmType
 from server.web import WebClass
 
-from flask import Flask, render_template, session, request, jsonify, redirect, make_response
+from flask import render_template, request, jsonify, redirect, make_response
 import json
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta, datetime

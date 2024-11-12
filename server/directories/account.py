@@ -7,8 +7,7 @@
 
 from server.web import WebClass
 
-from flask import Flask, render_template, session, redirect
-from flask_jwt_extended import jwt_required
+from flask import render_template, redirect
 
 # SETTINGS
 

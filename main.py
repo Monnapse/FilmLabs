@@ -11,7 +11,7 @@
 """
 
 from flask import Flask, request
-from flask_session import Session
+#from flask_session import Session
 from datetime import timedelta
 from os import environ
 from flask_limiter import Limiter
@@ -45,7 +45,7 @@ limiter = Limiter(app, key_func=get_remote_address)
 app.config['JWT_SECRET_KEY'] = environ.get("FILMLABS_JWT_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=token_max_days)
 
-Session(app)
+#Session(app)
 jwt = JWTManager(app)
 
 api = tmdb.TMDB(

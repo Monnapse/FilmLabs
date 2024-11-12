@@ -8,9 +8,8 @@
 from server.packages import authentication
 from server.web import WebClass
 
-from flask import Flask, render_template, session, request, jsonify, redirect, make_response
-import json
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask import render_template, request, jsonify, redirect, make_response
+from flask_jwt_extended import create_access_token
 from datetime import timedelta
 
 def run(app: WebClass):
