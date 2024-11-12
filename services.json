@@ -1,6 +1,6 @@
 [
     {
-        "name": "Embed su",
+        "name": "Embed Su",
         "movie": "https://embed.su/embed/movie/{id}",
         "tv": "https://embed.su/embed/tv/{id}/{season}/{episode}"
     },
@@ -8,5 +8,70 @@
         "name": "Moviee",
         "movie": "https://moviee.tv/embed/movie/{id}",
         "tv": "https://moviee.tv/embed/tv/{id}?season={season}&episode={episode}"
+    },
+    {
+        "name": "VidSrc Rip",
+        "movie": "https://vidsrc.rip/embed/movie/{id}",
+        "tv": "https://vidsrc.rip/embed/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "AutoEmbed",
+        "movie": "https://player.autoembed.cc/embed/movie/{id}",
+        "tv": "https://player.autoembed.cc/embed/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "SuperEmbed",
+        "movie": "https://multiembed.mov/?video_id={id}&tmdb=1",
+        "tv": "https://multiembed.mov/?video_id={id}&tmdb=1&s={season}&e={episode}"
+    },
+    {
+        "name": "SuperEmbed VIP",
+        "movie": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1",
+        "tv": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&s={season}&e={episode}"
+    },
+    {
+        "name": "2Embed cc",
+        "movie": "https://www.2embed.cc/embed/{id}",
+        "tv": "https://www.2embed.cc/embedtv/{id}&s={season}&e={episode}"
+    },
+    {
+        "name": "2Embed Skin",
+        "movie": "https://www.2embed.skin/embed/{id}",
+        "tv": "https://www.2embed.skin/embedtv/{id}&s={season}&e={episode}"
+    },
+    {
+        "name": "VidLink Pro",
+        "movie": "https://vidlink.pro/movie/{id}",
+        "tv": "https://vidlink.pro/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "VidSrc XYZ",
+        "movie": "https://vidsrc.xyz/embed/movie/{id}",
+        "tv": "https://vidsrc.xyz/embed/tv/{id}/{season}-{episode}"
+    },
+    {
+        "name": "VidSrc To",
+        "movie": "https://vidsrc.to/embed/movie/{id}",
+        "tv": "https://vidsrc.to/embed/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "VidSrc Dev",
+        "movie": "https://vidsrc.dev/embed/movie/{id}",
+        "tv": "https://vidsrc.dev/embed/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "Smashy Stream",
+        "movie": "https://player.smashy.stream/movie/{id}",
+        "tv": "https://player.smashy.stream/tv/{id}?s={season}&e={episode}"
+    },
+    {
+        "name": "Any Embed",
+        "movie": "https://anyembed.xyz/movie/{id}",
+        "tv": "https://anyembed.xyz/tv/{id}/{season}/{episode}"
+    },
+    {
+        "name": "MoviesApi Club",
+        "movie": "https://moviesapi.club/movie/{id}",
+        "tv": "https://moviesapi.club/tv/{id}-{season}-{episode}"
     }
 ]

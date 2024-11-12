@@ -115,10 +115,10 @@ class FilmsController:
         episodes_pass = []
 
         for episode in episodes:
-            print(f"Season: {episode.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
+            #print(f"Season: {episode.season_number}, Episode: {episode.episode_number}, Progress: {episode.progress}")
             seen = self.seen_episode(episode, episodes_history)
             if seen != None:
-                print(f"Seen: Season: {seen.season_number}, Episode: {seen.episode_number}, Progress: {seen.progress}")
+                #print(f"Seen: Season: {seen.season_number}, Episode: {seen.episode_number}, Progress: {seen.progress}")
                 episode.progress = seen.progress
             episodes_pass.append(episode)
         return episodes_pass

@@ -24,7 +24,10 @@
                     <img class="rating-img" src="/static/media/star.png" alt="Rating">
                     <span>{{ rating or "Rating" }}/10</span>
                 </div>
-
+                
+                <button id="popout" class="button">
+                    Popout
+                </button>
                 <button id="watch-now" class="button">
                     Watch Now
                 </button>
@@ -44,6 +47,45 @@
                 {% endif %}
 
                 <script>
+                    // Popout
+                    const popoutbtn = document.getElementById("popout");
+                    const iframe = document.getElementById("media-iframe");
+                    iframe.addEventListener('load', () => {
+
+                        // Get the video element inside the iframe
+                        const video = iframe.contentWindow.document.querySelector('video');
+
+                        // Add a button to trigger PiP
+                        //const pipButton = document.createElement('button');
+                        //pipButton.textContent = 'Enter Picture-in-Picture';
+                        //document.body.appendChild(pipButton);
+
+                        // Toggle PiP when the button is clicked
+                        popoutbtn.addEventListener('click', async () => {
+                            var iframe = document.querySelector('iframe');
+                            var video = iframe.contentWindow.document.getElementsByTagName('video');
+                            console.log(video);
+                            console.log("Clicked")
+                            //if (!document.pictureInPictureElement) {
+                            //  try {
+                            //    await video.requestPictureInPicture();
+                            //  } catch (error) {
+                            //    console.error('Error entering Picture-in-Picture mode:', error);
+                            //  }
+                            //} else {
+                            //  try {
+                            //    await document.exitPictureInPicture();
+                            //  } catch (error) {
+                            //    console.error('Error exiting Picture-in-Picture mode:', error);
+                            //  }
+                            //}
+                        });
+                    });
+                    //popoutbtn.addEventListener("click", ()=>{
+                    //    const videoUrl = iframe.src;
+                    //    window.open(videoUrl, "_blank", "width=800,height=450");
+                    //})
+
                     // Watch now
                     const watchBtn = document.getElementById("watch-now");
 
