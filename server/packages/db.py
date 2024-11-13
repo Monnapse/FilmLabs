@@ -14,6 +14,9 @@ from server.packages import authentication
 
 from os import environ
 import mysql.connector as mysql
+import mysql.connector
+from mysql.connector import pooling
+from mysql.connector.pooling import PooledMySQLConnection
 
 class Account:
     def __init__(self, 
@@ -97,7 +100,7 @@ class FilmLabsDB:
             username_max_length
         ) -> None:
         self.db_connection = None
-        self.db_cursor = None
+        #self.db_cursor = None
 
         self.password_max_length = password_max_length
         self.password_min_length = password_min_length
@@ -107,15 +110,66 @@ class FilmLabsDB:
         print("DB >>> Created database class")
 
     def connect(self, host: str, user: str, password: str, database:str) -> None:
-        self.db_connection = mysql.connect(
+        self.db_pool = mysql.connector.pooling.MySQLConnectionPool(
             host=host,
             user=user,
             password=password,
             database=database,
-            ssl_disabled = True
+            ssl_disabled = True,
+            pool_name="filmlabs_db_pool",
+            pool_size=5,
+            pool_reset_session=True,
         )
 
-        self.db_cursor = self.db_connection.cursor()
+        #self.db_cursor = self.db_connection.cursor()
+
+    def get_connection(self) -> PooledMySQLConnection:
+        try:
+            connection = self.db_pool.get_connection()
+            #if connection.is_connected():
+            #    print("Successfully retrieved a connection from the pool")
+            return connection
+        except mysql.connector.Error as e:
+            print(f"DB Error occurred inside {self.get_connection.__name__}: {e}")
+            return None
+        
+    def execute_query_fetchall(self, query: str, params = None, commit: bool = False):
+        connection = None
+        cursor = None
+        try:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(query, params)
+            if commit:
+                connection.commit()
+            result = cursor.fetchall()
+            return result
+        except mysql.connector.Error as e:
+            print(f"DB Error occurred inside {self.execute_query_fetchall.__name__}: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+
+    def execute_query_lastrowid(self, query: str, params = None, commit: bool = False):
+        connection = None
+        cursor = None
+        try:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(query, params)
+            if commit:
+                connection.commit()
+            result = cursor.lastrowid()
+            return result
+        except mysql.connector.Error as e:
+            print(f"DB Error occurred inside {self.execute_query_lastrowid.__name__}: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
 
     def create_account(self, username: str, password: str, reenter_password) -> Account:
         try:
@@ -129,12 +183,12 @@ class FilmLabsDB:
                         # Create queire
                         query = "insert into account (username, password) values (%s, %s)"
                         values = (username, hashed_password)
+#
+                        ## Execute querie
+                        #self.db_cursor.execute(query, values)
+                        #self.db_connection.commit()
 
-                        # Execute querie
-                        self.db_cursor.execute(query, values)
-                        self.db_connection.commit()
-
-                        user_id = self.db_cursor.lastrowid
+                        user_id = self.execute_query_lastrowid(query, values, True)#self.db_cursor.lastrowid
 
                         return Account(
                             user_id,
@@ -163,10 +217,10 @@ class FilmLabsDB:
     def does_username_exist(self, username: str) -> bool:
         try:
             query = "select user_id from account where username = %s"
-            username = (username, )
+            params = (username, )
 
-            self.db_cursor.execute(query, username)
-            results = self.db_cursor.fetchall()
+            #self.db_cursor.execute(query, username)
+            results = self.execute_query_fetchall(query, params, False)#self.db_cursor.fetchall()
 
             if (len(results) > 0):
                 return True
@@ -177,10 +231,10 @@ class FilmLabsDB:
     def get_account(self, user_id: str) -> Account:
         try:
             query = "select user_id, username from account where user_id = %s"
-            user_id = (str(user_id), )
+            params = (str(user_id), )
 
-            self.db_cursor.execute(query, user_id)
-            results = self.db_cursor.fetchall()
+            #self.db_cursor.execute(query, user_id)
+            results = self.execute_query_fetchall(query, params, False)#self.db_cursor.fetchall()
 
             # Check if there are any results if not then that means
             # no account with that user_id exists
@@ -201,10 +255,10 @@ class FilmLabsDB:
     def login(self, username: str, password: str) -> Account:
         try:
             query = "select user_id, username, password from account where username = %s"
-            username = (username, )
+            params = (username, )
     
-            self.db_cursor.execute(query, username)
-            results = self.db_cursor.fetchall()
+            #self.db_cursor.execute(query, username)
+            results = self.execute_query_fetchall(query, params, False)#self.db_cursor.fetchall()
     
             # Check if there are any results if not then that means
             # no account with that username exists
@@ -253,8 +307,9 @@ class FilmLabsDB:
         try:
             query = "insert into film values (%s, %s, %s, %s, %s, %s)"
             values = (tmdb_id, media_type, name, release_date, rating, poster)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
+            self.execute_query_fetchall(query, values, True)
 
             return Film(
                     tmdb_id,
@@ -272,9 +327,9 @@ class FilmLabsDB:
         try:
             query = "select * from film where tmdb_id = %s"
             values = (tmdb_id, )
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
 
             if results and len(results) > 0:
                 result = results[0]
@@ -298,29 +353,32 @@ class FilmLabsDB:
         rating: float = None,
         poster: str = None
     ) -> Film:
-        film = self.get_film(tmdb_id)
+        try:
+            film = self.get_film(tmdb_id)
 
-        if film == None:
-            #print(poster)
-            self.add_film(
-                tmdb_id,
-                media_type,
-                name,
-                release_date,
-                rating,
-                poster
-            )
+            if film == None:
+                #print(poster)
+                self.add_film(
+                    tmdb_id,
+                    media_type,
+                    name,
+                    release_date,
+                    rating,
+                    poster
+                )
 
-            return Film(
-                tmdb_id,
-                media_type,
-                name,
-                release_date,
-                rating,
-                poster
-            )
+                return Film(
+                    tmdb_id,
+                    media_type,
+                    name,
+                    release_date,
+                    rating,
+                    poster
+                )
 
-        return film
+            return film
+        except Exception as e:
+            print(f"DB Error occurred inside {self.check_film.__name__}: {e}")
 
     def remove_favorite(self, tmdb_id: int, user_id: int):
         # delete from account_favorites where tmdb_id = 2 and user_id = 1
@@ -329,8 +387,9 @@ class FilmLabsDB:
         try:
             query = "delete from account_favorites where tmdb_id = %s and user_id = %s"
             values = (tmdb_id, user_id)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
+            self.execute_query_fetchall(query, values, True)
         except Exception as e:
             print(f"DB Error occurred inside {self.remove_favorite.__name__}: {e}")
 
@@ -342,8 +401,9 @@ class FilmLabsDB:
             #print("ADDING FAVORITE")
             query = "insert into account_favorites values(%s, %s)"
             values = (tmdb_id, user_id)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
+            self.execute_query_fetchall(query, values, True)
         except Exception as e:
             print(f"DB Error occurred inside {self.add_favorite.__name__}: {e}")
 
@@ -352,9 +412,9 @@ class FilmLabsDB:
         try:
             query = "select distinct f.* from account_favorites af join film f on af.tmdb_id = f.tmdb_id where af.user_id = %s group by f.tmdb_id"
             values = (user_id, )
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
 
             favorites = []
 
@@ -379,9 +439,9 @@ class FilmLabsDB:
         try:
             query = "select distinct * from account_favorites af where af.user_id = %s and af.tmdb_id = %s"
             values = (user_id, tmdb_id)
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
 
             favorites = []
 
@@ -432,9 +492,9 @@ class FilmLabsDB:
         try:
             query = "select * from movie_history where account_history_id = %s"
             values = (account_history_id, )
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
 
             if results and len(results) > 0:
                 result = results[0]
@@ -455,9 +515,9 @@ class FilmLabsDB:
         try:
             query = "select * from episode_history where account_history_id = %s"
             values = (account_history_id, )
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
             episodes = []
 
             if results and len(results) > 0:
@@ -483,9 +543,9 @@ class FilmLabsDB:
         try:
             query = "select * from account_watch_history where user_id = %s and tmdb_id = %s"
             values = (user_id, tmdb_id)
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values, False)#self.db_cursor.fetchall()
             
             if results and len(results) > 0:
                 result = results[0]
@@ -548,9 +608,9 @@ class FilmLabsDB:
         try:
             query = "select * from account_watch_history where user_id = %s;"
             values = (user_id, )
-            self.db_cursor.execute(query, values)
+            #self.db_cursor.execute(query, values)
 
-            results = self.db_cursor.fetchall()
+            results = self.execute_query_fetchall(query, values)#self.db_cursor.fetchall()
             history = []
 
             if results and len(results) > 0:
@@ -584,8 +644,9 @@ class FilmLabsDB:
             # First Query
             query = "insert into movie_history values (%s, %s)"
             values = (account_history_id, progress)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
+            self.execute_query_fetchall(query, values, True)
         except Exception as e:
             print(f"DB Error occurred inside {self.add_movie_history.__name__}: {e}")
 
@@ -607,8 +668,9 @@ class FilmLabsDB:
             # First Query
             query = "insert into episode_history values (%s, %s, %s, %s)"
             values = (account_history_id, episode_number, season_number, progress)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
+            self.execute_query_fetchall(query, values, True)
         except Exception as e:
             print(f"DB Error occurred inside {self.add_episode_history.__name__}: {e}")
 
@@ -639,11 +701,11 @@ class FilmLabsDB:
 
             # First Query
             query = "insert into account_watch_history (tmdb_id, user_id) values (%s, %s)"
-            values = (tmdb_id, user_id)
-            self.db_cursor.execute(query, values)
-            self.db_connection.commit()
+            values = (str(tmdb_id), str(user_id))
+            #self.db_cursor.execute(query, values)
+            #self.db_connection.commit()
 
-            watch_history_id = self.db_cursor.lastrowid
+            watch_history_id = self.execute_query_lastrowid(query, values, True)#self.db_cursor.lastrowid
             return watch_history_id
         except Exception as e:
             print(f"DB Error occurred inside {self.add_watch_history.__name__}: {e}")
@@ -754,8 +816,8 @@ db.connect(
     environ.get("FILMLABS_DB")
 )
 
-#admin_account = db.create_account("sugriva", "fortnite")
+admin_account = db.create_account("sugriva", "fortnite")
 #login = db.login("Monnapse", "Password")
-film = db.get_film(1)
-print(film.__dict__)
+#film = db.get_film(1)
+print(admin_account.user_id)
 """
