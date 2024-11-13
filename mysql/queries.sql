@@ -89,6 +89,7 @@ group by f.tmdb_id;
 
 # Get Account Watch History Table
 select * from account_watch_history where user_id = 1;
+select * from account_watch_history where user_id = 1 and tmdb_id = 94605;
 
 # Get History Movie Table
 select * from movie_history where account_history_id = 1;
