@@ -17,11 +17,33 @@ First Install the files here ____
 ## WINDOWS
 
 ## LINUX
-clone/download the repository `git clone -b film-labs https://github.com/Monnapse/FilmLabs.git` go into directory `cd FilmLabs/` then if you want but not required you can create a virtual environment by `python3 -m venv filmlabs-environment` if you dont have venv package install by doing `apt install python3-venv` activate environemnt `source filmlabs-environment/bin/activate` now install requirements `pip install -r requirements.txt`
-now install mysql `sudo apt install mysql-server` no you need to secure mysql by running `sudo mysql_secure_installation` say `y` then password security level do `2` and then all the following questions just say `y` to all of them. now enter mysql `sudo mysql -u root` 
+
+### Downloading Files
+Clone/download the repository by running `git clone -b film-labs https://github.com/Monnapse/FilmLabs.git`.
+
+Now go into directory by running `cd FilmLabs/`.
+
+### Create Virtual Environemnt (Optional)
+If you want to use a virtual environment then you want to first run `python3 -m venv filmlabs-environment` 
+(if you dont have the venv package install by running `apt install python3-venv`)
+
+Activate the virtual environemnt by running `source filmlabs-environment/bin/activate`.
+
+### Install required packages
+Now install required packages by running `pip install -r requirements.txt`.
+
+### Install mysql
+Now install the mysql server by running `sudo apt install mysql-server`. Now you need to secure mysql server by 
+running `sudo mysql_secure_installation` it will ask some questions, for the first question say `y` 
+then password security level question just say `2` for highest security,
+and then all the following questions just say `y` to all of them. 
+Now enter mysql `sudo mysql -u root` 
 now add your mysql password `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_new_password';` replace `'your_new_password'` with your password now `FLUSH PRIVILEGES;`
+
+### Create database
 now create the database by running `source mysql/forward_engineer.sql`
 
+### Creating environment variables
 now create your environment variables by running `sudo nano /etc/environment`
 now in that file add:
 `FILMLABS_DB="filmlabs"`
