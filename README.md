@@ -22,6 +22,11 @@ This repository does not store any media files it uses streaming apis to stream 
 
 ## WINDOWS
 
+### Download Files
+Download files [here](https://github.com/Monnapse/FilmLabs/archive/refs/tags/v1.1.0.zip)
+
+### 
+
 ## LINUX
 
 ### Downloading Files
