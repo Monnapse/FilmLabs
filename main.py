@@ -98,4 +98,4 @@ if __name__ == '__main__':
     web_controller.run_directories()
 
     # Run flask app
-    app.run(debug=True, port="2400", host="0.0.0.0")
+    app.run(debug=False, port="2400", host="0.0.0.0")
