@@ -21,7 +21,7 @@
             <h1 style="flex: 1;">{{ title or "Title" }}</h1>
             <div class="film-end">
                 <div class="rating">
-                    <img class="rating-img" src="/static/media/star.png" alt="Rating">
+                    <img class="rating-img" src="{{ url_for('static', filename='media/star.png') }}" alt="Rating">
                     <span>{{ rating or "Rating" }}/10</span>
                 </div>
                 
@@ -33,12 +33,12 @@
                 </button>
                 {% if is_favorited %}
                     <button id="favorite" class="button favorited">
-                        <img src="/static/media/heart.svg">
+                        <img src="{{ url_for('static', filename='media/heart.svg') }}">
                         <span>Favorited</span>
                     </button>
                 {% else %}
                     <button id="favorite" class="button">
-                        <img src="/static/media/heart.svg">
+                        <img src="{{ url_for('static', filename='media/heart.svg') }}">
                         <span>Favorite</span>
                     </button>
                 {% endif %}
@@ -122,7 +122,7 @@
                         {% if season.season_number == current_season %}
                             <button class="dropdown-button">
                                 <span class="unclickable">{{ season.name }}</span>
-                                <img src="/static/media/down_arrow.svg" class="unclickable">
+                                <img src="{{ url_for('static', filename='media/down_arrow.svg') }}" class="unclickable">
                             </button>
                         {% endif %}
                     {% endfor %}
@@ -151,7 +151,7 @@
                             {% if episode.episode_number == current_episode %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip selected-button-chip">
                                     {% if episode.progress %}
-                                        <img src="/static/media/eye.svg">
+                                        <img src="{{ url_for('static', filename='media/eye.svg') }}">
                                     {% endif %}
 
                                     <span>Episode {{episode.episode_number}}</span>
@@ -161,7 +161,7 @@
                             {% else %}
                                 <button id="episode-{{ episode.episode_number }}" class="button-chip">
                                     {% if episode.progress %}
-                                        <img src="/static/media/eye.svg">
+                                        <img src="{{ url_for('static', filename='media/eye.svg') }}">
                                     {% endif %}
                                     
                                     <span>Episode {{episode.episode_number}}</span>

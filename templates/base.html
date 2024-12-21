@@ -15,7 +15,7 @@
         <script src="{{ url_for('static', filename='js/global.js') }}"></script>
 
         {% if javascript %}
-            <script src="/static/js/{{ javascript }}.js"></script>
+            <script src="{{ url_for('static', filename='js/{{ javascript }}.js') }}"></script>
         {% endif %}
     </head>
     <body>
