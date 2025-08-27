@@ -17,6 +17,8 @@ import mysql.connector as mysql
 import mysql.connector
 from mysql.connector import pooling
 from mysql.connector.pooling import PooledMySQLConnection
+from mysql.connector import Error
+import time
 
 class Account:
     def __init__(self, 
@@ -110,16 +112,27 @@ class FilmLabsDB:
         print("DB >>> Created database class")
 
     def connect(self, host: str, user: str, password: str, database:str) -> None:
-        self.db_pool = mysql.connector.pooling.MySQLConnectionPool(
-            host=host,
-            user=user,
-            password=password,
-            database=database,
-            ssl_disabled = True,
-            pool_name="filmlabs_db_pool",
-            pool_size=5,
-            pool_reset_session=True,
-        )
+        while True:
+           try:
+               self.db_pool = mysql.connector.pooling.MySQLConnectionPool(
+                   host=host,
+                   user=user,
+                   password=password,
+                   database=database,
+                   ssl_disabled = True,
+                   pool_name="filmlabs_db_pool",
+                   pool_size=5,
+                   pool_reset_session=True,
+               )
+               # Get a connection and test
+               conn = self.db_pool.get_connection()
+               if conn.is_connected():
+                   print("MySQL pool connection works!")
+                   conn.close()
+                   break
+           except Error:
+               print("MySQL not ready, retrying in 5 seconds...")
+               time.sleep(5)
 
         #self.db_cursor = self.db_connection.cursor()
 
