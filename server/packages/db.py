@@ -119,7 +119,7 @@ class FilmLabsDB:
                     user=user,
                     password=password,
                     database=database,
-                    ssl_disabled = True,
+                    ssl_disabled=True,
                     pool_name="filmlabs_db_pool",
                     pool_size=5,
                     pool_reset_session=True,
