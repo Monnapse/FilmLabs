@@ -197,7 +197,7 @@ class FilmsController:
                 time_window=time_window,
                 has_more_pages=has_more_pages
             )
-            print(category.list_type)
+            #print(category.list_type)
 
             if category.media_type == None or category.media_type == "null":
                 # Media type is both
@@ -226,7 +226,7 @@ class FilmsController:
 
                 # Recommended
                 elif category.list_type == "recommendations" and user_id != None:
-                    print("RECOMMENDATIONS")
+                    #print("RECOMMENDATIONS")
                     #recommendations = self.db.get_recommendations(user_id)
 
                     favorites = self.db.get_favorites(user_id)
@@ -234,13 +234,13 @@ class FilmsController:
 
                     # Select random 5
                     items = random.sample(favorites_result.results, min(5, len(favorites_result.results)))
-                    for item in items:
-                        print("Selected item:", item.name)
+                    #for item in items:
+                    #    print("Selected item:", item.name)
 
                     recommendations = self.tmdb.get_recommendations(items)
-                    print("Recommendations fetched:", len(recommendations.results))
-                    for recommendation in recommendations.results:
-                        print("Recommendation:", recommendation.name, recommendation.media_type, recommendation.id)
+                    #print("Recommendations fetched:", len(recommendations.results))
+                    #for recommendation in recommendations.results:
+                    #    print("Recommendation:", recommendation.name, recommendation.media_type, recommendation.id)
 
                     #recommendations_result = self.db_films_to_tmdb_films(recommendations)
                     category.film_list = recommendations
