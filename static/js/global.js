@@ -246,7 +246,7 @@ function isMobile() {
 
 function redirect(url) { window.location.href = url; }
 
-function createCategory(title, mediaType, listType, timeWindow)
+function createCategory(title, mediaType, listType, timeWindow, id)
 {
     /*
         <section class="category">
@@ -262,7 +262,7 @@ function createCategory(title, mediaType, listType, timeWindow)
 
     const timeHtml = timeWindow != null ? `&time_window=${timeWindow}` : ""
 
-    const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${title}" class=" media-list scroll-list"></div></section>`
+    const html = `<section class="category"><a class="h3" href="/category?media_type=${mediaType}&list_type=${listType}${timeHtml}">${title}</a><div id="scroll-${id ? id : title}" class=" media-list scroll-list"></div></section>`
 
     return createHtmlElement(html);
 }

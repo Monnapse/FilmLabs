@@ -2,32 +2,27 @@
     "pages": [
         {
             "current_page": 1,
-            
+
             "categories": [
                 {
-                    "name": "My watch history",
-                    "media_type": null,
-                    "list_type": "watch_history",
-                    "time_window": null
-                },
-                {
-                    "name": "My favorites",
-                    "media_type": null,
-                    "list_type": "favorites",
-                    "time_window": null
-                },
-                {
-                    "name": "Trending today",
-                    "media_type": null,
-                    "list_type": "trending",
-                    "time_window": "day"
+                   "name": "My recommendations",
+                   "media_type": null,
+                   "list_type": "recommendations",
+                   "time_window": null
                 }
             ]
         },
         {
             "current_page": 2,
-
+            
             "categories": [
+                
+                {
+                    "name": "Trending today",
+                    "media_type": null,
+                    "list_type": "trending",
+                    "time_window": "day"
+                },
                 {
                     "name": "Trending this week",
                     "media_type": null,
@@ -45,13 +40,7 @@
                     "media_type": "movie",
                     "list_type": "now_playing",
                     "time_window": null
-                }
-            ]
-        },
-        {
-            "current_page": 3,
-
-            "categories": [
+                },
                 {
                     "name": "Top rated tv series",
                     "media_type": "tv",
@@ -69,13 +58,7 @@
                     "media_type": "tv",
                     "list_type": "popular",
                     "time_window": null
-                }
-            ]
-        },
-        {
-            "current_page": 4,
-
-            "categories": [
+                },
                 {
                     "name": "Airing today tv series",
                     "media_type": "tv",
@@ -92,6 +75,24 @@
                     "name": "Upcoming movies",
                     "media_type": "movie",
                     "list_type": "upcoming",
+                    "time_window": null
+                }
+            ]
+        },
+        {
+            "current_page": 3,
+
+            "categories": [
+                {
+                   "name": "My watch history",
+                   "media_type": null,
+                   "list_type": "watch_history",
+                   "time_window": null
+                },
+                {
+                    "name": "My favorites",
+                    "media_type": null,
+                    "list_type": "favorites",
                     "time_window": null
                 }
             ]

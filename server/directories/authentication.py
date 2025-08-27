@@ -90,7 +90,7 @@ def run(app: WebClass):
                 if (remember):
                     remember_time = timedelta(days=app.token_max_days)
 
-                token = create_access_token(identity=account.user_id)
+                token = create_access_token(identity=str(account.user_id))
                 response = make_response(jsonify(success=True, message="Successfully logged into account"), 200)
                 response.set_cookie(
                         "access_token", 

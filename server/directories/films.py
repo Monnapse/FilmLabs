@@ -85,6 +85,8 @@ def run(app: WebClass):
                 season_details = film_details.get_season(season)
                 episodes = season_details.episodes
 
+                #recommendations = app.film_controller.tmdb.get_recommendations_for_item(int(id), FilmType.TV)
+
                 #try:
                 #    current_season = int(season)
                 #    if film_details.seasons[current_season]:
@@ -153,6 +155,8 @@ def run(app: WebClass):
             film_details = app.film_controller.tmdb.get_details(FilmType.Movie, id)
 
             if film_details != None:
+                #recommendations = app.film_controller.tmdb.get_recommendations_for_item(int(id), FilmType.Movie)
+
                 return render_template(
                     app.base,
                     template = "film.html",
@@ -234,6 +238,21 @@ def run(app: WebClass):
                 return jsonify(success=False, message="Please specify a page number"), 400
         except Exception as e:
             print(f"Error in films at {get_home_page_categories.__name__}: {e}")
+            return jsonify(success=False, message="Something went wrong"), 500
+        
+    @app.flask.route("/get_recommendations/<type>/<id>", methods=['GET'])
+    @app.limiter.limit("30 per minute")
+    def get_recommendations(type, id):
+        try:
+            recommendations = app.film_controller.tmdb.get_recommendations_for_item(int(id), type)
+            if recommendations != None:
+                json_recommendations = [r.__dict__ for r in recommendations.results]
+
+                return jsonify(success=True, data=json_recommendations), 200
+            else:
+                return jsonify(success=False, message="Could not find recommendations"), 404
+        except Exception as e:
+            print(f"Error in films at {get_recommendations.__name__}: {e}")
             return jsonify(success=False, message="Something went wrong"), 500
 
     # /get_category?page=5&media_type=tv&list_type=top_rated&time_window=null

@@ -1,12 +1,21 @@
 """
 
     Film Box Server
+
     Made by Monnapse
-
     Created 11/6/2024
-    Last Updated 11/6/2024
+    
 
-    0.1.0
+    UPDATES
+    
+    0.2.0 8/27/2025
+    - Added show & movie recommendation categories to home page & film pages.
+    - Reorganized home page categories json file.
+    - Fixed token issue.
+    - Fixed some page responsiveness issues.
+
+    0.1.0 11/6/2024
+    - Initial release.
 
 """
 
@@ -69,7 +78,8 @@ db_controller = db.FilmLabsDB(
 film_controller = films.FilmsController(
     api,
     db_controller,
-    json_controller.load_json("home_page.json")
+    json_controller.load_json("home_page.json"),
+
 )
 web_controller = web.WebClass(
     app, 

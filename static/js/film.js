@@ -1,15 +1,66 @@
 let watchingTrailer = false;
 let addedToWatchHistory = false;
+let isLoading = false;
+let recLoaded = false;
 
 window.onload = function() {
     console.log("film.js loaded");
     
     loadGlobal();
 
+    const url = window.location.pathname;
+    const urlPaths = url.split("/");
+
+    let mediaType = urlPaths[2];
+    let tmdbId = urlPaths[3];
+
     // Seasons drropdown
-    const DropdownBtn = document.getElementsByClassName("dropdown-button")[0];
-    const DropdownList = document.getElementsByClassName("dropdown-list-container")[0];
-    addDropdown(DropdownBtn, DropdownList);
+    if (mediaType == "tv")
+    {
+        const DropdownBtn = document.getElementsByClassName("dropdown-button")[0];
+        const DropdownList = document.getElementsByClassName("dropdown-list-container")[0];
+        addDropdown(DropdownBtn, DropdownList);
+    }
+    
+
+    // Recomendations
+    const recommendationsContainer = document.getElementById("recommendations")
+    
+    dynamicScrollBarLoading(async ()=>{
+        if (isLoading || recLoaded || tmdbId == null || mediaType == null) 
+        { 
+            //console.log(`${isLoading}, ${recLoaded}, ${tmdbId}, ${mediaType}`); 
+            return; 
+        };
+
+        isLoading = true;
+        
+        try {
+            recLoaded = true;
+            const response = await fetch(`/get_recommendations/${mediaType}/${tmdbId}`);
+
+            const data = await response.json();
+            
+            const title = `Recommendations from this ${mediaType == "tv" ? "TV Show" : "Movie"}`;
+
+            category = createCategory(title, null, null, null, "recommendations");
+            recommendationsContainer.appendChild(category);
+
+            const categoryMediaList = document.getElementById(`scroll-recommendations`);
+            console.log(data);
+            data.data.forEach((film)=>{
+                categoryMediaList.appendChild(createFilmCard(film, getFilmUrl(film)));
+            })
+            addScrollList(document.getElementById(`scroll-recommendations`));
+
+        } catch (error) {
+            console.error('Failed to load data:', error);
+            return false;
+        } finally {
+            isLoading = false;
+            return true;
+        }
+    });
 
     //const mediaIFrameOverlay = document.getElementById("media-iframe-overlay");
 }
@@ -24,7 +75,7 @@ function mediaFrameClicked()
 
     const url = window.location.pathname;
     const urlPaths = url.split("/");
-    console.log(urlPaths);
+    //console.log(urlPaths);
     // /film/tv/48866/1/1
 
     let mediaType = urlPaths[2];

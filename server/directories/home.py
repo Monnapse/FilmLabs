@@ -19,7 +19,6 @@ def run(app: WebClass):
     def home():
         try:
             authorization = app.get_authorization_data()
-
             return render_template(
                 app.base,
                 template = "index.html",

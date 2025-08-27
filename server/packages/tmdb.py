@@ -26,6 +26,7 @@ class MovieListType(Enum):
     TopRated = "top_rated"
     UpComing = "upcoming"
     Trending = "trending"
+    Recommendations = "recommendations"
 
 class TVListType(Enum):
     AiringToday = "airing_today"
@@ -33,6 +34,7 @@ class TVListType(Enum):
     Popular = "popular"
     TopRated = "top_rated"
     Trending = "trending"
+    Recommendations = "recommendations"
 
 # Classes
 class TVEpisode:
@@ -125,6 +127,11 @@ class Movie:
         self.vote_count = vote_count
 
         self.progress = None
+
+        
+
+    def to_dict(self):
+        return self.__dict__
 
 class TV:
     def __init__(
@@ -546,6 +553,50 @@ class TMDB:
             return trailers[len(trailers)-1]
         else:
             return None
+        
+    def get_recommendations_for_item(self, item_id: int, film_type: FilmType) -> ListResult:
+        """
+            Get TMDb recommendations for a single movie or TV show.
+            Returns a list of Movie or TV objects.
+        """
+
+        media_type = enum_to_string(film_type)
+        api_endpoint = f"{media_type}/{item_id}/recommendations?language=en-US&page=1"
+
+        response = self.send_api(api_endpoint)
+
+        if response.status_code == 200:
+            data = response.json()
+            return self.json_to_list_result(data, film_type)
+
+        else:
+            print(f"Error fetching recommendations for {media_type} {item_id}: {response.status_code}")
+            return None
+        
+    def get_recommendations(self, items: list[Union[Movie, TV]]) -> ListResult:
+        """
+            Get TMDb recommendations for a list of movies or TV shows.
+            Returns a list of Movie or TV objects.
+        """
+
+        all_recommendations: ListResult = ListResult(
+            results=[],
+            total_pages=0,
+            total_results=0
+        )
+
+        for item in items:
+            media_type = FilmType.Movie if item.media_type == "movie" else FilmType.TV
+            recommendations = self.get_recommendations_for_item(item.id, media_type)
+            all_recommendations.results.extend(recommendations.results)
+            all_recommendations.total_pages += recommendations.total_pages
+            all_recommendations.total_results += recommendations.total_results
+
+        # Remove duplicates based on the 'id' attribute
+        all_recommendations.results = {rec.id: rec for rec in all_recommendations.results}.values()
+        #print(unique_recommendations)
+
+        return all_recommendations
 
 # Functions
 def sort_by_rating(film: Optional[Union[Movie, TV]]):
@@ -570,4 +621,14 @@ api = TMDB(environ.get("TMDB_API_KEY"))
 films_video = api.get_trailer(FilmType.TV, 1396)
 print(f"Trailer Url: {films_video.url}, Trailer Name: {films_video.name}")
 #
+
+from os import environ
+
+api = TMDB(environ.get("TMDB_API_KEY"))
+
+# Example: Get recommendations for "Fight Club" (TMDb ID 550, movie)
+recs = api.get_recommendations_for_item(550, FilmType.Movie)
+
+for r in recs:
+    print(f"{r.name} ({r.media_type}) - TMDb ID: {r.id}, Rating: {r.vote_average}")
 """

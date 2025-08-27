@@ -8,6 +8,7 @@
 from typing import Optional, Union
 from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult, Movie, TV, ListResult, TVSeason, TVEpisode
 from server.packages.db import FilmLabsDB, Film, EpisodeHistory
+import random
 
 class Category:
     def __init__(self, 
@@ -196,6 +197,7 @@ class FilmsController:
                 time_window=time_window,
                 has_more_pages=has_more_pages
             )
+            print(category.list_type)
 
             if category.media_type == None or category.media_type == "null":
                 # Media type is both
@@ -221,6 +223,30 @@ class FilmsController:
                     category.film_list = history_result
                     category.has_more_pages = False
                     category.film_list.has_more_pages = False
+
+                # Recommended
+                elif category.list_type == "recommendations" and user_id != None:
+                    print("RECOMMENDATIONS")
+                    #recommendations = self.db.get_recommendations(user_id)
+
+                    favorites = self.db.get_favorites(user_id)
+                    favorites_result = self.db_films_to_tmdb_films(favorites)
+
+                    # Select random 5
+                    items = random.sample(favorites_result.results, min(5, len(favorites_result.results)))
+                    for item in items:
+                        print("Selected item:", item.name)
+
+                    recommendations = self.tmdb.get_recommendations(items)
+                    print("Recommendations fetched:", len(recommendations.results))
+                    for recommendation in recommendations.results:
+                        print("Recommendation:", recommendation.name, recommendation.media_type, recommendation.id)
+
+                    #recommendations_result = self.db_films_to_tmdb_films(recommendations)
+                    category.film_list = recommendations
+                    category.has_more_pages = False
+                    category.film_list.has_more_pages = False
+
             #elif category.media_type == None and category.list_type == "favorites":
             #    # Get favorited films
             elif category.media_type == FilmType.Movie.value:

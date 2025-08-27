@@ -70,6 +70,7 @@ class WebClass:
     def get_authorized_account(app) -> Account:
         #current_user = get_jwt_identity()
         token = request.cookies.get("access_token")
+
         if (token):
             decoded_token = decode_token(token)
             # Check if expired
@@ -83,7 +84,7 @@ class WebClass:
             
             # Check if valid token
             # Check if user_id is valid
-            user_id = decoded_token.get("sub")
+            user_id = int(decoded_token.get("sub"))
 
             selected_account = app.db_controller.get_account(user_id)
 
@@ -103,6 +104,7 @@ class WebClass:
         return app.check_authentication() != None
     def get_authorization_data(app) -> dict[bool, str]:
         authorized_account = app.get_authorized_account()
+
         if authorized_account.account_exists:
             return {
                 "logged_in": authorized_account.account_exists,
