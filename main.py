@@ -22,7 +22,7 @@
 from flask import Flask, request
 #from flask_session import Session
 from datetime import timedelta
-from os import environ
+import os
 from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -54,14 +54,14 @@ limiter = Limiter(app, key_func=get_remote_address)
 #app.config["SESSION_PERMANENT"] = False
 #app.config["SESSION_TYPE"] = "filesystem"
 #app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=session_days)
-app.config['JWT_SECRET_KEY'] = environ.get("FILMLABS_JWT_KEY")
+app.config['JWT_SECRET_KEY'] = os.getenv("FILMLABS_JWT_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=token_max_days)
 
 #Session(app)
 jwt = JWTManager(app)
 
 api = tmdb.TMDB(
-    environ.get("TMDB_API_KEY"), 
+    os.getenv("TMDB_API_KEY"), 
     poster_sizing
 )
 service_controller = service.ServiceController(
@@ -101,9 +101,9 @@ if __name__ == '__main__':
     # Connect to database
     db_controller.connect(
         "127.0.0.1",
-        environ.get("MYSQL_USER"),
-        environ.get("MYSQL_PASSWORD"),
-        environ.get("FILMLABS_DB")
+        os.getenv("MYSQL_USER"),
+        os.getenv("MYSQL_PASSWORD"),
+        os.getenv("FILMLABS_DB")
     )
 
     # Now make the web directories
