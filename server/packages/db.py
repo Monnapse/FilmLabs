@@ -130,8 +130,9 @@ class FilmLabsDB:
                     print("MySQL pool connection works!")
                     conn.close()
                     break
-            except Error:
+            except Error as e:
                 print("MySQL not ready, retrying in 5 seconds...")
+                print(f"MySQL error: {e}")
                 time.sleep(5)
 
         #self.db_cursor = self.db_connection.cursor()
