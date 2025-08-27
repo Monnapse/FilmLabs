@@ -23,6 +23,7 @@ from flask import Flask, request
 #from flask_session import Session
 from datetime import timedelta
 from os import environ
+from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_jwt_extended import JWTManager
@@ -31,6 +32,8 @@ import json
 import server.web as web
 from server.packages import db, films, tmdb, json_controller, service
 from server.packages.tmdb import FilmType, TVListType, MovieListType, TimeWindow, TMDB, ListResult
+
+load_dotenv()
 
 # Settings
 token_max_days = 7
