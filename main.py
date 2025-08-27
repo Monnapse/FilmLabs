@@ -97,7 +97,7 @@ web_controller = web.WebClass(
 if __name__ == '__main__':
     # Connect to database
     db_controller.connect(
-        "localhost",
+        "127.0.0.1",
         environ.get("MYSQL_USER"),
         environ.get("MYSQL_PASSWORD"),
         environ.get("FILMLABS_DB")
