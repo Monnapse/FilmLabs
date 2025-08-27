@@ -133,7 +133,6 @@ class FilmLabsDB:
             except Error:
                 print("MySQL not ready, retrying in 5 seconds...")
                 time.sleep(5)
-        
 
         #self.db_cursor = self.db_connection.cursor()
 
