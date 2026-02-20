@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function MediaRow({ title, items, linkHref }: { title: string, items: any[], linkHref: string }) {
+export default function MediaRow({ title, items, linkHref }: { title: string, items: any[], linkHref?: string }) {
   // 1. Create a reference to target the scrollable container
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -24,16 +24,19 @@ export default function MediaRow({ title, items, linkHref }: { title: string, it
   };
 
   return (
-
     <div className="space-y-4 relative group/row">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white tracking-tight">{title}</h2>
-        <Link 
-          href={linkHref} 
-          className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center group transition-colors"
-        >
-          View More <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-        </Link>
+        
+        {/* 2. Only render the View More link if a linkHref was provided! */}
+        {linkHref && (
+          <Link 
+            href={linkHref} 
+            className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center group transition-colors"
+          >
+            View More <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        )}
       </div>
 
       {/* Left Scroll Button */}

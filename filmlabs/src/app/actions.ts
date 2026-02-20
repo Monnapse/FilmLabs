@@ -73,7 +73,7 @@ export async function addToWatchHistory(movieData: any) {
     });
   }
 
-  revalidatePath(`/movie/${movieData.id}`);
+  revalidatePath('/', 'layout');
 }
 
 // Ensure a TV Show exists in the database
@@ -129,7 +129,7 @@ export async function markEpisodeWatched(tvData: any, seasonNumber: number, epis
     },
   });
 
-  revalidatePath(`/tv/${tvData.id}`);
+  revalidatePath('/', 'layout');
 }
 
 export async function fetchTmdbCategory(category: string, page: number = 1): Promise<any[]> {
