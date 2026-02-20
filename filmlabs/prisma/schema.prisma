@@ -10,6 +10,7 @@ model Account {
   userId        Int                   @id @default(autoincrement())
   username      String                @unique @db.VarChar(45)
   password      String                @db.VarChar(255)
+  avatar        String?               @db.VarChar(255)
   watchHistory  AccountWatchHistory[]
   favorites     AccountFavorites[]
 }
