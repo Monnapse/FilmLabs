@@ -5,15 +5,21 @@ import {
   fetchTmdbCategory, 
   getUserFavorites, 
   getUserWatchHistory, 
-  getPersonalRecommendations 
+  getTrendingFilms
 } from "@/app/actions";
 import MediaRow from "@/components/MediaRow";
+import FeaturedHero from "@/components/FeaturedHero";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
 
   const userId = parseInt(session.user.id as string, 10);
+
+  const trending = await getTrendingFilms();
+
+  // 3. Grab the #1 trending film to feature in the massive hero banner
+  const heroFilm = trending[0];
 
   // Fetch both Personal Data and TMDB Data in parallel!
   const [
@@ -35,15 +41,20 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-8 pb-20 px-4 md:px-8">
-      <div className="max-w-[1400px] mx-auto space-y-12">
+    <div className="min-h-screen bg-background pt-8 pb-20 px-4 md:px-8">
+      <div className="max-w-350 mx-auto space-y-12">
         
-        <header className="pb-4 border-b border-slate-800">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Discover</h1>
-          <p className="text-slate-400 mt-2 text-lg">What to watch next, {session.user?.name}.</p>
+        <header className="pb-4 border-b border-border/50">
+          <h1 className="text-4xl font-black text-white tracking-tight drop-shadow-sm">Discover</h1>
+          <p className="text-muted-foreground mt-2 text-lg font-medium">
+            What to watch next, <span className="text-primary">{session.user?.name}</span>.
+          </p>
         </header>
 
         <div className="space-y-10">
+          <FeaturedHero film={heroFilm} />
+    
+      
           {/* Personalized User Rows */}
           <MediaRow title="Continue Watching" items={personalWatchHistory} linkHref="/category/history" />
           <MediaRow title="Your Favorites" items={personalFavorites} linkHref="/category/favorites" />

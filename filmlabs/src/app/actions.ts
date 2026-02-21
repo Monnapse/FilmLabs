@@ -463,3 +463,47 @@ export async function searchMediaAction(params: {
 
   return results;
 }
+
+// Add this at the bottom of filmlabs/src/app/actions.ts
+
+export async function getMediaRating(id: number, type: "movie" | "tv"): Promise<string> {
+  const apiKey = process.env.TMDB_API_KEY;
+  if (!apiKey) return "";
+
+  try {
+    if (type === "movie") {
+      // Fetch Movie Release Dates & Certifications
+      // Cache for 604800 seconds (7 days) to save API calls
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${apiKey}`, { next: { revalidate: 604800 } });
+      if (!res.ok) return "";
+      const data = await res.json();
+      
+      const usRelease = data.results?.find((r: any) => r.iso_3166_1 === 'US');
+      const validCert = usRelease?.release_dates?.find((r: any) => r.certification !== '')?.certification;
+      return validCert || "";
+      
+    } else {
+      // Fetch TV Content Ratings
+      const res = await fetch(`https://api.themoviedb.org/3/tv/${id}/content_ratings?api_key=${apiKey}`, { next: { revalidate: 604800 } });
+      if (!res.ok) return "";
+      const data = await res.json();
+      
+      const usRating = data.results?.find((r: any) => r.iso_3166_1 === 'US');
+      return usRating?.rating || "";
+    }
+  } catch (error) {
+    console.error("Failed to fetch rating for", id, error);
+    return "";
+  }
+}
+
+// 1. Define your secure server-side fetch functions
+export async function getTrendingFilms() {
+  const apiKey = process.env.TMDB_API_KEY;
+  if (!apiKey) return "";
+
+  const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.results;
+}

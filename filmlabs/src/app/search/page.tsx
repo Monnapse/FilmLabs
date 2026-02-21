@@ -3,12 +3,11 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { searchMediaAction } from "@/app/actions";
+import MediaCard from "@/components/MediaCard";
 
 function SearchResults() {
   const { data: session, status } = useSession();
@@ -35,7 +34,6 @@ function SearchResults() {
     if (status === "unauthenticated") router.push("/login");
   }, [status, router]);
 
-  // Fetch initial data anytime URL params change
   useEffect(() => {
     setInitialLoad(true);
     setMediaItems([]);
@@ -53,7 +51,6 @@ function SearchResults() {
         setMediaItems(newItems);
         setInitialLoad(false);
       } else {
-        // Append new items preventing duplicates
         setMediaItems((prev) => {
           const existingIds = new Set(prev.map((item) => item.id));
           const uniqueNewItems = newItems.filter((item: any) => !existingIds.has(item.id));
@@ -69,81 +66,43 @@ function SearchResults() {
 
   if (status === "loading" || initialLoad) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-blue-600 h-10 w-10" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary h-12 w-12" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        <header className="pb-6 border-b border-slate-200">
-          <h1 className="text-3xl font-bold text-slate-900">
-            {isBrowsing ? "Browsing Catalog" : `Search Results for "${query}"`}
+        <header className="pb-4 border-b border-border/50">
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight drop-shadow-sm border-l-4 border-primary pl-4">
+            {isBrowsing ? "Browsing Catalog" : `Results for "${query}"`}
           </h1>
         </header>
 
         {mediaItems.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-slate-500">We couldn't find any results matching your search and filters.</p>
-            <Link href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block font-medium">
-              Return to Discover
+          <div className="text-center py-20 bg-secondary/30 rounded-2xl border border-border/50">
+            <p className="text-xl text-muted-foreground font-medium">We couldn't find any results matching your filters.</p>
+            <Link href="/dashboard" className="text-primary hover:text-primary/80 mt-6 inline-block font-bold text-lg transition-colors">
+              Return to Dashboard
             </Link>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {mediaItems.map((media: any) => {
-                if (!media.poster_path) return null; 
-
-                const linkBase = media.media_type === "tv" ? "tv" : "movie";
-                const title = media.title || media.name; 
-                const date = media.release_date || media.first_air_date;
-                const yearLabel = date ? date.split('-')[0] : "";
-
-                return (
-                  <Link href={`/${linkBase}/${media.id}`} key={`${media.id}-${media.media_type}`}>
-                    <Card className="overflow-hidden group cursor-pointer border-0 shadow-sm hover:shadow-md transition-all">
-                      <CardContent className="p-0 relative aspect-[2/3]">
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w500${media.poster_path}`}
-                          alt={title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-blue-400 text-xs font-bold uppercase">
-                              {media.media_type} {yearLabel && `• ${yearLabel}`}
-                            </span>
-                            {media.vote_average > 0 && (
-                              <div className="flex items-center gap-1 text-yellow-400 text-xs font-bold">
-                                <Star className="w-3 h-3 fill-current" />
-                                {(media.vote_average).toFixed(1)}
-                              </div>
-                            )}
-                          </div>
-                          <h3 className="text-white font-semibold text-sm line-clamp-2">
-                            {title}
-                          </h3>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                );
-              })}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-8">
+              {mediaItems.map((media: any, index: number) => (
+                 <MediaCard key={`${media.id}-${media.media_type}-${index}`} item={media} />
+              ))}
             </div>
 
-            <div className="flex justify-center pt-8 pb-12">
+            <div className="flex justify-center pt-10 pb-16">
               <Button 
                 size="lg" 
-                variant="default"
                 onClick={() => loadMoreItems(page + 1)} 
                 disabled={loading}
-                className="w-full md:w-auto px-12"
+                className="w-full md:w-auto px-12 h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-xl shadow-[0_0_15px_rgba(255,193,25,0.2)] transition-all"
               >
                 {loading && <Loader2 className="animate-spin mr-2 h-5 w-5" />}
                 {loading ? "Loading..." : "Load More"}
@@ -156,12 +115,11 @@ function SearchResults() {
   );
 }
 
-// Wrap search params reliant component in Suspense boundary for Next.js build compliance
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-blue-600 h-10 w-10" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary h-12 w-12" />
       </div>
     }>
       <SearchResults />

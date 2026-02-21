@@ -29,7 +29,6 @@ export default function SearchBar() {
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
-  // Close filters when clicking outside the component
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -73,37 +72,37 @@ export default function SearchBar() {
 
   return (
     <div className="w-full max-w-2xl flex flex-col gap-2 relative z-50" ref={filterRef}>
-      <form onSubmit={handleSearch} className="flex w-full items-center space-x-2">
+      <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 bg-secondary p-1 rounded-full border border-border/50 shadow-inner">
         <Input
           type="text"
-          placeholder="Search for movies or TV shows... (Leave empty to browse)"
+          placeholder="Search for movies or TV shows..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-400 focus-visible:ring-blue-500"
+          className="bg-transparent border-0 text-white placeholder:text-muted-foreground focus-visible:ring-0 px-4 h-10 w-full"
         />
         <Button 
           type="button" 
-          variant="secondary" 
+          variant="ghost" 
           onClick={() => setShowFilters(!showFilters)} 
-          className={`bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors ${showFilters ? 'bg-slate-700 ring-2 ring-blue-500' : ''}`}
+          className={`rounded-full h-10 w-10 p-0 shrink-0 transition-colors ${showFilters ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-white hover:bg-white/10'}`}
         >
-          <Filter className="h-4 w-4 text-slate-300" />
+          <Filter className="h-4 w-4" />
         </Button>
-        <Button type="submit" size="icon" variant="secondary" className="bg-slate-800 hover:bg-slate-700 border border-slate-700">
-          <Search className="h-4 w-4 text-slate-300" />
+        <Button type="submit" size="icon" className="rounded-full h-10 w-10 shrink-0 bg-primary text-primary-foreground hover:bg-primary/80">
+          <Search className="h-4 w-4" />
         </Button>
       </form>
 
       {/* Advanced Filter Dropdown */}
       {showFilters && (
-        <div className="absolute top-14 left-0 w-full bg-slate-900 rounded-xl border border-slate-700 shadow-2xl p-5 overflow-y-auto max-h-[80vh] flex flex-col gap-6 text-slate-200">
+        <div className="absolute top-16 left-0 w-full bg-[#14151a] rounded-2xl border border-border/50 shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-y-auto max-h-[80vh] flex flex-col gap-6 text-foreground z-50">
            
-           <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-               <h3 className="font-semibold text-lg text-white">Advanced Filters</h3>
+           <div className="flex justify-between items-center border-b border-border/50 pb-3">
+               <h3 className="font-bold text-xl text-white">Advanced Filters</h3>
                <div className="flex gap-4 items-center">
-                  <button type="button" onClick={clearFilters} className="text-sm text-slate-400 hover:text-white transition-colors">Clear All</button>
-                  <button type="button" onClick={() => setShowFilters(false)} className="text-slate-400 hover:text-white transition-colors">
-                      <X className="h-5 w-5" />
+                  <button type="button" onClick={clearFilters} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Clear All</button>
+                  <button type="button" onClick={() => setShowFilters(false)} className="text-muted-foreground hover:text-white transition-colors bg-secondary p-1.5 rounded-full">
+                      <X className="h-4 w-4" />
                   </button>
                </div>
            </div>
@@ -112,20 +111,20 @@ export default function SearchBar() {
                {/* Left Column */}
                <div className="space-y-4">
                    <div className="flex flex-col gap-1.5">
-                       <label className="text-sm font-medium text-slate-400">Media Type</label>
-                       <select value={type} onChange={(e) => setType(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                       <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Media Type</label>
+                       <select value={type} onChange={(e) => setType(e.target.value)} className="bg-secondary border border-border/50 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
                            <option value="multi">All Types</option>
                            <option value="movie">Movies Only</option>
                            <option value="tv">TV Shows Only</option>
                        </select>
                    </div>
                    <div className="flex flex-col gap-1.5">
-                       <label className="text-sm font-medium text-slate-400">Release Year</label>
-                       <input type="number" placeholder="e.g., 2023" value={year} onChange={(e) => setYear(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                       <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Release Year</label>
+                       <input type="number" placeholder="e.g., 2023" value={year} onChange={(e) => setYear(e.target.value)} className="bg-secondary border border-border/50 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary outline-none transition-all" />
                    </div>
                    <div className="flex flex-col gap-1.5">
-                       <label className="text-sm font-medium text-slate-400">Status</label>
-                       <select value={status} onChange={(e) => setStatus(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                       <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Status</label>
+                       <select value={status} onChange={(e) => setStatus(e.target.value)} className="bg-secondary border border-border/50 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
                            <option value="all">Any Status</option>
                            <option value="released">Released</option>
                            <option value="upcoming">Upcoming</option>
@@ -136,8 +135,8 @@ export default function SearchBar() {
                {/* Right Column */}
                <div className="space-y-4">
                    <div className="flex flex-col gap-1.5">
-                       <label className="text-sm font-medium text-slate-400">Sort By</label>
-                       <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                       <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Sort By</label>
+                       <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-secondary border border-border/50 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
                            <option value="popularity">Popularity</option>
                            <option value="rating">Highest Rated</option>
                            <option value="newest">Newest First</option>
@@ -145,8 +144,8 @@ export default function SearchBar() {
                        </select>
                    </div>
                    <div className="flex flex-col gap-1.5">
-                       <label className="text-sm font-medium text-slate-400">Age Rating (US)</label>
-                       <select value={rating} onChange={(e) => setRating(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                       <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Age Rating (US)</label>
+                       <select value={rating} onChange={(e) => setRating(e.target.value)} className="bg-secondary border border-border/50 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary outline-none transition-all">
                            <option value="all">Any Rating</option>
                            <option value="G">G / TV-Y</option>
                            <option value="PG">PG / TV-PG</option>
@@ -156,23 +155,23 @@ export default function SearchBar() {
                    </div>
                    <div className="flex flex-col gap-1.5">
                        <div className="flex justify-between items-center">
-                           <label className="text-sm font-medium text-slate-400">Minimum Score</label>
-                           <span className="text-xs text-blue-400 font-medium">{score > "0" ? `${score} / 10` : 'Any'}</span>
+                           <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Minimum Score</label>
+                           <span className="text-xs text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">{score > "0" ? `${score} / 10` : 'Any'}</span>
                        </div>
-                       <input type="range" min="0" max="10" step="1" value={score} onChange={(e) => setScore(e.target.value)} className="w-full accent-blue-500" />
+                       <input type="range" min="0" max="10" step="1" value={score} onChange={(e) => setScore(e.target.value)} className="w-full accent-primary" />
                    </div>
                </div>
            </div>
 
            {/* Genres Toggle */}
            <div className="flex flex-col gap-2">
-               <label className="text-sm font-medium text-slate-400">Genres</label>
+               <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Genres</label>
                <div className="flex flex-wrap gap-2">
                    {ALL_GENRES.map(g => (
                        <button 
                           key={g}
                           type="button" 
-                          className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors border ${genres.includes(g) ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
+                          className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all ${genres.includes(g) ? 'bg-primary text-primary-foreground shadow-[0_0_10px_rgba(255,193,25,0.3)]' : 'bg-secondary text-muted-foreground hover:bg-secondary-foreground/10 hover:text-white'}`}
                           onClick={() => toggleGenre(g)}
                        >
                            {g}
@@ -181,7 +180,7 @@ export default function SearchBar() {
                </div>
            </div>
 
-           <Button type="button" onClick={() => handleSearch()} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-md mt-2">
+           <Button type="button" onClick={() => handleSearch()} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg py-6 rounded-xl mt-4 shadow-[0_0_15px_rgba(255,193,25,0.2)]">
                Apply Filters & Search
            </Button>
         </div>
