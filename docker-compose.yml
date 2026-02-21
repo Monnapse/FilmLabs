@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: filmlabs_admin
+      POSTGRES_PASSWORD: super_secure_password_123
+      POSTGRES_DB: filmlabs
+    volumes:
+      - filmlabs_pgdata:/var/lib/postgresql/data
+    networks:
+      - filmlabs_network
+
+  web:
+    build: . # Tells Portainer to build the Dockerfile from the Git repo
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # In Docker, we use the service name 'postgres' instead of localhost or an IP
+      DATABASE_URL: "postgresql://filmlabs_admin:super_secure_password_123@postgres:5432/filmlabs?schema=public"
+      NEXTAUTH_SECRET: "your_super_secret_random_string_here"
+      PASSWORD_PEPPER: "your_generated_password_pepper_here"
+      NEXTAUTH_URL: "http://your_server_ip_or_domain:3000"
+      TMDB_API_KEY: "paste_your_tmdb_api_key_here"
+    depends_on:
+      - postgres
+    networks:
+      - filmlabs_network
+
+networks:
+  filmlabs_network:
+
+volumes:
+  filmlabs_pgdata:

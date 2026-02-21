@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  userId        Int                   @id @default(autoincrement())
+  username      String                @unique @db.VarChar(45)
+  password      String                @db.VarChar(255)
+  avatar        String?               @db.VarChar(255)
+  watchHistory  AccountWatchHistory[]
+  favorites     AccountFavorites[]
+}
+
+model AccountWatchHistory {
+  accountHistoryId Int               @id @default(autoincrement())
+  tmdbId           Int
+  mediaType        String            @db.VarChar(8)
+  userId           Int
+  account          Account           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  episodeHistory   EpisodeHistory[]
+}
+
+model AccountFavorites {
+  tmdbId       Int
+  mediaType    String  @db.VarChar(8)
+  userId       Int
+  account      Account @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([tmdbId, mediaType, userId])
+}
+
+model EpisodeHistory {
+  accountHistoryId Int
+  seasonNumber     Int
+  episodeNumber    Int
+  progress         String?             @db.VarChar(10)
+  watchHistory     AccountWatchHistory @relation(fields: [accountHistoryId], references: [accountHistoryId], onDelete: Cascade)
+
+  @@id([accountHistoryId, seasonNumber, episodeNumber])
+}

@@ -1,96 +1,68 @@
 # FilmLabs
- 
-This repository does not store any media files it uses streaming apis to stream movies/tv shows.
 
-# Features
+FilmLabs is a modern, full-stack, locally hosted entertainment platform. It leverages third-party streaming APIs to let you watch movies and TV shows without storing any media files locally. 
 
-* Local hosted streaming site.
-* Create/Login accounts.
-* Account favoriting for Movies/TV Shows.
-* Account Watch history for Movies/TV Shows.
-* Account Settings.
-* Home page showing popular, trending, new, etc Movies/TV Shows.
-* Search for Movies/TV Shows.
-* Watch Movies/TV Shows.
+## ✨ Features
 
-# Technical Features
-* MYSQL Database.
-* Python Flask Server.
-* TMDB Api.
+* **Streaming Integration**: Watch Movies and TV Shows seamlessly.
+* **User Accounts**: Create accounts and login securely.
+* **Personalized Library**: Account favoriting for Movies and TV Shows.
+* **Watch History**: Keep track of what you've watched, including specific TV episodes.
+* **Advanced Discovery**: Home page showcasing popular, trending, and new releases.
+* **Robust Search**: Search with advanced filters including Media Type, Release Year, Age Rating, Minimum Score, and Genres.
+* **Pagination**: Infinite "Load More" functionality for browsing large catalogs smoothly.
 
-# FilmLabs Installation Intructions
+## 🛠️ Technical Stack
 
-## WINDOWS
+* **Framework**: Next.js 15 (App Router)
+* **Database**: Prisma ORM (MySQL / PostgreSQL compatible)
+* **Authentication**: NextAuth.js
+* **Styling**: Tailwind CSS & shadcn/ui
+* **Data Provider**: TMDB API
 
-### Download Files
-Download files [here](https://github.com/Monnapse/FilmLabs/archive/refs/tags/v1.1.0.zip)
+## 🚀 Installation Instructions
 
-### 
-
-## LINUX
-
-### Downloading Files
-Clone/download the repository by running `git clone -b film-labs https://github.com/Monnapse/FilmLabs.git`.
-
-Now go into directory by running `cd FilmLabs/`.
-
-### Create Virtual Environemnt (Optional)
-If you want to use a virtual environment then you want to first run `python3 -m venv filmlabs-environment` 
-(if you dont have the venv package install by running `apt install python3-venv`)
-
-Activate the virtual environemnt by running `source filmlabs-environment/bin/activate`.
-
-### Install required packages
-Now install required packages by running `pip install -r requirements.txt`.
-
-### Install mysql
-Now install the mysql server by running `sudo apt install mysql-server`. Now you need to secure mysql server by 
-running `sudo mysql_secure_installation` it will ask some questions, for the first question say `y` 
-then password security level question just say `2` for highest security,
-and then all the rest of the questions just say `y` to all of them.
-
-### Create mysql password
-Now enter mysql by running `sudo mysql -u root` 
-add this line and enter a password in `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_new_password';` replace `'your_new_password'` with your password then press enter, once you have done that add this line `FLUSH PRIVILEGES;`
-
-### Create database
-Now create the database by adding `source mysql/forward_engineer.sql` to the next line. Exit by entering `exit`.
-
-### Creating environment variables
-Now create your environment variables by running `sudo nano /etc/environment`
-next in that file add the following on different lines:
-
-1. `FILMLABS_DB="filmlabs"` (this is the name of the database)
-
-2. `FILMLABS_JWT_KEY="df6^Dju-3Ffsf__d9pFDfSh#7#$)448*#4v$Jf-#HQHjf9hdf-FH(#r#"lrjfx-dSGsDJ4td)"` (This variable is your secret key creating your tokens so you can change it to whatever you want but its best to make it long and randomized so no hacker can get it)
-
-3. `MYSQL_PASSWORD="mysql password"` (Change mysql passsword with your password you created for your mysql root)
-
-4. `MYSQL_USER="root"` (This is your mysql user that is being logged into just keep it the same)
-
-5. `TMDB_API_KEY="your tmdb api key"` (Put in your TMDB api key here, you can get an api key from this [link](https://developer.themoviedb.org/docs/getting-started))
-
-Now save the file by doing `ctrl+o` then press `enter` now exit the file by doing `ctrl+x`.
-
-Now restart, so the changes to take effect by running `sudo reboot`.
-
-Once restarted go to your the FilmLabs folder (`cd FilmLabs/`) 
-(and if you set up a virtual environment you need to activate it by running  `source filmlabs-environment/bin/activate`) 
-now run your server by running `python3 main.py`,  it should print out alot of stuff but what you are looking for is a list of ip adresses like this
+### 1. Clone the repository
+```bash
+git clone [https://github.com/Monnapse/FilmLabs.git](https://github.com/Monnapse/FilmLabs.git)
+cd FilmLabs/filmlabs
 ```
-* Running on all addresses (0.0.0.0)
-* Running on http://127.0.0.1:2400  
-* Running on http://10.0.0.52:2400
+
+### 2. Install dependencies
+```bash
+npm install
 ```
-`http://127.0.0.1:2400` will only allow access on your local machine. The last one `http://10.0.0.52:2400` allows access to the site on your network.
 
-Now enjoy.
+### 3. Set up environment variables
+Create a `.env` file in the root directory and add the following variables:
+```env
+# Database connection string (e.g., MySQL or PostgreSQL)
+# Example: mysql://USER:PASSWORD@HOST:PORT/DATABASE
+DATABASE_URL="mysql://root:password@localhost:3306/filmlabs"
 
-## Update files
-if you want to update the files to latest release you do, pull latest changes `git pull origin film-labs`.
+# NextAuth Secret & Password Pepper (Generate one using `openssl rand -base64 32` in your terminal)
+NEXTAUTH_SECRET="your_randomly_generated_secret_here"
+PASSWORD_PEPPER="your_generated_password_pepper_here"
+NEXTAUTH_URL="http://localhost:3000"
 
-# Modifying Home Page Categories
-Open `home_page.json`
+# TMDB API Key (Get from [https://developer.themoviedb.org/docs/getting-started](https://developer.themoviedb.org/docs/getting-started))
+TMDB_API_KEY="your_tmdb_api_key_here"
+```
 
-# Adding/Removing Streaming Apis
-Open `services.json`
+### 4. Setup the Database
+```bash
+npx prisma db push
+npx prisma generate  
+```
+
+### 5. Run the Development Server
+```bash
+npm run dev
+```
+
+### 6. Access the Application
+Open http://localhost:3000 with your browser to see the app running.
+
+## Notes
+* **Modifying Streaming APIs**: Update the services array in src/lib/videoServices.ts to add or remove embed providers.
+* **Database Management**: You can view and manage your database easily by running npx prisma studio.
