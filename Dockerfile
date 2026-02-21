@@ -3,10 +3,13 @@ FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Update these paths to include the 'filmlabs' directory
+# Copy the configuration files from the subfolder
 COPY filmlabs/package.json filmlabs/package-lock.json ./
+# Copy the prisma folder for the generator
 COPY filmlabs/prisma ./prisma/
 
+# Install dependencies
+# If npm ci fails, try 'npm install' to bypass strict lockfile checks
 RUN npm ci
 RUN npx prisma generate
 
@@ -15,25 +18,8 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
-# Update this path to copy the application source
+# Copy the rest of the application source code
 COPY filmlabs/ . 
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
-
-# Stage 3: Production Server
-FROM node:18-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Copy standalone build output
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
-EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
-CMD ["node", "server.js"]
