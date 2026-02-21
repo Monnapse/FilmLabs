@@ -7,7 +7,7 @@ import MediaButtons from "@/components/MediaButtons";
 import CastRow from "@/components/CastRow";
 import MediaRow from "@/components/MediaRow";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, CheckCircle } from "lucide-react"; // Added CheckCircle
 
 async function getMediaDetails(type: string, id: string) {
   const ratingEndpoint = type === "movie" ? "release_dates" : "content_ratings";
@@ -35,18 +35,22 @@ export default async function MediaPage({
   if (!media) return notFound();
 
   const tmdbId = parseInt(id, 10);
+  
+  // FIX: Query using mediaType directly instead of nested film relations
   const favoriteRecord = await prisma.accountFavorites.findFirst({
     where: {
       userId,
-      film: {
-        tmdbId: parseInt(id, 10),
-        mediaType: type, // Use the 'type' variable from your URL params
-      },
+      tmdbId,
+      mediaType: type, 
     },
   });
 
   const watchedHistory = await prisma.accountWatchHistory.findMany({
-    where: { userId, film: { tmdbId, mediaType: type } },
+    where: { 
+      userId, 
+      tmdbId, 
+      mediaType: type 
+    },
     include: { episodeHistory: true },
   });
 
@@ -59,6 +63,7 @@ export default async function MediaPage({
   )?.split("-")[0];
   const rating = media.vote_average.toFixed(1);
   const isTv = type === "tv";
+  const hasWatched = watchedHistory.length > 0; // Check if it's in their history
 
   let certification = "NR";
   if (type === "movie") {
@@ -101,9 +106,9 @@ export default async function MediaPage({
           watchedHistory={watchedHistory}
           episodeHistory={episodeHistoryData}
         >
-          {/* Details Section (Rendered inside MediaPlayer) */}
+          {/* Details Section */}
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 pt-4 pb-12">
-            {/* Poster - Prominent on desktop */}
+            {/* Poster */}
             <div className="hidden md:block shrink-0 w-[240px] lg:w-[300px]">
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-border/50 bg-secondary/30">
                 <Image
@@ -117,8 +122,18 @@ export default async function MediaPage({
 
             {/* Info Container */}
             <div className="flex flex-col justify-center space-y-4 md:space-y-6 max-w-4xl pt-4 md:pt-0">
+              
               {/* Meta Badges */}
               <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-bold tracking-wider">
+                
+                {/* NEW GLOBAL WATCHED CHIP */}
+                {hasWatched && (
+                  <span className="bg-[#14151a]/80 backdrop-blur-md border border-primary/30 text-primary px-2 py-1 rounded-sm shadow-[0_0_15px_rgba(255,193,25,0.2)] flex items-center gap-1">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    WATCHED
+                  </span>
+                )}
+
                 <span className="bg-primary text-primary-foreground px-2 py-1 rounded-sm uppercase shadow-sm">
                   HD
                 </span>

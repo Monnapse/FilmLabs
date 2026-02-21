@@ -51,6 +51,7 @@ TMDB_API_KEY="your_tmdb_api_key_here"
 ### 4. Setup the Database
 ```bash
 npx prisma db push
+npx prisma generate  
 ```
 
 ### 5. Run the Development Server

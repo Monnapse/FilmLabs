@@ -19,11 +19,11 @@ export default function MediaButtons({
   const [loadingFav, setLoadingFav] = useState(false);
   const router = useRouter();
 
-  const handleFavorite = async () => {
+ const handleFavorite = async () => {
     setLoadingFav(true);
     try {
-      // Pass the raw media object directly; the action now handles the mapping
-      await toggleFavorite(media);
+      // FIX: Explicitly append the mediaType to the payload
+      await toggleFavorite({ ...media, mediaType });
 
       const title = media.title || media.name;
       if (isFavorited) {

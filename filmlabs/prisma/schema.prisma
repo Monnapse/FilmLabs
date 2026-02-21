@@ -15,40 +15,22 @@ model Account {
   favorites     AccountFavorites[]
 }
 
-model Film {
-  tmdbId       Int                   @id
-  mediaType    String                @db.VarChar(8)
-  name         String                @db.VarChar(100)
-  releaseDate  String                @db.VarChar(15)
-  rating       Float
-  poster       String                @db.VarChar(120)
-  watchHistory AccountWatchHistory[]
-  favorites    AccountFavorites[]
-}
-
 model AccountWatchHistory {
   accountHistoryId Int               @id @default(autoincrement())
   tmdbId           Int
+  mediaType        String            @db.VarChar(8)
   userId           Int
-  film             Film              @relation(fields: [tmdbId], references: [tmdbId], onDelete: Cascade)
   account          Account           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  movieHistory     MovieHistory?
   episodeHistory   EpisodeHistory[]
 }
 
 model AccountFavorites {
   tmdbId       Int
+  mediaType    String  @db.VarChar(8)
   userId       Int
-  film         Film    @relation(fields: [tmdbId], references: [tmdbId], onDelete: Cascade)
   account      Account @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  @@id([tmdbId, userId])
-}
-
-model MovieHistory {
-  accountHistoryId Int                 @id
-  progress         String?             @db.VarChar(10)
-  watchHistory     AccountWatchHistory @relation(fields: [accountHistoryId], references: [accountHistoryId], onDelete: Cascade)
+  @@id([tmdbId, mediaType, userId])
 }
 
 model EpisodeHistory {

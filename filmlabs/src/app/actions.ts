@@ -6,140 +6,84 @@ import { revalidatePath } from "next/cache";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-// Helper function to ensure the film exists in the database
-async function ensureFilmExists(movieData: any) {
-  await prisma.film.upsert({
-    where: { tmdbId: movieData.id },
-    update: {}, // Do nothing if it already exists
-    create: {
-      tmdbId: movieData.id,
-      mediaType: "movie",
-      name: movieData.title,
-      releaseDate: movieData.release_date || "Unknown",
-      rating: movieData.vote_average || 0,
-      poster: movieData.poster_path || "",
-    },
-  });
-}
-
-async function ensureMediaExists(mediaData: any) {
-  // TMDB TV objects use 'name', Movies use 'title'
-  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
-  
-  return await prisma.film.upsert({
-    where: { tmdbId: mediaData.id },
-    update: {
-      // Update poster and rating in case they changed
-      poster: mediaData.poster_path || "",
-      rating: mediaData.vote_average || 0,
-    }, 
-    create: {
-      tmdbId: mediaData.id,
-      mediaType: isTv ? "tv" : "movie",
-      name: isTv ? mediaData.name : mediaData.title,
-      releaseDate: (isTv ? mediaData.first_air_date : mediaData.release_date) || "Unknown",
-      rating: mediaData.vote_average || 0,
-      poster: mediaData.poster_path || "",
-    },
-  });
-}
+const fetchTmdbDetails = async (tmdbId: number, mediaType: string) => {
+  const apiKey = process.env.TMDB_API_KEY;
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${apiKey}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return { 
+      ...data, 
+      media_type: mediaType,
+      vote_average: data.vote_average || 0 // Ensures the score is always passed to the MediaCard
+    };
+  } catch (error) {
+    return null;
+  }
+};
 
 export async function toggleFavorite(mediaData: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not authenticated");
   const userId = parseInt(session.user.id);
 
-  // Ensure it exists with the CORRECT media type before favoriting
-  await ensureMediaExists(mediaData);
+  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
+  const mediaType = isTv ? "tv" : "movie";
 
-  const existingFavorite = await prisma.accountFavorites.findUnique({
-    where: {
-      tmdbId_userId: { tmdbId: mediaData.id, userId },
-    },
+  const existingFavorite = await prisma.accountFavorites.findFirst({
+    where: { tmdbId: mediaData.id, mediaType, userId },
   });
 
   if (existingFavorite) {
-    await prisma.accountFavorites.delete({
-      where: { tmdbId_userId: { tmdbId: mediaData.id, userId } },
+    await prisma.accountFavorites.deleteMany({
+      where: { tmdbId: mediaData.id, mediaType, userId },
     });
   } else {
     await prisma.accountFavorites.create({
-      data: { tmdbId: mediaData.id, userId },
+      data: { tmdbId: mediaData.id, mediaType, userId },
     });
   }
 
-  // Determine path for revalidation so the button updates immediately
-  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
-  const typePath = isTv ? "tv" : "movie";
-  
-  revalidatePath(`/${typePath}/${mediaData.id}`);
+  revalidatePath(`/${mediaType}/${mediaData.id}`);
   revalidatePath('/dashboard');
 }
 
-export async function addToWatchHistory(movieData: any) {
+export async function addToWatchHistory(mediaData: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not authenticated");
   const userId = parseInt(session.user.id);
 
-  await ensureFilmExists(movieData);
+  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
+  const mediaType = isTv ? "tv" : "movie";
 
-  // 1. Check if this movie is already in the user's watch history
   const existingRecord = await prisma.accountWatchHistory.findFirst({
-    where: {
-      tmdbId: movieData.id,
-      userId: userId,
-    },
+    where: { tmdbId: mediaData.id, mediaType, userId },
   });
 
-  // 2. Only create a new record if one doesn't already exist
   if (!existingRecord) {
     await prisma.accountWatchHistory.create({
-      data: {
-        tmdbId: movieData.id,
-        userId: userId,
-      },
+      data: { tmdbId: mediaData.id, mediaType, userId },
     });
   }
 
   revalidatePath('/', 'layout');
 }
 
-// Ensure a TV Show exists in the database
-async function ensureTvExists(tvData: any) {
-  await prisma.film.upsert({
-    where: { tmdbId: tvData.id },
-    update: {}, 
-    create: {
-      tmdbId: tvData.id,
-      mediaType: "tv",
-      name: tvData.name, // TMDB uses 'name' for TV shows instead of 'title'
-      releaseDate: tvData.first_air_date || "Unknown",
-      rating: tvData.vote_average || 0,
-      poster: tvData.poster_path || "",
-    },
-  });
-}
-
-// Mark a specific episode as watched
 export async function markEpisodeWatched(tvData: any, seasonNumber: number, episodeNumber: number) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not authenticated");
   const userId = parseInt(session.user.id, 10);
 
-  await ensureTvExists(tvData);
-
-  // 1. Get or create the overarching Watch History record for this TV Show
   let watchHistory = await prisma.accountWatchHistory.findFirst({
-    where: { tmdbId: tvData.id, userId: userId },
+    where: { tmdbId: tvData.id, mediaType: "tv", userId },
   });
 
   if (!watchHistory) {
     watchHistory = await prisma.accountWatchHistory.create({
-      data: { tmdbId: tvData.id, userId: userId },
+      data: { tmdbId: tvData.id, mediaType: "tv", userId },
     });
   }
 
-  // 2. Add or update the specific episode in the EpisodeHistory table
   await prisma.episodeHistory.upsert({
     where: {
       accountHistoryId_seasonNumber_episodeNumber: {
@@ -148,7 +92,7 @@ export async function markEpisodeWatched(tvData: any, seasonNumber: number, epis
         episodeNumber: episodeNumber,
       }
     },
-    update: { progress: "watched" }, // If they click it again, ensure it's marked watched
+    update: { progress: "watched" }, 
     create: {
       accountHistoryId: watchHistory.accountHistoryId,
       seasonNumber: seasonNumber,
@@ -173,78 +117,100 @@ export async function fetchTmdbCategory(category: string, page: number = 1): Pro
     if (category === "favorites") {
       const favs = await prisma.accountFavorites.findMany({
         where: { userId },
-        include: { film: true },
         orderBy: { tmdbId: 'desc' },
         skip: skip,
         take: pageSize
       });
-      return favs.map(f => mapFilmToTmdb(f.film))
+      // Use the helper to fetch fresh details from TMDB
+      const results = await Promise.all(favs.map(f => fetchTmdbDetails(f.tmdbId, f.mediaType)));
+      return results.filter(Boolean);
     }
 
     if (category === "history") {
       const history = await prisma.accountWatchHistory.findMany({
         where: { userId },
-        include: { film: true },
         orderBy: { accountHistoryId: 'desc' }
       });
-      // Filter out duplicates so a user doesn't see a show 5 times
+      // Filter out duplicates (checking both ID and MediaType)
       const uniqueHistory = history.filter((item, index, self) =>
-        index === self.findIndex((t) => t.tmdbId === item.tmdbId)
+        index === self.findIndex((t) => t.tmdbId === item.tmdbId && t.mediaType === item.mediaType)
       );
-      // Manually paginate the filtered results
-      return uniqueHistory.slice(skip, skip + pageSize).map(h => mapFilmToTmdb(h.film));
+      
+      const paginatedHistory = uniqueHistory.slice(skip, skip + pageSize);
+      const results = await Promise.all(paginatedHistory.map(h => fetchTmdbDetails(h.tmdbId, h.mediaType)));
+      return results.filter(Boolean);
     }
 
     if (category === "recommendations") {
-      // 1. Get their recent favorites
-      const favs = await prisma.accountFavorites.findMany({ 
-        where: { userId }, 
-        include: { film: true },
-        orderBy: { tmdbId: 'desc' },
-        take: 20 // Grab enough to hopefully find both a movie and a TV show
-      });
-      
-      if (favs.length === 0) return fetchTmdbCategory("trending-movies", page);
+      // 1. Fetch BOTH recent Favorites and Watch History
+      const [favs, history] = await Promise.all([
+        prisma.accountFavorites.findMany({ where: { userId }, orderBy: { tmdbId: 'desc' }, take: 15 }),
+        prisma.accountWatchHistory.findMany({ where: { userId }, orderBy: { accountHistoryId: 'desc' }, take: 25 })
+      ]);
 
-      // 2. Find the most recent Movie AND the most recent TV Show
-      const recentMovie = favs.find(f => f.film.mediaType === "movie")?.film;
-      const recentTv = favs.find(f => f.film.mediaType === "tv")?.film;
+      // 2. Build a Set of IDs the user has ALREADY SEEN so we don't recommend them again!
+      const seenIds = new Set([
+        ...favs.map(f => f.tmdbId),
+        ...history.map(h => h.tmdbId)
+      ]);
+
+      // 3. Combine and deduplicate base items to generate recommendations FROM
+      const baseItemsMap = new Map();
+      [...favs, ...history].forEach(item => {
+        if (!baseItemsMap.has(item.tmdbId)) {
+          baseItemsMap.set(item.tmdbId, item);
+        }
+      });
+      const baseItems = Array.from(baseItemsMap.values());
+
+      if (baseItems.length === 0) return fetchTmdbCategory("trending-movies", page);
+
+      // 4. Separate into movies and TV, grab up to 3 most recent of each to heavily diversify the pool
+      const recentMovies = baseItems.filter(i => i.mediaType === "movie").slice(0, 3);
+      const recentTv = baseItems.filter(i => i.mediaType === "tv").slice(0, 3);
 
       const apiKey = process.env.TMDB_API_KEY;
-      let movieRecs: any[] = [];
-      let tvRecs: any[] = [];
 
-      // 3. Fetch Movie Recommendations
-      if (recentMovie) {
-        const res = await fetch(`https://api.themoviedb.org/3/movie/${recentMovie.tmdbId}/recommendations?api_key=${apiKey}&language=en-US&page=${page}`);
-        if (res.ok) {
+      // 5. Helper function to fetch recommendations for a specific item
+      const fetchRecs = async (item: any) => {
+        try {
+          // We fetch page 1 for each item (gives ~20 recs per item)
+          const res = await fetch(`https://api.themoviedb.org/3/${item.mediaType}/${item.tmdbId}/recommendations?api_key=${apiKey}&language=en-US&page=1`);
+          if (!res.ok) return [];
           const data = await res.json();
-          // Explicitly tag them as movies
-          movieRecs = data.results.map((m: any) => ({ ...m, media_type: "movie" })); 
+          // Explicitly tag them so the frontend knows how to route them
+          return data.results.map((r: any) => ({ ...r, media_type: item.mediaType }));
+        } catch {
+          return [];
         }
-      }
+      };
 
-      // 4. Fetch TV Recommendations
-      if (recentTv) {
-        const res = await fetch(`https://api.themoviedb.org/3/tv/${recentTv.tmdbId}/recommendations?api_key=${apiKey}&language=en-US&page=${page}`);
-        if (res.ok) {
-          const data = await res.json();
-          // Explicitly tag them as TV shows
-          tvRecs = data.results.map((t: any) => ({ ...t, media_type: "tv" }));
+      // 6. Fetch ALL recommendations in parallel (blazing fast)
+      const recPromises = [...recentMovies, ...recentTv].map(fetchRecs);
+      const recResults = await Promise.all(recPromises);
+      
+      // Flatten the array of arrays into one massive pool of recommendations
+      const allRecs = recResults.flat();
+
+      // 7. Filter out duplicates AND items the user has already seen
+      const uniqueRecsMap = new Map();
+      allRecs.forEach(rec => {
+        if (!seenIds.has(rec.id) && !uniqueRecsMap.has(rec.id)) {
+          uniqueRecsMap.set(rec.id, rec);
         }
-      }
+      });
 
-      // 5. Interleave them together (Movie, TV, Movie, TV...)
-      const combined = [];
-      const maxLength = Math.max(movieRecs.length, tvRecs.length);
-      for (let i = 0; i < maxLength; i++) {
-        if (tvRecs[i]) combined.push(tvRecs[i]);
-        if (movieRecs[i]) combined.push(movieRecs[i]);
-      }
+      const finalRecs = Array.from(uniqueRecsMap.values());
 
-      if (combined.length > 0) return combined;
+      // 8. Sort by popularity to ensure high-quality recommendations bubble to the top
+      finalRecs.sort((a, b) => b.popularity - a.popularity);
 
-      // Fallback: If TMDB had zero recommendations for their specific items, return general trending
+      // 9. Manually paginate the aggregated pool
+      const paginatedRecs = finalRecs.slice(skip, skip + pageSize);
+
+      if (paginatedRecs.length > 0) return paginatedRecs;
+
+      // Fallback if TMDB somehow returns 0 recommendations for all their items
       const fallbackRes = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${apiKey}&language=en-US&page=${page}`);
       const fallbackData = await fallbackRes.json();
       return fallbackData.results;
@@ -275,39 +241,38 @@ export async function fetchTmdbCategory(category: string, page: number = 1): Pro
   return data.results;
 }
 
-// Helper to map Prisma Database fields to TMDB API fields
-const mapFilmToTmdb = (film: any) => ({
-  id: film.tmdbId,
-  poster_path: film.poster,
-  title: film.mediaType === "movie" ? film.name : undefined,
-  name: film.mediaType === "tv" ? film.name : undefined,
-  media_type: film.mediaType,
-});
-
 export async function getUserFavorites(userId: number) {
   const favs = await prisma.accountFavorites.findMany({
     where: { userId },
-    include: { film: true },
-    orderBy: { tmdbId: 'desc' }, // Get newest first
-    take: 15 // Limit to 15 for the scrolling row
+    orderBy: { tmdbId: 'desc' },
+    take: 15
   });
-  return favs.map(f => mapFilmToTmdb(f.film));
+  
+  // Fetch fresh, full details directly from TMDB
+  const results = await Promise.all(favs.map(f => fetchTmdbDetails(f.tmdbId, f.mediaType)));
+  return results.filter(Boolean); 
 }
 
 export async function getUserWatchHistory(userId: number) {
   const history = await prisma.accountWatchHistory.findMany({
     where: { userId },
-    include: { film: true },
     orderBy: { accountHistoryId: 'desc' },
-    take: 25 // Fetch a bit more so we can filter duplicates
+    take: 25 
   });
   
-  // Filter duplicates
+  // Filter out duplicates (checking both ID and MediaType)
   const uniqueHistory = history.filter((item, index, self) =>
-    index === self.findIndex((t) => t.tmdbId === item.tmdbId)
+    index === self.findIndex((t) => t.tmdbId === item.tmdbId && t.mediaType === item.mediaType)
   );
   
-  return uniqueHistory.slice(0, 15).map(h => mapFilmToTmdb(h.film));
+  // Fetch fresh details and AUTOMATICALLY inject the "watched: true" flag!
+  const results = await Promise.all(uniqueHistory.slice(0, 15).map(async (h) => {
+    const details = await fetchTmdbDetails(h.tmdbId, h.mediaType);
+    if (!details) return null;
+    return { ...details, watched: true }; 
+  }));
+  
+  return results.filter(Boolean);
 }
 
 // Fetch episodes for a specific TV Season
@@ -546,28 +511,36 @@ export async function redirectToRandomMedia() {
   let targetUrl = "";
 
   try {
-    // Increased to 100 pages (Pool of ~2,000 popular items)
-    // Going too high (like 500) might eventually hit very obscure items 
-    // depending on how high your vote_count.gte is set.
-    const randomPage = Math.floor(Math.random() * 100) + 1; // Pick from first 100 pages
+    // We restrict the pool to the first 50 pages of high-quality content 
+    // (50 pages * 20 items = 1000 top-tier random choices per type)
+    const randomPage = Math.floor(Math.random() * 70) + 1; 
     
-    // 2. Discover films with include_adult=false AND a minimum vote count
-    // vote_count.gte=100 ensures the show is "known" and not just a random upload
+    // STRICT QUALITY FILTERS:
+    // 1. vote_count.gte=300 (Must have at least 300 reviews - ensures it's a real, known production)
+    // 2. vote_average.gte=6.0 (Must be at least a 6/10 rating)
+    // 3. with_original_language=en (Prioritizes English releases)
+    // 4. cache: 'no-store' (Forces Next.js to never cache the randomizer)
     const res = await fetch(
-      `https://api.themoviedb.org/3/discover/${selectedType}?api_key=${apiKey}&include_adult=false&vote_count.gte=150&language=en-US&page=${randomPage}`
+      `https://api.themoviedb.org/3/discover/${selectedType}?api_key=${apiKey}&include_adult=false&vote_count.gte=300&vote_average.gte=6.0&with_original_language=en&language=en-US&page=${randomPage}`,
+      { cache: 'no-store' }
     );
     
     if (res.ok) {
       const data = await res.json();
-      const results = data.results;
       
-      if (results && results.length > 0) {
-        const randomItem = results[Math.floor(Math.random() * results.length)];
+      // Filter out any results that are missing a poster OR a backdrop image
+      // This guarantees your cinematic Hero and MediaCards never look broken
+      const validResults = (data.results || []).filter(
+        (item: any) => item.poster_path && item.backdrop_path && item.overview
+      );
+      
+      if (validResults.length > 0) {
+        const randomItem = validResults[Math.floor(Math.random() * validResults.length)];
         targetUrl = `/${selectedType}/${randomItem.id}`;
       }
     }
 
-    // Fallback if the discover call fails
+    // Fallback if the discover call fails or returns an empty page
     if (!targetUrl) {
       targetUrl = "/dashboard";
     }
@@ -577,5 +550,6 @@ export async function redirectToRandomMedia() {
     targetUrl = "/dashboard";
   }
 
+  // Redirect the user to their high-quality random pick
   return redirect(targetUrl);
 }

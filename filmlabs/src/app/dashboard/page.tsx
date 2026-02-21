@@ -37,11 +37,7 @@ export default async function DashboardPage() {
     fetchTmdbCategory("sci-fi-tv"),
   ]);
 
-  const heroPool = trending.slice(0, 10);
-  const heroFilm = heroPool[Math.floor(Math.random() * heroPool.length)];
-
   const displayedIds = new Set([
-    heroFilm?.id,
     ...personalWatchHistory.map((item: any) => item.id)
   ]);
 
@@ -49,12 +45,14 @@ export default async function DashboardPage() {
     items.filter(item => !displayedIds.has(item.id)).slice(0, 15);
 
   return (
-    <div className="min-h-screen bg-background pt-8 pb-20 px-4 md:px-8">
-      <div className="max-w-350 mx-auto space-y-12">
-        <div className="space-y-10">
-          <FeaturedHero films={filterItems(trending)} />
-    
+    <div className="min-h-screen bg-background pb-20">
       
+      {/* 1. Hero spans full width, outside the padding! */}
+      <FeaturedHero films={filterItems(trending)} />
+
+      {/* 2. Content is pulled up slightly over the hero for a seamless blend */}
+      <div className="max-w-[1600px] mx-auto px-4 md:px-8 space-y-12 -mt-20 md:-mt-32 relative z-20">
+        <div className="space-y-10 pt-8">
           {/* Personalized User Rows */}
           <MediaRow title="Continue Watching" items={personalWatchHistory} linkHref="/category/history" />
           <MediaRow title="Your Favorites" items={personalFavorites} linkHref="/category/favorites" />
@@ -66,8 +64,8 @@ export default async function DashboardPage() {
           <MediaRow title="Action Packed" items={actionMovies} linkHref="/category/action-movies" />
           <MediaRow title="Sci-Fi & Fantasy TV" items={sciFiTv} linkHref="/category/sci-fi-tv" />
         </div>
-
       </div>
+
     </div>
   );
 }
