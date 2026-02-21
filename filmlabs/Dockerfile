@@ -1,12 +1,18 @@
-# Use Node.js 18 (or 20) as the base image
-FROM node:18-alpine
+# Use Node.js 20 as Next.js 15 strongly prefers it
+FROM node:20-alpine
+
+# Install essential build tools needed for native dependencies (Prisma, bcrypt, etc.)
+RUN apk add --no-cache python3 make g++
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies 
+# Using --legacy-peer-deps prevents installation from failing if there are strict React version mismatches
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
