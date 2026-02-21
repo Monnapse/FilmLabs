@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <header className="text-center space-y-4">
           <ShieldCheck className="w-12 h-12 text-primary mx-auto drop-shadow-[0_0_15px_rgba(255,193,25,0.5)]" />
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">Privacy Policy</h1>
-          <p className="text-white/50 font-medium">Last updated: October 2024</p>
+          <p className="text-white/50 font-medium">Last updated: February 2026</p>
         </header>
 
         <div className="bg-[#14151a]/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-2xl p-8 md:p-12 prose prose-invert prose-p:text-white/70 prose-headings:text-white max-w-none">

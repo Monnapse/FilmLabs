@@ -201,14 +201,14 @@ export default function FeaturedHero({ films }: { films: any[] }) {
         })}
       </div>
 
-      {/* 2. Navigation Arrows */}
-      <div className="absolute bottom-28 md:bottom-32 right-6 md:right-12 z-20 flex gap-3">
+      {/* 2. Navigation Arrows (Hidden on mobile, swipe enabled) */}
+      <div className="absolute hidden md:flex bottom-32 right-12 z-20 gap-3">
         <Button 
           variant="secondary" 
           size="icon" 
           onMouseDown={(e) => { e.stopPropagation(); prevSlide(); }}
           onTouchStart={(e) => { e.stopPropagation(); prevSlide(); }}
-          className="bg-[#14151a]/80 hover:bg-primary hover:text-primary-foreground border border-white/10 rounded-xl w-14 h-14 backdrop-blur-xl transition-all shadow-2xl"
+          className="bg-[#14151a]/80 hover:bg-primary hover:text-[#14151a] border border-white/10 rounded-xl w-14 h-14 backdrop-blur-xl transition-all shadow-2xl"
         >
           <ChevronLeft className="w-8 h-8 pointer-events-none" />
         </Button>
@@ -217,7 +217,7 @@ export default function FeaturedHero({ films }: { films: any[] }) {
           size="icon" 
           onMouseDown={(e) => { e.stopPropagation(); nextSlide(); }}
           onTouchStart={(e) => { e.stopPropagation(); nextSlide(); }}
-          className="bg-[#14151a]/80 hover:bg-primary hover:text-primary-foreground border border-white/10 rounded-xl w-14 h-14 backdrop-blur-xl transition-all shadow-2xl"
+          className="bg-[#14151a]/80 hover:bg-primary hover:text-[#14151a] border border-white/10 rounded-xl w-14 h-14 backdrop-blur-xl transition-all shadow-2xl"
         >
           <ChevronRight className="w-8 h-8 pointer-events-none" />
         </Button>
