@@ -1,7 +1,29 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Film } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isIndexPage = pathname === "/";
+
+  // =======================================================================
+  // 1. COMPLETELY DIFFERENT FOOTER FOR INDEX PAGE
+  // =======================================================================
+  if (isIndexPage) {
+    return (
+      <footer className="w-full py-8 mt-auto relative z-20 flex justify-center">
+        <p className="text-white/30 text-xs font-medium">
+          &copy; {new Date().getFullYear()} FilmLabs. All rights reserved.
+        </p>
+      </footer>
+    );
+  }
+
+  // =======================================================================
+  // 2. REGULAR FOOTER FOR ALL OTHER PAGES
+  // =======================================================================
   return (
     <footer className="bg-[#0b0b0c] border-t border-white/5 pt-16 pb-8 mt-auto relative z-20">
       <div className="max-w-[1600px] mx-auto px-6 md:px-12">

@@ -28,7 +28,7 @@ export default async function HomePage() {
 
         {/* Big Centered Search Bar (Like HiAnime) */}
         <div className="max-w-2xl mx-auto py-6">
-           <SearchBar />
+           <SearchBar hideFilter={true} /> {/* <-- Add the prop here */}
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

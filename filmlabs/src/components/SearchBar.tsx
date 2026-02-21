@@ -13,7 +13,11 @@ const ALL_GENRES = [
   "Thriller", "War", "Western"
 ];
 
-export default function SearchBar() {
+interface SearchBarProps {
+  hideFilter?: boolean;
+}
+
+export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <-- Update this line
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -80,23 +84,27 @@ export default function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           className="bg-transparent border-0 text-white placeholder:text-muted-foreground focus-visible:ring-0 px-4 h-10 w-full"
         />
-        <Button 
-          type="button" 
-          variant="ghost" 
-          onClick={() => setShowFilters(!showFilters)} 
-          className={`rounded-full h-10 w-10 p-0 shrink-0 transition-colors ${showFilters ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-white hover:bg-white/10'}`}
-        >
-          <Filter className="h-4 w-4" />
-        </Button>
+        
+        {/* Wrap the Filter button in this conditional check */}
+        {!hideFilter && (
+          <Button 
+            type="button" 
+            variant="ghost" 
+            onClick={() => setShowFilters(!showFilters)} 
+            className={`rounded-full h-10 w-10 p-0 shrink-0 transition-colors ${showFilters ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-white hover:bg-white/10'}`}
+          >
+            <Filter className="h-4 w-4" />
+          </Button>
+        )}
+
         <Button type="submit" size="icon" className="rounded-full h-10 w-10 shrink-0 bg-primary text-primary-foreground hover:bg-primary/80">
           <Search className="h-4 w-4" />
         </Button>
       </form>
 
-      {/* Advanced Filter Dropdown */}
-      {showFilters && (
+      {/* Optional: Add !hideFilter to your dropdown check just to be extra safe */}
+      {!hideFilter && showFilters && (
         <div className="absolute top-16 left-0 w-full bg-[#14151a] rounded-2xl border border-border/50 shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-y-auto max-h-[80vh] flex flex-col gap-6 text-foreground z-50">
-           
            <div className="flex justify-between items-center border-b border-border/50 pb-3">
                <h3 className="font-bold text-xl text-white">Advanced Filters</h3>
                <div className="flex gap-4 items-center">

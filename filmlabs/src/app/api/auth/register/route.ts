@@ -10,6 +10,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Username and password are required" }, { status: 400 });
     }
 
+    // Ensure the pepper exists in the environment
+    const pepper = process.env.PASSWORD_PEPPER;
+    if (!pepper) {
+      console.error("PASSWORD_PEPPER is missing from environment variables.");
+      return NextResponse.json({ message: "Server configuration error" }, { status: 500 });
+    }
+
     // Check if user already exists
     const existingUser = await prisma.account.findUnique({
       where: { username }
@@ -19,8 +26,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Username already taken" }, { status: 409 });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Combine password with the dedicated pepper
+    const pepperedPassword = password + pepper;
+
+    // Hash the peppered password (bcrypt generates its own salt automatically)
+    const hashedPassword = await bcrypt.hash(pepperedPassword, 10);
 
     // Save the new user
     const newUser = await prisma.account.create({

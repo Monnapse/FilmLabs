@@ -94,14 +94,14 @@ export default function MediaCard({ item }: { item: any }) {
         )}
 
         {/* Bottom Left: Info Badges (HiAnime Style) */}
-        <div className="absolute bottom-2 left-2 z-10 flex gap-1.5">
-          <div className="bg-[#14151a]/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-xl tracking-wider min-w-[28px] text-center">
+        <div className="absolute bottom-2 left-2 right-2 z-10 flex flex-wrap items-center gap-1.5">
+          <div className="bg-[#14151a]/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-xl tracking-wider min-w-[28px] text-center whitespace-nowrap">
             {ageRating}
           </div>
-          <div className="bg-primary/90 backdrop-blur-md text-primary-foreground text-[10px] font-black px-2 py-1 rounded-md shadow-xl uppercase tracking-wider">
+          <div className="bg-primary/90 backdrop-blur-md text-primary-foreground text-[10px] font-black px-2 py-1 rounded-md shadow-xl uppercase tracking-wider whitespace-nowrap">
             HD
           </div>
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 text-white/90 text-[10px] font-bold px-2 py-1 rounded-md shadow-xl uppercase tracking-wider">
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 text-white/90 text-[10px] font-bold px-2 py-1 rounded-md shadow-xl uppercase tracking-wider whitespace-nowrap">
             {badgeLabel}
           </div>
         </div>

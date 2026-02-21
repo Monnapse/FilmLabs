@@ -14,13 +14,24 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
 
+        // Ensure the pepper exists in the environment
+        const pepper = process.env.PASSWORD_PEPPER;
+        if (!pepper) {
+          console.error("PASSWORD_PEPPER is missing from environment variables.");
+          return null; // Fail safe
+        }
+
         const user = await prisma.account.findUnique({
           where: { username: credentials.username }
         });
 
         if (!user) return null;
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        // Combine entered password with the dedicated pepper
+        const pepperedPassword = credentials.password + pepper;
+
+        // Compare the peppered password to the database hash
+        const isPasswordValid = await bcrypt.compare(pepperedPassword, user.password);
         if (!isPasswordValid) return null;
 
         return {
@@ -31,6 +42,8 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  // Explicitly tell NextAuth to use its own secret for JWTs/sessions
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -43,7 +56,6 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id; 
         token.avatar = user.avatar; 
       }
-      // This allows the client to dynamically update the active session!
       if (trigger === "update") {
         if (session?.avatar !== undefined) token.avatar = session.avatar;
         if (session?.name !== undefined) token.name = session.name;

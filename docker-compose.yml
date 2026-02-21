@@ -21,7 +21,8 @@ services:
     environment:
       # In Docker, we use the service name 'postgres' instead of localhost or an IP
       DATABASE_URL: "postgresql://filmlabs_admin:super_secure_password_123@postgres:5432/filmlabs?schema=public"
-      NEXTAUTH_SECRET: "your_super_secret_random_string_here_998877"
+      NEXTAUTH_SECRET: "your_super_secret_random_string_here"
+      PASSWORD_PEPPER: "your_generated_password_pepper_here"
       NEXTAUTH_URL: "http://your_server_ip_or_domain:3000"
       TMDB_API_KEY: "paste_your_tmdb_api_key_here"
     depends_on:

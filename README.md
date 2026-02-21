@@ -40,8 +40,9 @@ Create a `.env` file in the root directory and add the following variables:
 # Example: mysql://USER:PASSWORD@HOST:PORT/DATABASE
 DATABASE_URL="mysql://root:password@localhost:3306/filmlabs"
 
-# NextAuth Secret (Generate one using `openssl rand -base64 32` in your terminal)
+# NextAuth Secret & Password Pepper (Generate one using `openssl rand -base64 32` in your terminal)
 NEXTAUTH_SECRET="your_randomly_generated_secret_here"
+PASSWORD_PEPPER="your_generated_password_pepper_here"
 NEXTAUTH_URL="http://localhost:3000"
 
 # TMDB API Key (Get from [https://developer.themoviedb.org/docs/getting-started](https://developer.themoviedb.org/docs/getting-started))

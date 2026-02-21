@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Menu, Search, X } from "lucide-react";
 import SearchBar from "./SearchBar"; 
@@ -14,6 +15,9 @@ export default function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  
+  const pathname = usePathname();
+  const isIndexPage = pathname === "/"; 
 
   const handleRandomClick = () => {
     startTransition(async () => {
@@ -21,9 +25,34 @@ export default function Navbar() {
     });
   };
 
+  // =======================================================================
+  // 1. COMPLETELY DIFFERENT NAVBAR FOR INDEX PAGE
+  // =======================================================================
+  if (isIndexPage) {
+    return (
+      <nav className="absolute top-0 w-full z-50 py-6 px-4">
+        <div className="max-w-3xl mx-auto flex flex-wrap justify-center items-center gap-4 sm:gap-8 font-bold text-sm sm:text-base text-white/70">
+          <Link href="/search?type=movie" className="hover:text-primary transition-colors">Movies</Link>
+          <Link href="/search?type=tv" className="hover:text-primary transition-colors">TV Shows</Link>
+          <Link href="/category/trending-movies" className="hover:text-primary transition-colors">Trending</Link>
+          <Button 
+            variant="ghost" 
+            onClick={handleRandomClick}
+            disabled={isPending}
+            className="text-white/70 hover:text-primary hover:bg-primary/10 rounded-full font-bold px-3 sm:px-4 text-sm sm:text-base"
+          >
+            {isPending ? "Picking..." : "Random"}
+          </Button>
+        </div>
+      </nav>
+    );
+  }
+
+  // =======================================================================
+  // 2. REGULAR NAVBAR FOR ALL OTHER PAGES
+  // =======================================================================
   return (
     <>
-      {/* MAIN NAVBAR */}
       <nav className="bg-[#14151a]/95 backdrop-blur-xl border-b border-white/5 text-white py-3 px-4 md:px-6 sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
           
@@ -55,8 +84,7 @@ export default function Navbar() {
           </div>
 
           {/* RIGHT: Actions */}
-          <div className="flex items-center gap-4 shrink-0">
-            {/* Mobile Search Toggle */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <button 
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
               className="md:hidden text-white/70 hover:text-primary transition-colors p-1"
@@ -68,29 +96,28 @@ export default function Navbar() {
               variant="ghost" 
               onClick={handleRandomClick}
               disabled={isPending}
-              className="hidden sm:flex text-white/70 hover:text-primary hover:bg-primary/10 rounded-full font-bold"
+              className="flex text-sm sm:text-base px-3 sm:px-4 text-white/70 hover:text-primary hover:bg-primary/10 rounded-full font-bold"
             >
               {isPending ? "Picking..." : "Random"}
             </Button>
 
-            {/* Profile Dropdown */}
             {session ? (
               <ProfileDropdown user={session.user} />
             ) : (
                <Link href="/login">
-                 <Button className="rounded-full font-bold px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_rgba(255,193,25,0.3)]">Login</Button>
+                 <Button className="rounded-full font-bold px-4 sm:px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_15px_rgba(255,193,25,0.3)]">Login</Button>
                </Link>
             )}
           </div>
         </div>
-      </nav>
 
-      {/* MOBILE SEARCH DROPDOWN */}
-      {isMobileSearchOpen && (
-        <div className="md:hidden w-full bg-[#14151a] p-4 border-b border-white/5 absolute top-[70px] left-0 z-40 shadow-xl animate-in slide-in-from-top-2">
-           <SearchBar />
-        </div>
-      )}
+        {/* MOBILE SEARCH DROPDOWN */}
+        {isMobileSearchOpen && (
+          <div className="md:hidden w-full bg-[#14151a] p-4 border-b border-white/5 absolute top-full left-0 z-40 shadow-xl animate-in slide-in-from-top-2">
+             <SearchBar />
+          </div>
+        )}
+      </nav>
 
       {/* MOBILE SIDEBAR */}
       {isSidebarOpen && (
