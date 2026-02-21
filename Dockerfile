@@ -10,7 +10,7 @@ COPY filmlabs/prisma ./prisma/
 
 # Install dependencies
 # If npm ci fails, try 'npm install' to bypass strict lockfile checks
-RUN npm install
+RUN npm install --legacy-peer-deps
 RUN npx prisma generate
 
 # Stage 2: Build the application
