@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 // Helper function to ensure the film exists in the database
 async function ensureFilmExists(movieData: any) {
@@ -21,31 +22,58 @@ async function ensureFilmExists(movieData: any) {
   });
 }
 
-export async function toggleFavorite(movieData: any) {
+async function ensureMediaExists(mediaData: any) {
+  // TMDB TV objects use 'name', Movies use 'title'
+  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
+  
+  return await prisma.film.upsert({
+    where: { tmdbId: mediaData.id },
+    update: {
+      // Update poster and rating in case they changed
+      poster: mediaData.poster_path || "",
+      rating: mediaData.vote_average || 0,
+    }, 
+    create: {
+      tmdbId: mediaData.id,
+      mediaType: isTv ? "tv" : "movie",
+      name: isTv ? mediaData.name : mediaData.title,
+      releaseDate: (isTv ? mediaData.first_air_date : mediaData.release_date) || "Unknown",
+      rating: mediaData.vote_average || 0,
+      poster: mediaData.poster_path || "",
+    },
+  });
+}
+
+export async function toggleFavorite(mediaData: any) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Not authenticated");
   const userId = parseInt(session.user.id);
 
-  await ensureFilmExists(movieData);
+  // Ensure it exists with the CORRECT media type before favoriting
+  await ensureMediaExists(mediaData);
 
-  // Check if it's already a favorite
   const existingFavorite = await prisma.accountFavorites.findUnique({
     where: {
-      tmdbId_userId: { tmdbId: movieData.id, userId },
+      tmdbId_userId: { tmdbId: mediaData.id, userId },
     },
   });
 
   if (existingFavorite) {
     await prisma.accountFavorites.delete({
-      where: { tmdbId_userId: { tmdbId: movieData.id, userId } },
+      where: { tmdbId_userId: { tmdbId: mediaData.id, userId } },
     });
   } else {
     await prisma.accountFavorites.create({
-      data: { tmdbId: movieData.id, userId },
+      data: { tmdbId: mediaData.id, userId },
     });
   }
 
-  revalidatePath(`/movie/${movieData.id}`); // Refresh the page UI automatically
+  // Determine path for revalidation so the button updates immediately
+  const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
+  const typePath = isTv ? "tv" : "movie";
+  
+  revalidatePath(`/${typePath}/${mediaData.id}`);
+  revalidatePath('/dashboard');
 }
 
 export async function addToWatchHistory(movieData: any) {
@@ -506,4 +534,48 @@ export async function getTrendingFilms() {
   if (!res.ok) return [];
   const data = await res.json();
   return data.results;
+}
+
+// src/app/actions.ts
+
+export async function redirectToRandomMedia() {
+  const apiKey = process.env.TMDB_API_KEY;
+  const types = ["movie", "tv"];
+  const selectedType = types[Math.floor(Math.random() * types.length)];
+  
+  let targetUrl = "";
+
+  try {
+    // Increased to 100 pages (Pool of ~2,000 popular items)
+    // Going too high (like 500) might eventually hit very obscure items 
+    // depending on how high your vote_count.gte is set.
+    const randomPage = Math.floor(Math.random() * 100) + 1; // Pick from first 100 pages
+    
+    // 2. Discover films with include_adult=false AND a minimum vote count
+    // vote_count.gte=100 ensures the show is "known" and not just a random upload
+    const res = await fetch(
+      `https://api.themoviedb.org/3/discover/${selectedType}?api_key=${apiKey}&include_adult=false&vote_count.gte=150&language=en-US&page=${randomPage}`
+    );
+    
+    if (res.ok) {
+      const data = await res.json();
+      const results = data.results;
+      
+      if (results && results.length > 0) {
+        const randomItem = results[Math.floor(Math.random() * results.length)];
+        targetUrl = `/${selectedType}/${randomItem.id}`;
+      }
+    }
+
+    // Fallback if the discover call fails
+    if (!targetUrl) {
+      targetUrl = "/dashboard";
+    }
+
+  } catch (error) {
+    console.error("Random search failed:", error);
+    targetUrl = "/dashboard";
+  }
+
+  return redirect(targetUrl);
 }

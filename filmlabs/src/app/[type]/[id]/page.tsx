@@ -12,13 +12,17 @@ import { Star } from "lucide-react";
 async function getMediaDetails(type: string, id: string) {
   const ratingEndpoint = type === "movie" ? "release_dates" : "content_ratings";
   const res = await fetch(
-    `https://api.themoviedb.org/3/${type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US&append_to_response=credits,recommendations,${ratingEndpoint}`
+    `https://api.themoviedb.org/3/${type}/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US&append_to_response=credits,recommendations,${ratingEndpoint}`,
   );
   if (!res.ok) return null;
   return res.json();
 }
 
-export default async function MediaPage({ params }: { params: Promise<{ type: string; id: string }> }) {
+export default async function MediaPage({
+  params,
+}: {
+  params: Promise<{ type: string; id: string }>;
+}) {
   const { type, id } = await params;
 
   if (type !== "movie" && type !== "tv") return notFound();
@@ -32,7 +36,13 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
 
   const tmdbId = parseInt(id, 10);
   const favoriteRecord = await prisma.accountFavorites.findFirst({
-    where: { userId, film: { tmdbId, mediaType: type } },
+    where: {
+      userId,
+      film: {
+        tmdbId: parseInt(id, 10),
+        mediaType: type, // Use the 'type' variable from your URL params
+      },
+    },
   });
 
   const watchedHistory = await prisma.accountWatchHistory.findMany({
@@ -44,16 +54,24 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
   const episodeHistoryData = showHistoryRecord?.episodeHistory || [];
 
   const title = type === "movie" ? media.title : media.name;
-  const releaseYear = (type === "movie" ? media.release_date : media.first_air_date)?.split("-")[0];
+  const releaseYear = (
+    type === "movie" ? media.release_date : media.first_air_date
+  )?.split("-")[0];
   const rating = media.vote_average.toFixed(1);
   const isTv = type === "tv";
 
   let certification = "NR";
   if (type === "movie") {
-    const usRelease = media.release_dates?.results?.find((r: any) => r.iso_3166_1 === "US");
-    certification = usRelease?.release_dates?.find((r: any) => r.certification)?.certification || "NR";
+    const usRelease = media.release_dates?.results?.find(
+      (r: any) => r.iso_3166_1 === "US",
+    );
+    certification =
+      usRelease?.release_dates?.find((r: any) => r.certification)
+        ?.certification || "NR";
   } else {
-    const usRating = media.content_ratings?.results?.find((r: any) => r.iso_3166_1 === "US");
+    const usRating = media.content_ratings?.results?.find(
+      (r: any) => r.iso_3166_1 === "US",
+    );
     certification = usRating?.rating || "NR";
   }
 
@@ -61,7 +79,6 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
 
   return (
     <div className="min-h-screen bg-background text-foreground relative pb-20">
-      
       {/* Background Hero Layer */}
       {media.backdrop_path && (
         <div className="absolute top-0 left-0 w-full h-[60vh] md:h-[75vh] z-0 overflow-hidden pointer-events-none">
@@ -78,33 +95,48 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
 
       {/* Main Content Layer */}
       <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 pt-6 md:pt-12">
-        <MediaPlayer media={media} mediaType={type} watchedHistory={watchedHistory} episodeHistory={episodeHistoryData}>
-          
+        <MediaPlayer
+          media={media}
+          mediaType={type}
+          watchedHistory={watchedHistory}
+          episodeHistory={episodeHistoryData}
+        >
           {/* Details Section (Rendered inside MediaPlayer) */}
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 pt-4 pb-12">
-            
             {/* Poster - Prominent on desktop */}
             <div className="hidden md:block shrink-0 w-[240px] lg:w-[300px]">
               <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-border/50 bg-secondary/30">
-                <Image src={`https://image.tmdb.org/t/p/w500${media.poster_path}`} alt={title} fill className="object-cover" />
+                <Image
+                  src={`https://image.tmdb.org/t/p/w500${media.poster_path}`}
+                  alt={title}
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
 
             {/* Info Container */}
             <div className="flex flex-col justify-center space-y-4 md:space-y-6 max-w-4xl pt-4 md:pt-0">
-              
               {/* Meta Badges */}
               <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-bold tracking-wider">
-                <span className="bg-primary text-primary-foreground px-2 py-1 rounded-sm uppercase shadow-sm">HD</span>
-                <span className="bg-white/90 text-black px-2 py-1 rounded-sm shadow-sm">{certification}</span>
+                <span className="bg-primary text-primary-foreground px-2 py-1 rounded-sm uppercase shadow-sm">
+                  HD
+                </span>
+                <span className="bg-white/90 text-black px-2 py-1 rounded-sm shadow-sm">
+                  {certification}
+                </span>
                 {media.vote_average > 0 && (
                   <span className="flex items-center gap-1 text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-sm">
                     <Star className="w-3.5 h-3.5 fill-current" />
                     {rating}
                   </span>
                 )}
-                <span className="text-muted-foreground bg-secondary/50 px-2 py-1 rounded-sm uppercase tracking-widest">{isTv ? "TV" : "MOV"}</span>
-                {releaseYear && <span className="text-white/80 px-1">{releaseYear}</span>}
+                <span className="text-muted-foreground bg-secondary/50 px-2 py-1 rounded-sm uppercase tracking-widest">
+                  {isTv ? "TV" : "MOV"}
+                </span>
+                {releaseYear && (
+                  <span className="text-white/80 px-1">{releaseYear}</span>
+                )}
               </div>
 
               {/* Title */}
@@ -113,17 +145,30 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
               </h1>
 
               {/* Action Buttons */}
-              <MediaButtons media={media} mediaType={type} isFavorited={!!favoriteRecord} />
+              <MediaButtons
+                media={media}
+                mediaType={type}
+                isFavorited={!!favoriteRecord}
+              />
 
               {/* Synopsis & Stats */}
               <div className="space-y-4 pt-4 text-sm md:text-base text-muted-foreground leading-relaxed">
-                <p className="max-w-3xl drop-shadow-sm">{media.overview || "No description available for this title."}</p>
+                <p className="max-w-3xl drop-shadow-sm">
+                  {media.overview || "No description available for this title."}
+                </p>
                 <div className="flex flex-col sm:flex-row sm:gap-12 pt-4 border-t border-border/50">
-                   <div><span className="font-bold text-white mr-2">Genre:</span> {genres || "Unknown"}</div>
-                   {media.status && <div><span className="font-bold text-white mr-2">Status:</span> {media.status}</div>}
+                  <div>
+                    <span className="font-bold text-white mr-2">Genre:</span>{" "}
+                    {genres || "Unknown"}
+                  </div>
+                  {media.status && (
+                    <div>
+                      <span className="font-bold text-white mr-2">Status:</span>{" "}
+                      {media.status}
+                    </div>
+                  )}
                 </div>
               </div>
-
             </div>
           </div>
         </MediaPlayer>
@@ -133,7 +178,10 @@ export default async function MediaPage({ params }: { params: Promise<{ type: st
           <CastRow cast={media.credits?.cast || []} />
           {media.recommendations?.results?.length > 0 && (
             <div className="pt-8 border-t border-border/50">
-              <MediaRow title={`Similar ${isTv ? "Shows" : "Movies"}`} items={media.recommendations.results} />
+              <MediaRow
+                title={`Similar ${isTv ? "Shows" : "Movies"}`}
+                items={media.recommendations.results}
+              />
             </div>
           )}
         </div>

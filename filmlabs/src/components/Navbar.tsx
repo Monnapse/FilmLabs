@@ -1,48 +1,124 @@
+"use client";
+
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import SearchBar from "./SearchBar";
-import ProfileDropdown from "./ProfileDropdown";
-import { Button } from "./ui/button";
+import { useSession } from "next-auth/react";
+import { Menu, Search, X } from "lucide-react";
+import SearchBar from "./SearchBar"; 
+import ProfileDropdown from "./ProfileDropdown"; // Restoring original component
+import { Button } from "./ui/button"; // Restoring UI buttons
+import { redirectToRandomMedia } from "@/app/actions";
 
-export default async function Navbar() {
-  const session = await getServerSession(authOptions);
+export default function Navbar() {
+  const { data: session } = useSession();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  if (!session) return null;
+  const handleRandomClick = () => {
+    startTransition(async () => {
+      await redirectToRandomMedia();
+    });
+  };
 
   return (
-    <nav className="bg-[#14151a]/95 backdrop-blur-md border-b border-border/50 text-white py-3 px-6 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center gap-6">
-        
-        {/* Logo */}
-        <div className="flex items-center gap-8 shrink-0">
-          <Link href="/dashboard" className="text-2xl font-black tracking-tighter text-white hover:text-primary transition-colors">
-            Film<span className="text-primary">Labs</span>
-          </Link>
+    <>
+      {/* MAIN NAVBAR */}
+      <nav className="bg-[#14151a]/95 backdrop-blur-md border-b border-border/50 text-white py-3 px-4 md:px-6 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-4">
           
-          {/* Quick Links */}
-          <div className="hidden lg:flex items-center gap-6 font-medium text-sm text-muted-foreground">
-            <Link href="/dashboard" className="hover:text-primary transition-colors">Home</Link>
-            <Link href="/movies" className="hover:text-primary transition-colors">Movies</Link>
-            <Link href="/tv-shows" className="hover:text-primary transition-colors">TV Shows</Link>
-            <Link href="/top-rated" className="hover:text-primary transition-colors">Top Rated</Link>
+          {/* LEFT: Logo & Desktop Links */}
+          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+            <button 
+              onClick={() => setIsSidebarOpen(true)} 
+              className="lg:hidden text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Menu className="w-7 h-7" />
+            </button>
+
+            <Link href="/dashboard" className="text-2xl font-black tracking-tighter text-white hover:text-primary transition-colors">
+              Film<span className="text-primary">Labs</span>
+            </Link>
+
+            {/* Desktop Quick Links */}
+            <div className="hidden lg:flex items-center gap-6 font-medium text-sm text-muted-foreground">
+              <Link href="/dashboard" className="hover:text-primary transition-colors">Home</Link>
+              <Link href="/movies" className="hover:text-primary transition-colors">Movies</Link>
+              <Link href="/tv-shows" className="hover:text-primary transition-colors">TV Shows</Link>
+              <Link href="/top-rated" className="hover:text-primary transition-colors">Top Rated</Link>
+            </div>
+          </div>
+          
+          {/* CENTER: Your Custom SearchBar (Desktop) */}
+          <div className="flex-1 max-w-md hidden md:block mx-4">
+            <SearchBar /> 
+          </div>
+
+          {/* RIGHT: Actions */}
+          <div className="flex items-center gap-4 shrink-0">
+            {/* Mobile Search Toggle */}
+            <button 
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className="md:hidden text-muted-foreground hover:text-primary transition-colors p-1"
+            >
+              <Search className="w-6 h-6" />
+            </button>
+
+            <Button 
+      variant="ghost" 
+      onClick={handleRandomClick}
+      disabled={isPending}
+      className="hidden sm:flex text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full font-bold"
+    >
+      {isPending ? "Picking..." : "Random"}
+    </Button>
+
+            {/* Restored Original Profile Dropdown */}
+            {session && <ProfileDropdown user={session.user} />}
+            
+            {!session && (
+               <Link href="/login">
+                 <Button className="rounded-full font-bold px-6">Login</Button>
+               </Link>
+            )}
           </div>
         </div>
-        
-        {/* Search Bar */}
-        <div className="flex-1 max-w-md hidden md:block">
-          {/* Ensure your SearchBar component has rounded-full styling to match HiAnime */}
-          <SearchBar /> 
-        </div>
+      </nav>
 
-        {/* User Profile / Actions */}
-        <div className="flex items-center gap-4 shrink-0">
-          <Button variant="ghost" className="hidden sm:flex text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full font-bold">
-            Random
-          </Button>
-          <ProfileDropdown user={session.user} />
+      {/* MOBILE SEARCH DROPDOWN */}
+      {isMobileSearchOpen && (
+        <div className="md:hidden w-full bg-[#14151a] p-4 border-b border-border/50 absolute top-[70px] left-0 z-40 shadow-lg animate-in slide-in-from-top-2">
+           <SearchBar />
         </div>
-      </div>
-    </nav>
+      )}
+
+      {/* MOBILE SIDEBAR (Only if needed) */}
+      {isSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-[100] flex">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
+          <div className="relative w-[280px] h-full bg-[#14151a] border-r border-border/50 p-6 flex flex-col gap-6 animate-in slide-in-from-left duration-300">
+            
+            <button 
+              onClick={() => setIsSidebarOpen(false)} 
+              className="absolute top-5 right-5 text-muted-foreground hover:text-white bg-[#2a2c31] rounded-full p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <Link href="/dashboard" onClick={() => setIsSidebarOpen(false)} className="text-3xl font-black tracking-tighter text-white mt-2">
+              Film<span className="text-primary">Labs</span>
+            </Link>
+
+            <nav className="flex flex-col gap-5 mt-6 font-bold text-lg text-[#aaaaaa]">
+              <Link href="/dashboard" onClick={() => setIsSidebarOpen(false)} className="hover:text-primary transition-colors">Home</Link>
+              <Link href="/movies" onClick={() => setIsSidebarOpen(false)} className="hover:text-primary transition-colors">Movies</Link>
+              <Link href="/tv-shows" onClick={() => setIsSidebarOpen(false)} className="hover:text-primary transition-colors">TV Shows</Link>
+              <Link href="/top-rated" onClick={() => setIsSidebarOpen(false)} className="hover:text-primary transition-colors">Top Rated</Link>
+                
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

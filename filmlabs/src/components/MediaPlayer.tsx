@@ -97,11 +97,18 @@ export default function MediaPlayer({
       
       {/* THE PLAYER (Only visible if URL says so) */}
       {isPlaying && (
-        <div ref={playerRef} className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <ServerSelector selectedIndex={selectedServiceIndex} setSelectedIndex={setSelectedServiceIndex} />
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-[0_15px_50px_rgba(0,0,0,0.8)] bg-[#0f1115] border border-border/50">
+        <div ref={playerRef} className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col mt-4 md:mt-8 shadow-2xl">
+          
+          {/* Video Container */}
+          <div className="relative w-full aspect-video bg-[#000000] overflow-hidden rounded-t-lg">
             <iframe src={iframeSrc} allowFullScreen className="absolute inset-0 w-full h-full border-0" />
           </div>
+          
+          {/* Attached Control Bar (Servers) */}
+          <div className="w-full rounded-b-lg overflow-hidden">
+             <ServerSelector selectedIndex={selectedServiceIndex} setSelectedIndex={setSelectedServiceIndex} />
+          </div>
+          
         </div>
       )}
 

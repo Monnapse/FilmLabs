@@ -16,13 +16,9 @@ export default async function DashboardPage() {
 
   const userId = parseInt(session.user.id as string, 10);
 
-  const trending = await getTrendingFilms();
-
-  // 3. Grab the #1 trending film to feature in the massive hero banner
-  const heroFilm = trending[0];
-
   // Fetch both Personal Data and TMDB Data in parallel!
   const [
+    trending,
     personalFavorites,
     personalWatchHistory,
     recommendations,
@@ -31,6 +27,7 @@ export default async function DashboardPage() {
     actionMovies,
     sciFiTv
   ] = await Promise.all([
+    getTrendingFilms(),
     getUserFavorites(userId),
     getUserWatchHistory(userId),
     fetchTmdbCategory("recommendations", 1),
@@ -40,19 +37,22 @@ export default async function DashboardPage() {
     fetchTmdbCategory("sci-fi-tv"),
   ]);
 
+  const heroPool = trending.slice(0, 10);
+  const heroFilm = heroPool[Math.floor(Math.random() * heroPool.length)];
+
+  const displayedIds = new Set([
+    heroFilm?.id,
+    ...personalWatchHistory.map((item: any) => item.id)
+  ]);
+
+  const filterItems = (items: any[]) => 
+    items.filter(item => !displayedIds.has(item.id)).slice(0, 15);
+
   return (
     <div className="min-h-screen bg-background pt-8 pb-20 px-4 md:px-8">
       <div className="max-w-350 mx-auto space-y-12">
-        
-        <header className="pb-4 border-b border-border/50">
-          <h1 className="text-4xl font-black text-white tracking-tight drop-shadow-sm">Discover</h1>
-          <p className="text-muted-foreground mt-2 text-lg font-medium">
-            What to watch next, <span className="text-primary">{session.user?.name}</span>.
-          </p>
-        </header>
-
         <div className="space-y-10">
-          <FeaturedHero film={heroFilm} />
+          <FeaturedHero films={filterItems(trending)} />
     
       
           {/* Personalized User Rows */}
