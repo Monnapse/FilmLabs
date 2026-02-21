@@ -1,25 +1,24 @@
-# Stage 1: Install dependencies
-FROM node:18-alpine AS deps
-RUN apk add --no-cache libc6-compat
+# Use Node.js 18 (or 20) as the base image
+FROM node:18-alpine
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the configuration files from the subfolder
-COPY filmlabs/package.json filmlabs/package-lock.json ./
-# Copy the prisma folder for the generator
-COPY filmlabs/prisma ./prisma/
+# Copy package.json and install dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
 
-# Install dependencies
-# If npm ci fails, try 'npm install' to bypass strict lockfile checks
-RUN npm install --legacy-peer-deps
+# Copy the rest of the application code
+COPY . .
+
+# Generate the Prisma client required for database access
 RUN npx prisma generate
 
-# Stage 2: Build the application
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copy the rest of the application source code
-COPY filmlabs/ . 
-
-ENV NEXT_TELEMETRY_DISABLED=1
+# Build the Next.js application for production
 RUN npm run build
+
+# Expose the internal port (matches the compose file)
+EXPOSE 3000
+
+# Start the Next.js application
+CMD ["npm", "run", "start"]
