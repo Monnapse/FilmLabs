@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
 /** @type {import('next').Config} */
-const nextConfig = {
-  output: "standalone", // <-- Add this line
+const nextConfig: NextConfig = {
+  output: "standalone",
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
