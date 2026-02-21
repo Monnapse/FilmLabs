@@ -1,37 +1,36 @@
-# Use Node.js 20 as Next.js 15 strongly prefers it
-FROM node:20-alpine
+FROM node:20-alpine AS base
 
-# Install essential build tools needed for native dependencies
-RUN apk add --no-cache python3 make g++
-
-# Set the working directory inside the container
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies 
-RUN npm install --legacy-peer-deps
-
-# Copy the rest of the application code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Generate the Prisma client required for database access
+# Generate prisma client before building
 RUN npx prisma generate
-
-# --- ADDED: Dummy environment variables for the build phase ---
-# This prevents Next.js from crashing when it tries to pre-render pages
-ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
-ENV NEXTAUTH_SECRET="dummy_secret"
-ENV NEXTAUTH_URL="http://localhost:3000"
-ENV TMDB_API_KEY="dummy_key"
-ENV PASSWORD_PEPPER="dummy_pepper"
-
-# Build the Next.js application for production
 RUN npm run build
 
-# Expose the internal port (matches the compose file)
-EXPOSE 3000
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# Start the Next.js application
-CMD ["npm", "run", "start"]
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT 3000
+
+CMD ["node", "server.js"]
