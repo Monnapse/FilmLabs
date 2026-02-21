@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import MediaPlayer from "@/components/MediaPlayer";
@@ -7,7 +7,7 @@ import MediaButtons from "@/components/MediaButtons";
 import CastRow from "@/components/CastRow";
 import MediaRow from "@/components/MediaRow";
 import Image from "next/image";
-import { Star, CheckCircle } from "lucide-react"; // Added CheckCircle
+import { Star, CheckCircle } from "lucide-react";
 
 async function getMediaDetails(type: string, id: string) {
   const ratingEndpoint = type === "movie" ? "release_dates" : "content_ratings";
@@ -28,31 +28,27 @@ export default async function MediaPage({
   if (type !== "movie" && type !== "tv") return notFound();
 
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/login");
-  const userId = parseInt(session.user.id, 10);
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
   const media = await getMediaDetails(type, id);
   if (!media) return notFound();
 
   const tmdbId = parseInt(id, 10);
   
-  // FIX: Query using mediaType directly instead of nested film relations
-  const favoriteRecord = await prisma.accountFavorites.findFirst({
-    where: {
-      userId,
-      tmdbId,
-      mediaType: type, 
-    },
-  });
+  // Conditionally fetch user-specific database records
+  let favoriteRecord = null;
+  let watchedHistory: any[] = [];
 
-  const watchedHistory = await prisma.accountWatchHistory.findMany({
-    where: { 
-      userId, 
-      tmdbId, 
-      mediaType: type 
-    },
-    include: { episodeHistory: true },
-  });
+  if (userId) {
+    favoriteRecord = await prisma.accountFavorites.findFirst({
+      where: { userId, tmdbId, mediaType: type },
+    });
+
+    watchedHistory = await prisma.accountWatchHistory.findMany({
+      where: { userId, tmdbId, mediaType: type },
+      include: { episodeHistory: true },
+    });
+  }
 
   const showHistoryRecord = watchedHistory[0];
   const episodeHistoryData = showHistoryRecord?.episodeHistory || [];
@@ -63,7 +59,7 @@ export default async function MediaPage({
   )?.split("-")[0];
   const rating = media.vote_average.toFixed(1);
   const isTv = type === "tv";
-  const hasWatched = watchedHistory.length > 0; // Check if it's in their history
+  const hasWatched = watchedHistory.length > 0;
 
   let certification = "NR";
   if (type === "movie") {
@@ -126,7 +122,6 @@ export default async function MediaPage({
               {/* Meta Badges */}
               <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs font-bold tracking-wider">
                 
-                {/* NEW GLOBAL WATCHED CHIP */}
                 {hasWatched && (
                   <span className="bg-[#14151a]/80 backdrop-blur-md border border-primary/30 text-primary px-2 py-1 rounded-sm shadow-[0_0_15px_rgba(255,193,25,0.2)] flex items-center gap-1">
                     <CheckCircle className="w-3.5 h-3.5" />
@@ -164,6 +159,7 @@ export default async function MediaPage({
                 media={media}
                 mediaType={type}
                 isFavorited={!!favoriteRecord}
+                isLoggedIn={!!userId}
               />
 
               {/* Synopsis & Stats */}

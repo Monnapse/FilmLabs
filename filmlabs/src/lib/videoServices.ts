@@ -1,5 +1,11 @@
 export const videoServices = [
   {
+    name: "FilmLabs 👑",
+    isNative: true,
+    movieUrl: "",
+    tvUrl: ""
+  },
+  {
     name: "Embed Su",
     movieUrl: "https://embed.su/embed/movie/{tmdbId}",
     tvUrl: "https://embed.su/embed/tv/{tmdbId}/{season}/{episode}"

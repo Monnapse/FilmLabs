@@ -50,7 +50,8 @@ export async function toggleFavorite(mediaData: any) {
 
 export async function addToWatchHistory(mediaData: any) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Not authenticated");
+  // Gracefully return instead of throwing an error
+  if (!session?.user?.id) return { error: "Not authenticated" };
   const userId = parseInt(session.user.id);
 
   const isTv = mediaData.name !== undefined || mediaData.mediaType === "tv";
@@ -67,11 +68,13 @@ export async function addToWatchHistory(mediaData: any) {
   }
 
   revalidatePath('/', 'layout');
+  return { success: true };
 }
 
 export async function markEpisodeWatched(tvData: any, seasonNumber: number, episodeNumber: number) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Not authenticated");
+  // Gracefully return instead of throwing an error
+  if (!session?.user?.id) return { error: "Not authenticated" };
   const userId = parseInt(session.user.id, 10);
 
   let watchHistory = await prisma.accountWatchHistory.findFirst({
@@ -102,6 +105,7 @@ export async function markEpisodeWatched(tvData: any, seasonNumber: number, epis
   });
 
   revalidatePath('/', 'layout');
+  return { success: true };
 }
 
 export async function fetchTmdbCategory(category: string, page: number = 1): Promise<any[]> {
@@ -552,4 +556,61 @@ export async function redirectToRandomMedia() {
 
   // Redirect the user to their high-quality random pick
   return redirect(targetUrl);
+}
+
+export async function extractRawStream(title: string, mediaType: string, season?: number, episode?: number) {
+  // We use the direct FlixHQ provider routes as documented in docs.consumet.org
+  const scraperInstances = [
+    "https://consumet-api-clone.vercel.app/movies/flixhq",
+    "https://api.consumet.org/movies/flixhq",
+    "https://consumet-api.vercel.app/movies/flixhq"
+  ];
+
+  for (const baseUrl of scraperInstances) {
+    try {
+      // STEP 1: Search FlixHQ for the exact title
+      const searchRes = await fetch(`${baseUrl}/${encodeURIComponent(title)}`, { cache: 'no-store' });
+      if (!searchRes.ok) continue;
+      const searchData = await searchRes.json();
+
+      // Find the closest match (checking title and whether it's a Movie or TV Series)
+      const expectedType = mediaType === "movie" ? "Movie" : "TV Series";
+      const exactMatch = searchData.results?.find(
+        (item: any) => item.title.toLowerCase() === title.toLowerCase() && item.type === expectedType
+      ) || searchData.results?.[0]; // Fallback to first result if exact match fails
+
+      if (!exactMatch?.id) continue;
+
+      // STEP 2: Fetch the Info & Episodes list using the FlixHQ media ID
+      const infoRes = await fetch(`${baseUrl}/info?id=${exactMatch.id}`, { cache: 'no-store' });
+      if (!infoRes.ok) continue;
+      const infoData = await infoRes.json();
+
+      let episodeId = "";
+      if (mediaType === "movie") {
+        episodeId = infoData.episodes?.[0]?.id;
+      } else {
+        const targetEp = infoData.episodes?.find((ep: any) => ep.season === season && ep.number === episode);
+        episodeId = targetEp?.id || infoData.episodes?.[0]?.id;
+      }
+
+      if (!episodeId) continue;
+
+      // STEP 3: Fetch the raw streaming sources (.m3u8)
+      const streamRes = await fetch(`${baseUrl}/watch?episodeId=${episodeId}&mediaId=${exactMatch.id}`, { cache: 'no-store' });
+      if (!streamRes.ok) continue;
+      const streamData = await streamRes.json();
+
+      const bestSource = streamData.sources?.find((s: any) => s.quality === "auto" || s.quality === "1080p") 
+                      || streamData.sources?.[0];
+
+      if (bestSource?.url) {
+        return { url: bestSource.url, success: true };
+      }
+    } catch (error) {
+      continue; // Move to the next instance if one times out
+    }
+  }
+
+  return { error: "Direct stream not found.", success: false };
 }

@@ -82,7 +82,10 @@ export default function ProfileDropdown({ user: serverUser }: { user: any }) {
         <DropdownMenuSeparator className="bg-white/10 my-2" />
         
         <DropdownMenuItem 
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={async () => {
+            await signOut({ redirect: false });
+            window.location.href = "/login";
+          }}
           className="hover:bg-red-500/10 focus:bg-red-500/10 text-red-400 cursor-pointer rounded-lg transition-colors py-2.5 mt-1"
         >
           <LogOut className="mr-3 h-4 w-4" />

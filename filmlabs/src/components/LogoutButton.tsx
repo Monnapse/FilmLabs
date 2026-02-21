@@ -7,7 +7,10 @@ export default function LogoutButton() {
   return (
     <Button 
       variant="destructive" 
-      onClick={() => signOut({ callbackUrl: "/login" })}
+      onClick={async () => {
+        await signOut({ redirect: false });
+        window.location.href = "/login";
+      }}
     >
       Log Out
     </Button>

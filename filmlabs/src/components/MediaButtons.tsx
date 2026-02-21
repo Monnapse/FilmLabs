@@ -11,18 +11,27 @@ export default function MediaButtons({
   media,
   mediaType,
   isFavorited,
+  isLoggedIn = false,
 }: {
   media: any;
   mediaType: string;
   isFavorited: boolean;
+  isLoggedIn?: boolean;
 }) {
   const [loadingFav, setLoadingFav] = useState(false);
   const router = useRouter();
 
  const handleFavorite = async () => {
+    if (!isLoggedIn) {
+      toast("Authentication required", {
+        description: "Please sign in to save your favorites.",
+      });
+      router.push("/login");
+      return;
+    }
+
     setLoadingFav(true);
     try {
-      // FIX: Explicitly append the mediaType to the payload
       await toggleFavorite({ ...media, mediaType });
 
       const title = media.title || media.name;

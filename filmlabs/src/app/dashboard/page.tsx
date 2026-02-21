@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { 
   fetchTmdbCategory, 
@@ -12,11 +11,11 @@ import FeaturedHero from "@/components/FeaturedHero";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/login");
+  
+  // Set userId to null if the user is not signed in
+  const userId = session?.user?.id ? parseInt(session.user.id as string, 10) : null;
 
-  const userId = parseInt(session.user.id as string, 10);
-
-  // Fetch both Personal Data and TMDB Data in parallel!
+  // Fetch TMDB Data, and conditionally fetch Personal Data if userId exists
   const [
     trending,
     personalFavorites,
@@ -28,8 +27,8 @@ export default async function DashboardPage() {
     sciFiTv
   ] = await Promise.all([
     getTrendingFilms(),
-    getUserFavorites(userId),
-    getUserWatchHistory(userId),
+    userId ? getUserFavorites(userId) : Promise.resolve([]),
+    userId ? getUserWatchHistory(userId) : Promise.resolve([]),
     fetchTmdbCategory("recommendations", 1),
     fetchTmdbCategory("trending-movies"),
     fetchTmdbCategory("trending-tv"),
@@ -38,7 +37,7 @@ export default async function DashboardPage() {
   ]);
 
   const displayedIds = new Set([
-    ...personalWatchHistory.map((item: any) => item.id)
+    ...(personalWatchHistory?.map((item: any) => item.id) || [])
   ]);
 
   const filterItems = (items: any[]) => 
@@ -53,9 +52,14 @@ export default async function DashboardPage() {
       {/* 2. Content is pulled up slightly over the hero for a seamless blend */}
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 space-y-12 -mt-20 md:-mt-32 relative z-20">
         <div className="space-y-10 pt-8">
-          {/* Personalized User Rows */}
-          <MediaRow title="Continue Watching" items={personalWatchHistory} linkHref="/category/history" />
-          <MediaRow title="Your Favorites" items={personalFavorites} linkHref="/category/favorites" />
+          {/* Personalized User Rows (Only show if logged in) */}
+          {userId && personalWatchHistory.length > 0 && (
+            <MediaRow title="Continue Watching" items={personalWatchHistory} linkHref="/category/history" />
+          )}
+          {userId && personalFavorites.length > 0 && (
+            <MediaRow title="Your Favorites" items={personalFavorites} linkHref="/category/favorites" />
+          )}
+          
           <MediaRow title="Recommended For You" items={recommendations} linkHref="/category/recommendations" />
           
           {/* Generic TMDB Rows */}
