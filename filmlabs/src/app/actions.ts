@@ -289,3 +289,177 @@ export async function getSeasonDetails(tvId: number, seasonNumber: number) {
   if (!res.ok) return null;
   return res.json();
 }
+const GENRE_MAP: Record<string, number[]> = {
+  Action: [28, 10759], Adventure: [12, 10759], Animation: [16],
+  Comedy: [35], Crime: [80], Documentary: [99], Drama: [18],
+  Family: [10751], Fantasy: [14, 10765], History: [36],
+  Horror: [27], Music: [10402], Mystery: [9648], Romance: [10749],
+  SciFi: [878, 10765], Thriller: [53], War: [10752], Western: [37]
+};
+
+const RATING_EQUIVALENTS: Record<string, string[]> = {
+  'G': ['G', 'TV-Y', 'TV-G'],
+  'PG': ['PG', 'TV-Y7', 'TV-PG'],
+  'PG-13': ['PG-13', 'TV-14'],
+  'R': ['R', 'TV-MA'],
+  'NC-17': ['NC-17', 'TV-MA'],
+  'TV-Y': ['TV-Y', 'G'],
+  'TV-Y7': ['TV-Y7', 'PG'],
+  'TV-G': ['TV-G', 'G'],
+  'TV-PG': ['TV-PG', 'PG'],
+  'TV-14': ['TV-14', 'PG-13'],
+  'TV-MA': ['TV-MA', 'R', 'NC-17']
+};
+
+function getGenreIds(selectedGenres: string[]): number[] {
+  const ids = new Set<number>();
+  selectedGenres.forEach(g => {
+    if (GENRE_MAP[g]) GENRE_MAP[g].forEach(id => ids.add(id));
+  });
+  return Array.from(ids);
+}
+
+export async function searchMediaAction(params: {
+  query: string; type: string; year: string; 
+  genres: string; status: string; rating: string; 
+  score: string; sort: string; page: number;
+}) {
+  const { query, type, year, genres, status, rating, score, sort, page } = params;
+  const minScore = parseFloat(score || "0");
+  const selectedGenresList = genres ? genres.split(',').filter(Boolean) : [];
+  const genreIds = getGenreIds(selectedGenresList);
+  const genreQueryParam = genreIds.join('|'); 
+  
+  const sortMap: Record<string, string> = {
+    popularity: 'popularity.desc',
+    rating: 'vote_average.desc',
+    newest: 'primary_release_date.desc',
+    oldest: 'primary_release_date.asc'
+  };
+
+  let urls: { url: string; media_type: string | null }[] = [];
+
+  const allowedRatings = RATING_EQUIVALENTS[rating] || [rating];
+  
+  // FIX: Join with pipe '|' to tell TMDB "OR" (e.g., "TV-Y|TV-G")
+  const movieRating = rating !== 'all' ? allowedRatings.filter(r => !r.startsWith('TV-')).join('|') : 'all';
+  const tvRating = rating !== 'all' ? allowedRatings.filter(r => r.startsWith('TV-')).join('|') : 'all';
+
+  if (!query.trim()) {
+    // DISCOVER MODE
+    if (type === 'movie' || type === 'multi') {
+      let url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=${page}`;
+      if (rating !== 'all') url += `&certification_country=US&certification=${movieRating}`;
+      if (year) url += `&primary_release_year=${year}`;
+      if (genreQueryParam) url += `&with_genres=${genreQueryParam}`;
+      if (minScore > 0) url += `&vote_average.gte=${minScore}&vote_count.gte=10`;
+      url += `&sort_by=${sortMap[sort] || 'popularity.desc'}`;
+      urls.push({ url, media_type: 'movie' });
+    }
+
+    if (type === 'tv' || type === 'multi') {
+      let url = `https://api.themoviedb.org/3/discover/tv?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=${page}`;
+      if (rating !== 'all') url += `&watch_region=US&with_content_rating=${tvRating}`;
+      if (year) url += `&first_air_date_year=${year}`;
+      if (genreQueryParam) url += `&with_genres=${genreQueryParam}`;
+      if (minScore > 0) url += `&vote_average.gte=${minScore}&vote_count.gte=10`;
+      
+      let tvSort = sortMap[sort] || 'popularity.desc';
+      if (tvSort.includes('primary_release_date')) tvSort = tvSort.replace('primary_release_date', 'first_air_date');
+      url += `&sort_by=${tvSort}`;
+      urls.push({ url, media_type: 'tv' });
+    }
+  } else {
+    // SEARCH MODE
+    let endpoint = type === "movie" ? "search/movie" : type === "tv" ? "search/tv" : "search/multi";
+    let url = `https://api.themoviedb.org/3/${endpoint}?api_key=${process.env.TMDB_API_KEY}&query=${encodeURIComponent(query.trim())}&language=en-US&page=${page}`;
+    if (year) {
+      if (type === "movie") url += `&primary_release_year=${year}`;
+      if (type === "tv") url += `&first_air_date_year=${year}`;
+    }
+    urls.push({ url, media_type: type === 'multi' ? null : type });
+  }
+
+  let results: any[] = [];
+  for (const item of urls) {
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) {
+        const data = await res.json();
+        let fetchedResults = data.results || [];
+        if (item.media_type) fetchedResults = fetchedResults.map((r: any) => ({ ...r, media_type: item.media_type }));
+        results = [...results, ...fetchedResults];
+      }
+    } catch (e) {
+      console.error("Fetch failed", item.url, e);
+    }
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+
+  results = results.filter((item: any) => {
+    if (item.media_type === "person") return false;
+    if (minScore > 0 && (item.vote_average || 0) < minScore) return false;
+    
+    if (query.trim() && genreIds.length > 0) {
+      const itemGenres = item.genre_ids || [];
+      const hasGenre = itemGenres.some((id: number) => genreIds.includes(id));
+      if (!hasGenre) return false;
+    }
+
+    if (status !== 'all') {
+      const date = item.release_date || item.first_air_date || "";
+      if (!date) return false;
+      if (status === 'released' && date > today) return false;
+      if (status === 'upcoming' && date <= today) return false;
+    }
+
+    if (query.trim() && type === 'multi' && year) {
+      const date = item.release_date || item.first_air_date || "";
+      if (!date.startsWith(year)) return false;
+    }
+
+    return true;
+  });
+
+  // FIX: Removed the `query.trim()` restriction so this local rigorous check evaluates everything.
+  // This physically blocks any TV show (like The Simpsons) that leaked through TMDB's sloppy TV discover endpoints
+  if (rating !== 'all' && results.length > 0) {
+    const detailedResults = await Promise.all(results.map(async (item) => {
+      try {
+        if (item.media_type === 'movie' || (!item.media_type && item.title)) {
+          const res = await fetch(`https://api.themoviedb.org/3/movie/${item.id}/release_dates?api_key=${process.env.TMDB_API_KEY}`);
+          const data = await res.json();
+          const usRelease = data.results?.find((r: any) => r.iso_3166_1 === 'US');
+          const validCert = usRelease?.release_dates?.find((r: any) => r.certification !== '')?.certification;
+          return { ...item, certification: validCert || '' };
+        } else if (item.media_type === 'tv' || (!item.media_type && item.name)) {
+          const res = await fetch(`https://api.themoviedb.org/3/tv/${item.id}/content_ratings?api_key=${process.env.TMDB_API_KEY}`);
+          const data = await res.json();
+          const usRating = data.results?.find((r: any) => r.iso_3166_1 === 'US');
+          return { ...item, certification: usRating?.rating || '' };
+        }
+      } catch (e) {
+        return { ...item, certification: '' };
+      }
+      return { ...item, certification: '' };
+    }));
+    
+    // Strict comparison guarantees only exact matches make it to the front-end
+    results = detailedResults.filter(item => allowedRatings.includes(item.certification));
+  }
+
+  if (sort === 'rating') results.sort((a,b) => (b.vote_average||0) - (a.vote_average||0));
+  else if (sort === 'newest') results.sort((a,b) => new Date(b.release_date || b.first_air_date || 0).getTime() - new Date(a.release_date || a.first_air_date || 0).getTime());
+  else if (sort === 'oldest') results.sort((a,b) => new Date(a.release_date || a.first_air_date || 0).getTime() - new Date(b.release_date || b.first_air_date || 0).getTime());
+  else if (sort === 'popularity') results.sort((a,b) => (b.popularity||0) - (a.popularity||0));
+  
+  const uniqueIds = new Set();
+  results = results.filter(item => {
+    if (uniqueIds.has(item.id)) return false;
+    uniqueIds.add(item.id);
+    return true;
+  });
+
+  return results;
+}
