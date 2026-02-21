@@ -14,10 +14,10 @@ services:
       - filmlabs_network
 
   web:
-    build: .
+    build: ./filmlabs # Changed from build: .
     restart: always
     ports:
-      - "2455:3000" # Maps port 2455 on your server to port 3000 in the container
+      - "2455:3000"
     environment:
       DATABASE_URL: "postgresql://filmlabs_admin:super_secure_password_123@postgres:5432/filmlabs?schema=public"
       NEXTAUTH_SECRET: "your_super_secret_random_string_here"
