@@ -2,8 +2,11 @@
 FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package.json package-lock.json ./
-COPY prisma ./prisma/
+
+# Update these paths to include the 'filmlabs' directory
+COPY filmlabs/package.json filmlabs/package-lock.json ./
+COPY filmlabs/prisma ./prisma/
+
 RUN npm ci
 RUN npx prisma generate
 
@@ -11,7 +14,10 @@ RUN npx prisma generate
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+
+# Update this path to copy the application source
+COPY filmlabs/ . 
+
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
