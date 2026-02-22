@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,8 @@ interface SearchBarProps {
   hideFilter?: boolean;
 }
 
-export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <-- Update this line
+// 1. Rename your main function to SearchBarContent
+function SearchBarContent({ hideFilter = false }: SearchBarProps) { 
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -85,7 +86,6 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
           className="bg-transparent border-0 text-white placeholder:text-muted-foreground focus-visible:ring-0 px-4 h-10 w-full"
         />
         
-        {/* Wrap the Filter button in this conditional check */}
         {!hideFilter && (
           <Button 
             type="button" 
@@ -102,7 +102,6 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
         </Button>
       </form>
 
-      {/* Optional: Add !hideFilter to your dropdown check just to be extra safe */}
       {!hideFilter && showFilters && (
         <div className="absolute top-16 left-0 w-full bg-[#14151a] rounded-2xl border border-border/50 shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-y-auto max-h-[80vh] flex flex-col gap-6 text-foreground z-50">
            <div className="flex justify-between items-center border-b border-border/50 pb-3">
@@ -116,7 +115,6 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
            </div>
            
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-               {/* Left Column */}
                <div className="space-y-4">
                    <div className="flex flex-col gap-1.5">
                        <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Media Type</label>
@@ -140,7 +138,6 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
                    </div>
                </div>
 
-               {/* Right Column */}
                <div className="space-y-4">
                    <div className="flex flex-col gap-1.5">
                        <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Sort By</label>
@@ -171,7 +168,6 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
                </div>
            </div>
 
-           {/* Genres Toggle */}
            <div className="flex flex-col gap-2">
                <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Genres</label>
                <div className="flex flex-wrap gap-2">
@@ -194,5 +190,18 @@ export default function SearchBar({ hideFilter = false }: SearchBarProps) { // <
         </div>
       )}
     </div>
+  );
+}
+
+// 2. Create the default export that wraps the content in Suspense
+export default function SearchBar({ hideFilter = false }: SearchBarProps) {
+  return (
+    <Suspense fallback={
+      <div className="w-full max-w-2xl flex items-center space-x-2 bg-secondary p-1 rounded-full border border-border/50 h-12 animate-pulse">
+        {/* Simple loading skeleton for the search bar */}
+      </div>
+    }>
+      <SearchBarContent hideFilter={hideFilter} />
+    </Suspense>
   );
 }
