@@ -29,13 +29,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# 1. ADD THIS LINE: Copy the Prisma schema into the final image
+# Make sure BOTH the prisma folder AND the config file are copied!
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
 
 USER nextjs
 EXPOSE 3000
 ENV PORT 3000
 
-# 2. CHANGE THIS LINE: Run database push before starting the server
-# (Using --yes bypasses the npx installation prompt)
 CMD ["sh", "-c", "npx --yes prisma db push && node server.js"]
