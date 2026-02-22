@@ -9,10 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film } from "lucide-react";
 
-export const metadata = {
-  title: "Register",
-};
-
 export default function RegisterPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
