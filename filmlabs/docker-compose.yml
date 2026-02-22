@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3000:3000"
+      - "${POSTGRES_HOST_PORT:-2455}:5432"
     depends_on:
       - postgres
     environment:
