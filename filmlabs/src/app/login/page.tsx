@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Film } from "lucide-react";
 
+export const metadata = {
+  title: "Login",
+};
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();

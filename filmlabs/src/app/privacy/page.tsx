@@ -1,7 +1,7 @@
 import { ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Privacy Policy | FilmLabs",
+  title: "Privacy Policy",
 };
 
 export default function PrivacyPage() {

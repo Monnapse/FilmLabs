@@ -9,6 +9,10 @@ import { Loader2 } from "lucide-react";
 import { searchMediaAction } from "@/app/actions";
 import MediaCard from "@/components/MediaCard";
 
+export const metadata = {
+  title: "Search Movies & TV",
+};
+
 function SearchResults() {
   const { data: session, status } = useSession();
   const router = useRouter();

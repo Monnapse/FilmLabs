@@ -1,7 +1,7 @@
 import { AlertOctagon } from "lucide-react";
 
 export const metadata = {
-  title: "DMCA | FilmLabs",
+  title: "DMCA",
 };
 
 export default function DMCAPage() {

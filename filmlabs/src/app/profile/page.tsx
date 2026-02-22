@@ -4,6 +4,10 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import ProfileForms from "./ProfileForms";
 
+export const metadata = {
+  title: "Profile Settings",
+};
+
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
