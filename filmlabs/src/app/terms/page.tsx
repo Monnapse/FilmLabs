@@ -1,7 +1,7 @@
 import { ShieldAlert } from "lucide-react";
 
 export const metadata = {
-  title: "Terms of Service | FilmLabs",
+  title: "Terms of Service",
 };
 
 export default function TermsPage() {

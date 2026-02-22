@@ -9,6 +9,35 @@ import MediaRow from "@/components/MediaRow";
 import Image from "next/image";
 import { Star, CheckCircle } from "lucide-react";
 
+export async function generateMetadata({ params }: { params: Promise<{ type: string, id: string }> }) {
+  const resolvedParams = await params;
+  const { type, id } = resolvedParams;
+
+  try {
+    // Fetch data from TMDB (using your existing environment variables)
+    const res = await fetch(
+      `https://api.themoviedb.org/3/${type}/${id}?api_key=${process.env.TMDB_API_KEY}`
+    );
+    
+    const data = await res.json();
+
+    // Movies use 'title', TV Shows use 'name'
+    const name = data.title || data.name;
+
+    if (!name) throw new Error("Name not found");
+
+    return {
+      title: name,
+    };
+  } catch (error) {
+    // Fallback if the fetch fails or API key is missing
+    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+    return {
+      title: `${typeLabel} Details`,
+    };
+  }
+}
+
 async function getMediaDetails(type: string, id: string) {
   const ratingEndpoint = type === "movie" ? "release_dates" : "content_ratings";
   const res = await fetch(
@@ -18,12 +47,9 @@ async function getMediaDetails(type: string, id: string) {
   return res.json();
 }
 
-export default async function MediaPage({
-  params,
-}: {
-  params: Promise<{ type: string; id: string }>;
-}) {
-  const { type, id } = await params;
+export default async function Page({ params }: { params: Promise<{ type: string, id: string }> }) {
+  const resolvedParams = await params;
+  const { type, id } = resolvedParams;
 
   if (type !== "movie" && type !== "tv") return notFound();
 

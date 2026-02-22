@@ -9,6 +9,10 @@ import {
 import MediaRow from "@/components/MediaRow";
 import FeaturedHero from "@/components/FeaturedHero";
 
+export const metadata = {
+  title: "Dashboard",
+};
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   
